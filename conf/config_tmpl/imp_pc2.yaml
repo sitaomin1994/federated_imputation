@@ -41,7 +41,7 @@ agg_strategy_imp:
 server_type: central_mlp_sklearn
 server:
   impute_mode: instant
-  imp_round: 40
+  imp_round: 20
   imp_local_epochs: 0
   pred_round: 0
   pred_local_epochs: 0
