@@ -120,7 +120,7 @@ def fedmechclw(weights, missing_infos, ms_coefs, params):
     return final_parameters, w
 
 
-def fedmechw(weights, missing_infos, ms_coefs, params):
+def fedmechw(weights, missing_infos, ms_coefs, params, sigmoid = False, filter_sim_mm = False, filter_sim_lm = False):
     '''Three factors Weighted Average'''
 
     scale_factor = settings['algo_params']['scale_factor']
@@ -139,11 +139,22 @@ def fedmechw(weights, missing_infos, ms_coefs, params):
 
     ms_coefs = np.array(list(ms_coefs.values()))
     mech_sim_dist = mech_cos_sim_matrix(ms_coefs)
+    model_sim_dist = mech_cos_sim_matrix(weights)
+
+    if sigmoid:
+        mech_sim_dist = 1 - 1 / (1 + np.exp(10 * (mech_sim_dist - 0.5)))
+
+    if filter_sim_mm:
+        mech_sim_dist = np.where(mech_sim_dist > 0.5, mech_sim_dist, 0.001)
+    
+    if filter_sim_lm:
+        mech_sim_dist = np.where(model_sim_dist < 0.2, mech_sim_dist, 0.001)
 
     final_parameters, w = [], []
     for client_idx in range(len(weights)):
         # select top-k client whose mech_sim_dist is larger
         top_k_idx = np.argsort(mech_sim_dist[client_idx])[-client_thres:]
+
 
         # adjust weights
         mech_sim_w = (mech_sim_dist[client_idx][top_k_idx] + 0.00001) ** scale_factor

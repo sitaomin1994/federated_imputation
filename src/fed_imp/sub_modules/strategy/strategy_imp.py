@@ -1,7 +1,7 @@
 import numpy as np
 
 from .fedavg import fedavg, fedavgs, fedavgh, fedavg2, fedavgcross, testavg
-from .fedmech import fedmechclw, fedmechclwcl, fedmechcl2, fedmechw, fedmechcl4
+from .fedmech import fedmechclw, fedmechclwcl, fedmechcl2, fedmechw, fedmechw2, fedmechcl4
 from .fedwavg import fedwavg, fedwavg2, fedwavg3
 from .fedwavgcl import fedwavgcl
 
@@ -89,6 +89,12 @@ class StrategyImputation:
 			agg_weight, w = fedmechclw(weights, missing_infos, ms_coefs, self.params)
 		elif self.strategy == 'fedmechw':
 			agg_weight, w = fedmechw(weights, missing_infos, ms_coefs, self.params)
+		elif self.strategy == 'fedmechw_sigmoid':
+			agg_weight, w = fedmechw(weights, missing_infos, ms_coefs, self.params, sigmoid=True)
+		elif self.strategy == 'fedmechw_fmm':
+			agg_weight, w = fedmechw(weights, missing_infos, ms_coefs, self.params,filter_sim_mm=True)
+		elif self.strategy == 'fedmechw_fmm_sigmoid':
+			agg_weight, w = fedmechw(weights, missing_infos, ms_coefs, self.params,filter_sim_mm=True, sigmoid=True)
 		elif self.strategy == 'fedmechclwcl':
 			agg_weight = fedmechclwcl(weights, missing_infos, ms_coefs)
 		elif self.strategy == 'fedmechcl2':
