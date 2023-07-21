@@ -1,11 +1,10 @@
-experiment_name: fed_imp12
+experiment_name: fed_imp_pc2
 debug: false
 experiment_marker:
   - num_clients
   - server@imp_round
 defaults:
-  - config_tmpl: imp4
+  - config_tmpl: imp_pc2
   - config_vars/imp4:
-      - ijcnn
-      - ijcnn2
+      - ijcnn_pca
   - _self_

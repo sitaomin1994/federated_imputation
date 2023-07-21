@@ -25,7 +25,7 @@ class DistributedFeatureImputer:
 			estimator_num = 'huber'
 		if estimator_cat is None:
 			estimator_cat = 'logistic_regression_cv'
-		print(estimator_num, estimator_cat)
+		# print(estimator_num, estimator_cat)
 		self.estimator_num = get_estimator(estimator_num)
 		self.estimator_cat = get_estimator(estimator_cat)
 

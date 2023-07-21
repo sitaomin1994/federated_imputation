@@ -1,8 +1,8 @@
 # @package config_vars
-adult:
+ijcnn:
   # dataset_name
   - name: dataset_name
-    value: [adult_balanced_pca]
+    value: [ijcnn_balanced_pca]
     keys:
       - data
       - dataset_name
@@ -17,7 +17,7 @@ adult:
 
   # data partition
   - name: data_partition
-    value: [sample@p=0.01]
+    value: [sample@p=500, sample@p=250]
     save_mode: dir3
     keys:
       - data_partition
@@ -25,7 +25,13 @@ adult:
 
   # missing scenario
   - name: mm_strategy
-    value: [mary_lr, mnar_lr]
+    value:
+      - mnar_lr@sp=extreme_r=0.0
+      - mnar_lr@sp=extreme_r=0.05
+      - mnar_lr@sp=extreme_r=0.25
+      - mnar_lr@sp=extreme_r=0.5
+      - mnar_lr@sp=extreme_r=0.75
+      - mnar_lr@sp=extreme_r=1.0
     save_mode: dir4
     keys:
       - missing_simulate
@@ -48,8 +54,7 @@ adult:
 
   # aggregation strategy
   - name: agg_strategy
-    value: [local, fedavg-s, fedmechw, fedmechclw]
-    #value: [fedmechcl3]
+    value: [local, fedavg-s, fedmechw]
     save_mode:
     keys:
       - agg_strategy_imp
@@ -89,3 +94,10 @@ adult:
     keys:
       - experiment
       - num_process
+
+  - name: test_size
+    value: [ 0.1 ]
+    save_mode: none
+    keys:
+      - experiment
+      - test_size
