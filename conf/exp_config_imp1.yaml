@@ -1,4 +1,4 @@
-experiment_name: fed_imp10
+experiment_name: fed_imp12
 debug: false
 experiment_marker:
   - num_clients
@@ -6,5 +6,6 @@ experiment_marker:
 defaults:
   - config_tmpl: imp4
   - config_vars/imp4:
-      - avila2
+      - ijcnn
+      - ijcnn2
   - _self_

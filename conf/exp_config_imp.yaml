@@ -6,14 +6,5 @@ experiment_marker:
 defaults:
   - config_tmpl: imp4
   - config_vars/imp4:
-      - statlog
-      - statlog2
-      - sensor
-      - sensor2
-      - svmguide
-      - svmguide2
-      - breast
-      - breast2
-      - avila
-      - avila2
+      - pendigits
   - _self_

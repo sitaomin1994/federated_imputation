@@ -41,7 +41,7 @@ agg_strategy_imp:
 server_type: central_mlp_sklearn
 server:
   impute_mode: instant
-  imp_round: 20
+  imp_round: 40
   imp_local_epochs: 0
   pred_round: 0
   pred_local_epochs: 0
@@ -69,12 +69,11 @@ experiment:
   mtp: true
   random_seed: 50 # 50
   num_process: 5
-  test_size: 0.1
 
 track: false
-tune_params: false
+tune_params: true
 prediction: false
-save_state: true
+save_state: false
 
 # params
 algo_params:
@@ -90,4 +89,4 @@ algo_params:
     client_thres: 1.0
     thres1: 0.2
     alpha: 0.8
-  scale_factor: 6
+  scale_factor: 4

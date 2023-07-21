@@ -1,10 +1,10 @@
-experiment_name: fed_imp12
+experiment_name: fed_imp_amarel
 debug: false
 experiment_marker:
   - num_clients
   - server@imp_round
 defaults:
-  - config_tmpl: imp5
-  - config_vars/imp5:
+  - config_tmpl: imp_amarel
+  - config_vars/imp_amarel:
       - susy
   - _self_
