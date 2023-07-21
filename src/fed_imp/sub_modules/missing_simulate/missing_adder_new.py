@@ -18,7 +18,7 @@ def add_missing(train_data_list, scenario, cols, seed=201030):
 		missing_ratio = ret[i]['missing_ratio']
 		missing_mechanism = ret[i]['missing_mechanism']
 		missing_features = ret[i]['missing_features']
-		#seed = (seed + i * 10089) % (2 ^ 32 - 1)
+		seed = (seed + i * 10089) % (2 ^ 32 - 1)
 		X_train_ms = simulate_nan_new(X_train, y_train, missing_features, missing_ratio, missing_mechanism, seed)
 		train_ms_list.append(np.concatenate([X_train_ms, y_train.reshape(-1, 1)], axis=1).copy())
 
