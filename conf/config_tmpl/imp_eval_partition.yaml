@@ -1,0 +1,32 @@
+# @package config_tmpl
+# dataset
+dataset:
+  name: breast
+
+# missing data simulation
+missing_simulate:
+  ms_ratio: 0.0
+  ms_features: 0.0
+  ms_mechanism: mcar
+
+# data partition
+data_partition:
+  k: 5
+
+# imputation method
+imputation:
+  name: iterative-sklearn
+  params:
+    n_iters: 50
+    clip: false
+
+# classification model
+clf_model:
+  name: linear_svc
+  tune_params: gridsearch
+  scoring: accuracy
+
+# fed_imp configs
+experiment:
+  n_rounds: 10
+  seed: 439309

@@ -1,0 +1,43 @@
+# @package config_vars
+var1:
+  # dataset_name
+  - name: dataset_name
+    value: [red]
+    keys:
+      - data
+      - dataset_name
+    save_mode: dir1
+  # missing mechanism
+  - name: missing_mechanism
+    value: [mar]
+    save_mode: dir2
+    keys:
+      - missing_simulate
+      - ms_mechanism
+      - params
+      - mechanism
+  # missing ratios
+  - name: missing_ratios
+    value: [0.75, 0.6]
+    keys:
+      - missing_simulate
+      - ms_ratio
+      - params
+      - ratio
+    save_mode:
+  # feature missing
+  - name: feature_missing
+    value: [1.0]
+    keys:
+      - missing_simulate
+      - ms_features
+      - params
+      - ratio
+    save_mode:
+  # aggregation strategy
+  - name: agg_strategy
+    value: [fedavg, local, fedwavg-w-fc-rmse]
+    save_mode:
+    keys:
+      - agg_strategy_imp
+      - strategy

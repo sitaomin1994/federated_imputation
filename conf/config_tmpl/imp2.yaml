@@ -1,0 +1,57 @@
+# @package config_tmpl
+# num_clients
+num_clients: 10
+# dataset
+data:
+  dataset_name: breast
+  normalize: true
+# dataset partition
+data_partition:
+  strategy: full
+  params: {}
+# missing data simulation
+missing_simulate:
+  ms_ratio:
+    strategy: two-clusters-19
+    params:
+      ratio: 0
+  ms_features:
+    strategy: identical-sample
+    params:
+      ratio: 1.0
+      sample_columns: null
+  ms_mechanism:
+    strategy: identical
+    params:
+      mechanism: mcar
+# imputation method
+imputation:
+  initial_strategy_num: mean
+  initial_strategy_cat: mode
+  estimator_num: ridge_cv
+  estimator_cat: logistic_cv
+  imp_evaluation_model: logistic
+  imp_evaluation_params:
+    tune_params: gridsearch
+  clip: false
+
+# aggregation strategy
+agg_strategy_imp:
+  strategy: local
+  params:
+    ms_field: missing_cell_pct
+    beta: 0.7
+
+# server
+server:
+  impute_mode: instant
+  imp_round: 30
+  imp_local_epochs: 0
+  pred_round: 0
+  pred_local_epochs: 0
+  model_fit_mode: one_shot
+
+# fed_imp
+experiment:
+  n_rounds: 5
+  seed: 1029310

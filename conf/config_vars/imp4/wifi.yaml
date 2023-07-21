@@ -1,0 +1,93 @@
+# @package config_vars
+########################################################################################################################
+wifi:
+  # dataset_name
+  - name: dataset_name
+    value: [wifi]
+    keys:
+      - data
+      - dataset_name
+    save_mode: dir1
+
+  # data partition
+  - name: data_partition
+    value: [sample@p=0.05, sample@p=0.1]
+    save_mode: dir2
+    keys:
+      - data_partition
+      - strategy
+
+  # num_client
+  - name: n_client
+    value: [20]
+    save_mode: dir3
+    keys:
+      - num_clients
+
+  # missing scenario
+  - name: mm_strategy
+    value: [mary_all, mnar_all]
+    save_mode: dir4
+    keys:
+      - missing_simulate
+      - mm_strategy
+
+  # missing scenario
+  - name: mr_strategy
+    value: [fixed, random]
+    save_mode: dir5
+    keys:
+      - missing_simulate
+      - mr_strategy
+
+  # missing scenario
+  - name: mf_strategy
+    value: [all]
+    save_mode: dir6
+    keys:
+      - missing_simulate
+      - mf_strategy
+
+  # aggregation strategy
+  - name: agg_strategy
+    value: [local, fedavg-s, fedwavg, fedwavgcl, fedmechcl, fedmechcl3]
+    #value: [fedmechcl3]
+    save_mode:
+    keys:
+      - agg_strategy_imp
+      - strategy
+
+  - name: seed
+    value: [102931466]
+    save_mode:
+    keys:
+      - experiment
+      - seed
+
+  - name: seed2
+    value: [ 50 ]
+    save_mode:
+    keys:
+      - experiment
+      - random_seed
+
+  - name: params
+    value: [ false ]
+    save_mode:
+    keys:
+      - tune_params
+
+  # n_rounds
+  - name: n_rounds
+    value: [ 10 ]
+    save_mode: none
+    keys:
+      - experiment
+      - n_rounds
+
+  - name: np
+    value: [0.05]
+    save_mode: none
+    keys:
+      - experiment
+      - num_process

@@ -1,0 +1,11 @@
+# @package algo_params
+algo_params:
+  local: {}
+  fedavg-s: {}
+  fedwavg:
+    alpha: 0.9
+  fedmechw:
+    client_thres: 1.0
+    alpha: 0.8
+    beta: 0.15
+  scale_factor: 4

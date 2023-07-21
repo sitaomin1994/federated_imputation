@@ -1,0 +1,19 @@
+experiment_name: fed_imp9
+debug: false
+experiment_marker:
+  - num_clients
+  - server@imp_round
+defaults:
+  - config_tmpl: imp4
+  - config_vars/imp4:
+      - statlog
+      - statlog2
+      - sensor
+      - sensor2
+      - svmguide
+      - svmguide2
+      - breast
+      - breast2
+      - avila
+      - avila2
+  - _self_

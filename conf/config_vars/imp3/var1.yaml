@@ -1,0 +1,52 @@
+# @package config_vars
+var1:
+  # dataset_name
+  - name: dataset_name
+    value: [default_credit]
+    keys:
+      - data
+      - dataset_name
+    save_mode: dir1
+
+  # missing scenario
+  - name: scenario
+    value: [mr0.5_mm_mnar_2cluster, mr0.5_mm_mary_2cluster]
+    save_mode: dir2
+    keys:
+      - missing_simulate
+      - scenario
+
+  # data partition
+  - name: data_partition
+    value: [sample-p=0.4]
+    save_mode: dir3
+    keys:
+      - data_partition
+      - strategy
+
+  #missing mechanism
+#  - name: missing_mechanism
+#    #value: [mcar, mar_quantile_left, mar_quantile_right, mary_left, mary_right]
+#    value: [mcar, mar_quantile_left, mar_quantile_right, mary_left, mary_right]
+#    save_mode: dir5
+#    keys:
+#      - missing_simulate
+#      - ms_mechanism
+
+  # tune params
+  - name: tune_params
+    value: [notune]
+    save_mode: dir4
+    keys:
+      - imputation
+      - imp_evaluation_params
+      - tune_params
+
+  # aggregation strategy
+  - name: agg_strategy
+    value: [local, fedwavgcl, fedmechcl]     #[fedavg, fedwavgcl-fc-rmse, fedavg-h]
+    #value: [fedmechcl2]
+    save_mode:
+    keys:
+      - agg_strategy_imp
+      - strategy

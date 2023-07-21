@@ -1,0 +1,178 @@
+import numpy as np
+import torch
+from loguru import logger
+from sklearn.metrics import f1_score, accuracy_score
+from src.fed_imp.sub_modules.client.simple_client import SimpleClient
+from typing import Dict, List
+from src.utils import set_seed
+from src.fed_imp.sub_modules.model.TwoNN import TwoNN
+from src.fed_imp.sub_modules.model.logistic import LogisticRegression
+from src.fed_imp.sub_modules.model.utils import EarlyStopping
+from torch.utils.data import DataLoader, TensorDataset
+
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+
+class PredServerCentralPytorch:
+
+	def __init__(
+			self,
+			clients: Dict[int, SimpleClient], server_config: dict,
+			pred_config: dict, test_data: np.ndarray = None, base_model='twonn'
+	):
+
+		self.clients = clients
+		self.config = server_config
+		self.seed = server_config['seed']
+		self.base_model = base_model
+
+		###########################################################################
+		# Prediction model
+		###########################################################################
+		# model
+		self.pred_model_params = pred_config.get(
+			'model_params', {
+				"num_hiddens": 64,
+				}
+			)
+
+		self.pred_model_params['input_feature_dim'] = test_data.shape[1] - 1
+		self.pred_model_params['output_classes_dim'] = len(np.unique(test_data[:, -1]))
+
+		self.pred_training_params = pred_config.get(
+			'train_params', {
+					"batch_size": 128,
+					"learning_rate": 0.001,
+					"weight_decay": 1e-4,
+					"pred_round": 300
+				}
+			)
+
+		# test data
+		self.test_data = test_data
+
+		# seeds
+		self.rounds = server_config['pred_rounds']
+
+	def prediction(self, seeds=None):
+
+		###############################################################################################
+		# Collecting client imputed datasets
+		###############################################################################################
+		# setup work in client side
+		if seeds is None:
+			seeds = list(range(42, 42 + self.rounds))
+
+		validate_data, train_data = [], []
+		for client_id, client in self.clients.items():
+			validate_data.append(client.val_data)
+			train_data.append(client.train_data)
+
+		dataset = np.concatenate(train_data, axis=0)
+		X_train, y_train = dataset[:, :-1], dataset[:, -1].astype(int)
+		X_test, y_test = self.test_data[:, :-1], self.test_data[:, -1].astype(int)
+		validate_dataset = np.concatenate(validate_data, axis=0)
+		X_validate, y_validate = validate_dataset[:, :-1], validate_dataset[:, -1].astype(int)
+
+		################################################################################################
+		# Training prediction model
+		################################################################################################
+		hidden_size = self.pred_model_params['num_hiddens']
+		train_epochs = self.pred_training_params['pred_round']
+		batch_size = self.pred_training_params['batch_size']
+		learning_rate = self.pred_training_params['learning_rate']
+		weight_decay = self.pred_training_params['weight_decay']
+
+		train_dataset = TensorDataset(torch.FloatTensor(X_train), torch.LongTensor(y_train))
+		train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+
+		# centralized evaluation
+		accus, f1s = [], []
+		for s in seeds:
+			set_seed(s)
+			#early_stopping = EarlyStopping()
+
+			# Model. loss and optimizer
+			if self.base_model == 'twonn':
+				model = TwoNN(
+					in_features=X_train.shape[1],
+					num_classes=len(np.unique(y_train)),
+					num_hiddens=hidden_size
+				)
+			elif self.base_model == 'lr':
+				model = LogisticRegression(
+					in_features=X_train.shape[1],
+					num_classes=len(np.unique(y_train))
+				)
+			else:
+				raise ValueError('base model not found')
+
+			criterion = torch.nn.CrossEntropyLoss()
+			optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
+
+			# Train the model
+			train_losses, val_losses = [], []
+			best_accus, best_f1s = [], []
+			for epoch in range(train_epochs):
+				model.to(DEVICE)
+				model.train()  # prep model for training
+
+				train_running_loss = 0.0
+				counter = 0
+				for i, (X_train_, y_train_) in enumerate(train_dataloader):
+					counter += 1
+					# Move tensors to the configured device
+					X_train_, y_train_ = X_train_.to(DEVICE), y_train_.to(DEVICE)
+
+					# Forward pass
+					outputs = model(X_train_)
+					loss = criterion(outputs, y_train_)
+
+					# Backward and optimize
+					optimizer.zero_grad()
+					loss.backward()
+					optimizer.step()
+					train_running_loss += loss.item()
+
+					if DEVICE == 'cuda':
+						torch.cuda.empty_cache()
+
+				train_epoch_loss = train_running_loss / counter
+				train_losses.append(train_epoch_loss)
+				#early_stopping(train_epoch_loss)
+
+				model.eval()  # prep model for evaluation
+				outputs = model(torch.FloatTensor(X_test).to(DEVICE))
+				_, predicted = torch.max(outputs.data, 1)
+				accu = accuracy_score(y_test, predicted.to('cpu').numpy())
+				f1 = f1_score(y_test, predicted.to('cpu').numpy(), average='macro')
+				best_accus.append(accu)
+				best_f1s.append(f1)
+
+				outputs = model(torch.FloatTensor(X_validate).to(DEVICE))
+				_, predicted = torch.max(outputs.data, 1)
+				val_accu = accuracy_score(y_validate, predicted.to('cpu').numpy())
+				val_f1 = f1_score(y_validate, predicted.to('cpu').numpy(), average='macro')
+
+				if epoch % 100 == 0:
+					logger.info(
+						'Round: {}, test_accu: {:.4f}, train_loss: {:.4f} val_accu: {:.4f} val_f1: {:.4f}'.format(
+							epoch, accu, train_epoch_loss, val_accu, val_f1
+						))
+
+				# if early_stopping.early_stop:
+				# 	break
+
+			# Test the model
+			accus.append(np.array(best_accus).max())
+			f1s.append(np.array(best_f1s).max())
+
+			model.to('cpu')
+
+		return {
+			"accu_mean": np.array(accus).mean(),
+			"f1_mean": np.array(f1s).mean(),
+			"accu_std": np.array(accus).std(),
+			"f1_std": np.array(f1s).std()
+		}
+

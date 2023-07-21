@@ -1,0 +1,10 @@
+experiment_name: fed_imp10
+debug: false
+experiment_marker:
+  - num_clients
+  - server@imp_round
+defaults:
+  - config_tmpl: imp4
+  - config_vars/imp4:
+      - avila2
+  - _self_
