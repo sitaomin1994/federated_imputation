@@ -17,7 +17,7 @@ ijcnn:
 
   # data partition
   - name: data_partition
-    value: [sample@p=500, sample@p=250]
+    value: [sample@p=500]
     save_mode: dir3
     keys:
       - data_partition
@@ -39,7 +39,7 @@ ijcnn:
 
   # missing scenario
   - name: mr_strategy
-    value: [fixed@mr=0.5]
+    value: [fixed@mr=0.1, fixed@mr=0.3, fixed@mr=0.7]
     save_mode: dir5
     keys:
       - missing_simulate
