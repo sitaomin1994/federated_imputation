@@ -210,11 +210,11 @@ def get_all_dirs(root_dir, method):
 
 if __name__ == '__main__':
     main_config_tmpl = {
-        "data": "fed_imp12/0717/ijcnn_balanced",
+        "data": "fed_imp_pc2/0721/ijcnn_balanced",
         "n_clients": 20,
-        "sample_size": 0.01,
-        "scenario": "mary_lr",
-        "mr": "random_in_group2",
+        "sample_size": 500,
+        "scenario": "mnar",
+        "mr": "fixed",
         "method": "local"
     }
 
@@ -247,33 +247,27 @@ if __name__ == '__main__':
     seed = 21
     mtp = False
 
-    datasets = [
-        # ('fed_imp12/0717/svm_g', 0.01, 0.01),
-        # ('fed_imp10/0716/statlog', 0.05, 0.05),
-        ('fed_imp10/0716/ijcnn_balanced', 0.01, 0.01),
-        # ('fed_imp10/0716/adult', 0.01, 0.01),
-        # ('fed_imp10/0716/default_credit', 0.05, 0.05),
-        # ('fed_imp12/0717/bank_balanced_pca', 0.01, 0.01),
-        # ('fed_imp10/0716/bank_marketing_balanced', 0.05, 0.05),
-        # ('fed_imp10/0716/susy', 0.01, 0.01),
-        # ('fed_imp10/0716/sensor', 0.01, 0.01),
-        # ('skin_balanced', 0.005, 0.005),
-        # ('statlog' , 0.05, 0.05),
-        # ('avila', 0.01, 0.025),
-        # ('fed_imp12/0717/pendigits', 0.01, 0.025),
-    ]
+    dataset = 'fed_imp_pc2/0721/ijcnn_balanced'
+    sample_size = 500
+    n_clients = 20
+    scenario = "mnar_lr@extreme_r="
+    r = [0, 0.05, 0.25, 0.5, 0.75, 1.0]
+    mr_strategy = "fixed"
+    mr = [0.1, 0.3, 0.5, 0.7]
 
     main_config = copy.deepcopy(main_config_tmpl)
-    main_config['data'] = datasets[0][0]
-    main_config['sample_size'] = datasets[0][1]
-    main_config['scenario'] = 'mary_lr'
+    main_config['data'] = dataset
+    main_config['n_clients'] = n_clients
+    main_config['sample_size'] = sample_size
+    main_config['scenario'] = scenario
+    main_config['scenario_list'] = r
+    main_config['mr'] = mr_strategy
+    main_config['mr_list'] = mr
     server_config = copy.deepcopy(server_config_tmpl)
     server_config['server_name'] = ''
     prediction(main_config, server_config, pred_rounds, seed, mtp=mtp)
     server_config['server_pred_config']['train_params']["pred_round"] = 500
 
-    # types = ['all_clients']
-    # servers = ['fedavg_mlp_pytorch_pred']
     types = ['all_clients', 'all_clients']
     servers = ['central_mlp_pytorch_pred', 'fedavg_mlp_pytorch_pred']
     pred_rounds_ = [1000, 1000]
