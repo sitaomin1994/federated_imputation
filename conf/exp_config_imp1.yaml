@@ -4,7 +4,7 @@ experiment_marker:
   - num_clients
   - server@imp_round
 defaults:
-  - config_tmpl: imp_pc2
+  - config_tmpl: imp4
   - config_vars/imp4:
-      - pendigits
+      - ijcnn_pca
   - _self_

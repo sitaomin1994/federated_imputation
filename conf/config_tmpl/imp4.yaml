@@ -28,7 +28,7 @@ imputation:
   imp_evaluation_model: logistic
   imp_evaluation_params:
     tune_params: gridsearch
-  clip: false
+  clip: true
 
 # aggregation strategy
 agg_strategy_imp:
@@ -38,7 +38,7 @@ agg_strategy_imp:
     beta: 0.7
 
 # server
-server_type: central_mlp_sklearn
+server_type: fedavg_pytorch
 server:
   impute_mode: instant
   imp_round: 20
@@ -51,7 +51,7 @@ server:
 pred_model:
   model_params:
     model: 2nn
-    num_hiddens: 128
+    num_hiddens: 32
     model_init_config: null
     model_other_params: null
   train_params:
@@ -84,7 +84,7 @@ algo_params:
     alpha: 0.9
   fedmechw:
     client_thres: 1.0
-    alpha: 0.8
+    alpha: 1.0
     beta: 0.15
   fedmechclw:
     client_thres: 1.0

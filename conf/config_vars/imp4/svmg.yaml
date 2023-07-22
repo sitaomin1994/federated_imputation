@@ -31,6 +31,7 @@ svm:
       - mnar_lr@sp=extreme_r=0.25
       - mnar_lr@sp=extreme_r=0.5
       - mnar_lr@sp=extreme_r=0.75
+      - mnar_lr@sp=extreme_r=0.95
       - mnar_lr@sp=extreme_r=1.0
     save_mode: dir4
     keys:
@@ -39,7 +40,7 @@ svm:
 
   # missing scenario
   - name: mr_strategy
-    value: [fixed@mr=0.1]
+    value: [fixed@mr=0.1, fixed@mr=0.3, fixed@mr=0.5, fixed@mr=0.7]
     save_mode: dir5
     keys:
       - missing_simulate

@@ -129,11 +129,6 @@ class Client:
 					X=self.X_train_filled, feature_idx=transform_instruction.get('feature_idx'),
 					global_weights=global_weights, update_weights=update_weights
 				)
-		elif transform_task == 'impute_data_grad':
-			self.X_train_filled = self.imputation_model_grad.transform_feature(
-				X=self.X_train_filled, feature_idx=transform_instruction.get('feature_idx'),
-				global_weights=global_weights
-			)
 		else:
 			raise NotImplementedError
 

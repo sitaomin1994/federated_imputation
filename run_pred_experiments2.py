@@ -42,7 +42,7 @@ def main_prediction(data_dir, server_name, server_config, server_pred_config, te
 
 
 def prediction(main_config, server_config_, pred_rounds, seed, mtp=False):
-    data = main_config["data"]
+    dataname = main_config["data"]
     n_clients = main_config["n_clients"]
     sample_size = main_config["sample_size"]
     scenario = main_config["scenario"]
@@ -64,6 +64,7 @@ def prediction(main_config, server_config_, pred_rounds, seed, mtp=False):
     if len(mr_list) == 0:
         mr_list = ['']
 
+    print(scenario_list)
     for scenario_param in scenario_list:
         for mr_param in mr_list:
 
@@ -71,7 +72,8 @@ def prediction(main_config, server_config_, pred_rounds, seed, mtp=False):
             # Main part
             ###################################################################################
             root_dir = "./results/raw_results/{}/{}/sample@p={}/{}/{}/".format(
-                data, n_clients, sample_size, scenario + scenario_param, mr_strategy + mr_param)
+                dataname, n_clients, sample_size, scenario + scenario_param, mr_strategy + mr_param
+            )
 
             print(root_dir)
             data_dir, exp_file = get_all_dirs(root_dir, method)
@@ -184,8 +186,6 @@ def prediction(main_config, server_config_, pred_rounds, seed, mtp=False):
             with open(pred_exp_filepath, 'w') as fp:
                 json.dump(pred_exp_ret_content, fp)
 
-            return average_ret
-
 
 def get_all_dirs(root_dir, method):
     all_dirs, all_files = [], []
@@ -255,9 +255,9 @@ if __name__ == '__main__':
     sample_size = 500
     n_clients = 20
     scenario = "mnar_lr@sp=extreme_r="
-    r = ['0.25', '0.5', '0.75']
+    r = ['0.0', '0.05', '0.25', '0.5', '0.75', '1.0']
     mr_strategy = "fixed@mr="
-    mr = ['0.5']
+    mr = ['0.7']
 
     main_config = copy.deepcopy(main_config_tmpl)
     main_config['data'] = dataset

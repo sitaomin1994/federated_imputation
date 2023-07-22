@@ -115,7 +115,9 @@ class ServerBase:
 			for client in self.clients.values():
 				client.features_max = global_max
 				client.features_min = global_min
-				client.update_imp_model_minmax()
+
+		for client in self.clients.values():
+			client.update_imp_model_minmax()
 
 		# initial global imputation
 		aggregated_initial_values_mean = self.strategy_imp.aggregate_initial(
