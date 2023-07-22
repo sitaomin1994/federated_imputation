@@ -143,9 +143,10 @@ class ServerBase:
 		# N rounds imputation
 		###############################################################################################
 		for current_round in range(1, self.num_rounds_imp + 1):
-			# if current_round % 10 == 0 or current_round == 1:
-			# 	logger.info("=" * 50)
-			# 	logger.info("Imputation Round {}".format(current_round))
+			if current_round % 10 == 0 or current_round == 1:
+				logger.info("=" * 50)
+				logger.info("Imputation Round {}".format(current_round))
+
 			self._run_round_impute(
 				server_round=current_round, client_imp_history=clients_imp_history, total_rounds=self.num_rounds_imp
 			)
