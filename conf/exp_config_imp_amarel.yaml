@@ -6,5 +6,5 @@ experiment_marker:
 defaults:
   - config_tmpl: imp4
   - config_vars/imp4:
-      - svmg
+      - susy
   - _self_

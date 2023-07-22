@@ -145,10 +145,10 @@ def fedmechw(weights, missing_infos, ms_coefs, params, sigmoid = False, filter_s
         mech_sim_dist = 1 - 1 / (1 + np.exp(10 * (mech_sim_dist - 0.5)))
 
     if filter_sim_mm:
-        mech_sim_dist = np.where(mech_sim_dist > 0.5, mech_sim_dist, 0.001)
+        mech_sim_dist = np.where(mech_sim_dist > 0.05, mech_sim_dist, 0.001)
     
     if filter_sim_lm:
-        mech_sim_dist = np.where(model_sim_dist > 0.2, mech_sim_dist, 0.001)
+        mech_sim_dist = np.where(model_sim_dist > 0.05, mech_sim_dist, 0.001)
 
     final_parameters, w = [], []
     for client_idx in range(len(weights)):
