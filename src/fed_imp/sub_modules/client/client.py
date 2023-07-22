@@ -12,9 +12,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import missingno
 
-from src.modules.iterative_imputation.distributed_imputer_grad import DistributedFeatureImputerGrad
-
-
 class Client:
 	"""
 	Client class for federated learning
@@ -42,8 +39,8 @@ class Client:
 		self.client_data_config = client_data_config
 		self.seed = seed
 		self.convergency = False
-
-		#logger.debug("{} {}".format(client_id, self.X_train_ms.shape))
+		self.features_min: np.ndarray = self.X_train.min(axis=0)
+		self.features_max: np.ndarray = self.X_train.max(axis=0)
 
 		# get original missing mask 0-1 matrix
 		self.missing_mask = np.isnan(self.X_train_ms).astype(bool)
@@ -66,7 +63,7 @@ class Client:
 		self.initial_strategy_num = imputation_config.get('initial_strategy_num', 'mean')
 		self.imp_estimator_num = imputation_config.get('imp_estimator_num', 'ridge')
 		self.imp_estimator_cat = imputation_config.get('imp_estimator_cat', 'logistic_cv')
-		self.imp_clip = imputation_config.get('imp_clip', False)
+		self.imp_clip = imputation_config.get('clip', False)
 
 		self.imputation_model = DistributedFeatureImputer(
 			missing_mask=self.missing_mask, estimator_num=self.imp_estimator_num, estimator_cat=self.imp_estimator_cat,
@@ -74,10 +71,6 @@ class Client:
 			clip=self.imp_clip, num_cols=self.num_cols, regression=self.regression
 		)
 
-		self.imputation_model_grad = DistributedFeatureImputerGrad(
-			missing_mask=self.missing_mask, initial_strategy_cat=self.initial_strategy_cat,
-			initial_strategy_num=self.initial_strategy_num, clip=self.imp_clip, num_cols=self.num_cols
-		)
 		################################################################################################################
 		# evaluation of imputation
 		################################################################################################################
@@ -158,12 +151,14 @@ class Client:
 	# helper functions
 	####################################################################################################################
 	def get_initial_values(self):
-		ret, sample_size, ms_info = [], [], []
+		ret_mean, ret_max, ret_min, sample_size, ms_info = [], [], [], [], []
 		for idx in range(self.X_train_ms.shape[1]):
-			ret.append(np.nanmean(self.X_train_ms[:, idx]))
+			ret_mean.append(np.nanmean(self.X_train_ms[:, idx]))
+			ret_max.append(np.nanmax(self.X_train_ms[:, idx]))
+			ret_min.append(np.nanmin(self.X_train_ms[:, idx]))
 			ms_info.append(self.imputation_model.get_missing_info(idx)['missing_cell_pct'])
 			sample_size.append(self.imputation_model.get_missing_info(idx)['sample_row_pct'])
-		return np.array(ret), np.array(sample_size), np.array(ms_info)
+		return np.array(ret_mean), np.array(ret_max), np.array(ret_min), np.array(sample_size), np.array(ms_info)
 
 	def initial_impute(self, aggregated_values):
 		if aggregated_values is None:
@@ -241,4 +236,8 @@ class Client:
 		self.local_pred_dataset_val = construct_tensor_dataset(self.val_data[:, :-1], self.val_data[:, -1])
 		self.train_dataloader = DataLoader(self.local_pred_dataset, batch_size=batch_size, shuffle=True)
 		self.val_data_loader = DataLoader(self.local_pred_dataset_val, batch_size=batch_size, shuffle=False)
+
+	def update_imp_model_minmax(self):
+		self.imputation_model.features_max = self.features_max
+		self.imputation_model.features_min = self.features_min
 

@@ -144,7 +144,7 @@ def impute_one_feature2(
 	if col_idx < num_cols:
 		num_cols = num_cols - 1
 
-	# if no missing values, dont predict
+	# if no missing values, don‘t predict
 	if np.sum(row_mask) == 0:
 		return X_filled
 

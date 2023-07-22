@@ -2,7 +2,7 @@ from loguru import logger
 
 from .utils import (
 	initial_imputation, fit_one_feature, impute_one_feature, get_visit_indices, impute_one_feature2,
-	get_clip_thresholds, get_estimator
+	get_clip_thresholds, get_estimator,
 )
 import numpy as np
 
@@ -12,7 +12,7 @@ class DistributedFeatureImputer:
 	def __init__(
 			self,
 			missing_mask, estimator_num, estimator_cat, num_cols=None,
-			initial_strategy_cat='most_frequent', initial_strategy_num='mean', clip=True, regression = False
+			initial_strategy_cat='most_frequent', initial_strategy_num='mean', clip=True, regression=False
 	):
 		# missing mask and missing info
 		self.missing_mask = missing_mask
@@ -37,6 +37,8 @@ class DistributedFeatureImputer:
 		self.estimator_placeholder = None
 		self.indicator_model = None
 		self.regression = regression
+		self.features_min = None
+		self.features_max = None
 
 	def initial_impute(self, X):
 		# initialize
@@ -53,7 +55,8 @@ class DistributedFeatureImputer:
 		# fit a model on to impute feature idx
 		estimator = self.estimator_num if feature_idx < num_cols else self.estimator_cat
 		estimator, losses, projection_matrix, ms_coef, lr = fit_one_feature(
-			X, y, self.missing_mask, col_idx=feature_idx, estimator=estimator, num_cols=num_cols, regression=self.regression
+			X, y, self.missing_mask, col_idx=feature_idx, estimator=estimator, num_cols=num_cols,
+			regression=self.regression
 		)
 
 		# ms_coef = np.concatenate([lr.coef_[0], lr.intercept_])
@@ -74,15 +77,22 @@ class DistributedFeatureImputer:
 
 		# initialize
 		num_cols = self.get_num_cols(X, self.num_cols)
-		min_values, max_values = get_clip_thresholds(X, self.clip)
+
+		# clip thresholds
+		if self.clip:
+			min_values = self.features_min
+			max_values = self.features_max
+		else:
+			min_values = np.full((X.shape[1],), 0)
+			max_values = np.full((X.shape[1],), 1)
 
 		calibration = False
 		if calibration:
 
 			# impute X
 			Xt = impute_one_feature2(
-				X, self.missing_mask, feature_idx, self.estimator_placeholder, aggregation_weights = global_weights,
-				min_value=min_values, max_value=max_values, num_cols=num_cols, indicator_model = self.indicator_model
+				X, self.missing_mask, feature_idx, self.estimator_placeholder, aggregation_weights=global_weights,
+				min_value=min_values, max_value=max_values, num_cols=num_cols, indicator_model=self.indicator_model
 			)
 			return Xt
 		else:
@@ -119,7 +129,8 @@ class DistributedFeatureImputer:
 		sample_row_pct = sample_size / self.missing_mask.shape[0]
 
 		# total pct of missing
-		total_missing_cell_pct = self.missing_mask.sum().sum() / (self.missing_mask.shape[0] * self.missing_mask.shape[1])
+		total_missing_cell_pct = self.missing_mask.sum().sum() / (
+					self.missing_mask.shape[0] * self.missing_mask.shape[1])
 		total_missing_row_pct = self.missing_mask.any(axis=1).sum() / self.missing_mask.shape[0]
 
 		# # among all rows for training imp model, the proportion of missing part of each features

@@ -124,12 +124,13 @@ def missing_ratio_strategy(strategy, n_clients, group_lens=None, seed=0):
 		assert group_lens is not None
 		ms_ratio = float(params['mr'])
 		return [ms_ratio for _ in range(n_clients)]
-		# group_mr = []
-		# for group_len in group_lens:
-		# 	np.random.seed(seed)
-		# 	client_mr = np.ones(group_len) * ms_ratio
-		# 	group_mr.append(client_mr)
-		# client_mr = np.concatenate(group_mr)
+	elif strategy == 'compl':
+		assert group_lens is not None
+		assert len(group_lens) == 2
+		ms_ratio = float(params['mr'])
+		ret1 = [ms_ratio]*group_lens[0]
+		ret2 = [1-ms_ratio]*group_lens[1]
+		return ret1+ret2
 	elif strategy == 'random':
 		client_mr = np.random.uniform(low=0.3, high=0.7, size=n_clients)
 	# missing ratio as random uniform in group
