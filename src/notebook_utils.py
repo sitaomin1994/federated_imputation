@@ -217,4 +217,10 @@ def vis_imp(ret):
             y = [ret['client_imp_history'][i][2]['metrics'][client_id][metric] for i in x]
             ax[idx].plot(x, y, label=client_id)
             ax[idx].set_title(metric)
+    
+    if len(client_ids) < 20:
+        ax[-1].legend(loc='upper right',
+                    bbox_to_anchor=(1.1, 1.1), ncol=4, fontsize=10)
+        
+    plt.tight_layout()
     plt.show()

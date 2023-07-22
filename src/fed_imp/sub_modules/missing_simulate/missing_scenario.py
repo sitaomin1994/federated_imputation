@@ -131,6 +131,21 @@ def missing_ratio_strategy(strategy, n_clients, group_lens=None, seed=0):
 		ret1 = [ms_ratio]*group_lens[0]
 		ret2 = [1-ms_ratio]*group_lens[1]
 		return ret1+ret2
+	elif strategy == 'compl2':
+		assert group_lens is not None
+		assert len(group_lens) == 3
+		ms_ratio = float(params['mr'])
+		m = params['m']
+		rets = []
+		for item, group_len in zip(m, group_lens):
+			mr = ms_ratio if item == 'n' else 1-ms_ratio
+			ret = [mr]*group_len
+			rets.extend(ret)		
+		return rets
+	elif strategy == 'test':
+		group1 = [0.6 for _ in range(int(n_clients * 0.5))]
+		group2 = [0.6 for _ in range(int(n_clients * 0.5))]
+		client_mr = group1 + group2
 	elif strategy == 'random':
 		client_mr = np.random.uniform(low=0.3, high=0.7, size=n_clients)
 	# missing ratio as random uniform in group
@@ -244,6 +259,12 @@ def ms_mechanism_strategy(n_clients, strategy):
 		mech_cats = [10, 11, 12, 13, 14, 15, 16, 17]
 	elif strategy == 'nonignorable_ms_random':
 		mech_cats = random.sample([10, 11, 12, 13, 14, 15, 16, 17], 4)
+	elif strategy == 'test':
+		mech_cats = [16, 17]
+		group1 = [MS_MECHANISM_MAPPING[mech_cats[0]] for _ in range(int(n_clients * 0.5))]
+		group2 = [MS_MECHANISM_MAPPING[mech_cats[1]] for _ in range(int(n_clients * 0.5))]
+		client_mechs = group1 + group2
+		group_lens = [int(n_clients * 0.5), int(n_clients * 0.5)]
 	else:
 		raise ValueError('strategy not found')
 
@@ -274,6 +295,26 @@ def ms_mechanism_strategy(n_clients, strategy):
 			mechanism = MS_MECHANISM_MAPPING[mech_cats[idx]]
 			group_mechs.append([mechanism for _ in range(group_len)])
 		client_mechs = np.concatenate(group_mechs)
+	# three groups left, left, right
+	elif split_func == 'extreme3':
+		ratio1 = params.get('r1', 0.05)
+		ratio2 = params.get('r2', 0.05)
+		ratio1 = float(ratio1)
+		ratio2 = float(ratio2)
+		m = params.get('m', 'lrr')
+		if strategy not in [
+			'mnar_lr', 'mary_lr', 'mary_rl', 'mnar_rl', 'mary_sigmoid_lr', 'mary_sigmoid_rl',
+			'mnar_sigmoid_lr', 'mnar_sigmoid_rl'
+		]:
+			raise ValueError('extreme split only support mnar_lr and mary_lr')
+		group_lens = [int(n_clients * ratio1), int(n_clients * ratio2), n_clients - int(n_clients * ratio1) - int(n_clients * ratio2)]
+		group_mechs = []
+		for idx, group_len in enumerate(group_lens):
+			mm = m[idx]
+			mech_idx = 0 if mm == 'l' else 1
+			mechanism = MS_MECHANISM_MAPPING[mech_cats[mech_idx]]
+			group_mechs.append([mechanism for _ in range(group_len)])
+		client_mechs = np.concatenate(group_mechs)
 	elif split_func == 'extreme2':
 		if strategy not in ['mnar_lr', 'mary_lr', 'mary_rl', 'mnar_rl', 'mary_sigmoid_lr', 'mary_sigmoid_rl']:
 			raise ValueError('extreme split only support mnar_lr and mary_lr')
@@ -283,12 +324,9 @@ def ms_mechanism_strategy(n_clients, strategy):
 			mechanism = MS_MECHANISM_MAPPING[mech_cats[idx]]
 			group_mechs.append([mechanism for _ in range(group_len)])
 		client_mechs = np.concatenate(group_mechs)
-		print(client_mechs)
 	else:
 		raise ValueError('split function not found')
 	
-	print(client_mechs)
-
 	return list(client_mechs), group_lens
 
 
