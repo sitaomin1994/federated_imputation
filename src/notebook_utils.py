@@ -103,11 +103,13 @@ def simulate_scenario(configuration):
 
 def NN_evaluation(ret0, type='centralized', n_rounds = 500, server_config_tmpl = None):
     clients_ = {}
-    data_imp = ret0['data']['imputed_data']
-    missing_mask = ret0['data']['missing_mask']
-    data_true = ret0['data']['origin_data']
-    n_clients = ret0['data']['origin_data'].shape[0]
+    split_indices = ret0['data']['split_indices'].tolist()
+    data_imp = np.split(ret0['data']['imputed_data'], split_indices)
+    missing_mask = np.split(ret0['data']['missing_mask'], split_indices)
+    data_true = np.split(ret0['data']['origin_data'], split_indices)
+    n_clients = len(data_imp)
     test_data = ret0['data']['test_data']
+    split_indices = ret0['data']['split_indices']
     for client_id in range(n_clients):
         clients_[client_id] = SimpleClient(
             client_id=client_id,
@@ -121,7 +123,7 @@ def NN_evaluation(ret0, type='centralized', n_rounds = 500, server_config_tmpl =
     if type == 'centralized':
         server_name = 'central_mlp_pytorch_pred'
     elif type == 'fedavg':
-        server_name = 'fedavg_mlp_pytorch_pred_local'
+        server_name = 'fedavg_mlp_pytorch_pred'
     else:
         raise ValueError('type should be centralized or fedavg')
     server_pred_config = pred_config['server_pred_config']

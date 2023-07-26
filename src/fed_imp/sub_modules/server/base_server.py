@@ -185,10 +185,10 @@ class ServerBase:
 				imputed_datas.append(imputed_data)
 				origin_datas.append(origin_data)
 				missing_masks.append(missing_mask)
-
-			imputed_datas = np.stack(imputed_datas, axis=0)
-			origin_datas = np.stack(origin_datas, axis=0)
-			missing_masks = np.stack(missing_masks, axis=0)
+			split_indices = np.cumsum([item.shape[0] for item in imputed_datas])[:-1]
+			imputed_datas = np.concatenate(imputed_datas, axis=0)
+			origin_datas = np.concatenate(origin_datas, axis=0)
+			missing_masks = np.concatenate(missing_masks, axis=0)
 		else:
 			imputed_datas, origin_datas, missing_masks, test_data = None, None, None, None
 
@@ -215,6 +215,7 @@ class ServerBase:
 				'origin_data': origin_datas,
 				'missing_mask': missing_masks,
 				'test_data': test_data,
+				'split_indices': split_indices,
 			}
 		}
 

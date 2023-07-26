@@ -33,6 +33,26 @@ def data_partition(strategy, params, data, n_clients, seed=201030, regression=Fa
 				)
 			ret.append(np.concatenate([X_test, y_test.reshape(-1, 1)], axis=1).copy())
 		return ret
+	elif strategy == '2case':
+		sample_frac1 = int(params['s1']) / data.shape[0]
+		sample_frac2 = int(params['s2']) / data.shape[0]
+		sample_fracs = [sample_frac1 for _ in range(int(n_clients*0.5))] + [sample_frac2 for _ in range(int(n_clients*0.5))] 
+		ret = []
+		for idx, sample_frac in enumerate(sample_fracs):
+			new_seed = seed + idx * seed + 990983
+			# new_seed = seed
+			if regression:
+				X_train, X_test, y_train, y_test = train_test_split(
+					data[:, :-1], data[:, -1], test_size=sample_frac,
+					random_state=(new_seed) % (2 ** 32)
+				)
+			else:
+				X_train, X_test, y_train, y_test = train_test_split(
+					data[:, :-1], data[:, -1], test_size=sample_frac,
+					random_state=(new_seed) % (2 ** 32), stratify=data[:, -1]
+				)
+			ret.append(np.concatenate([X_test, y_test.reshape(-1, 1)], axis=1).copy())
+		return ret
 	elif strategy == 'dirichlet':
 		alpha = params.get('alpha', 1)
 		alphas = generate_alphas(alpha, n_clients)
