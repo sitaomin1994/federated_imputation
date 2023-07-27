@@ -5,10 +5,10 @@ from dython.nominal import correlation_ratio
 from loguru import logger
 from sklearn.datasets import fetch_openml
 import numpy as np
-from data_prep_utils import (
+from .data_prep_utils import (
 	normalization, move_target_to_end, convert_gaussian, drop_unique_cols, one_hot_categorical
 )
-from data_prep_his import (
+from .data_prep_his import (
 	process_NHIS_income
 )
 

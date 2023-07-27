@@ -21,6 +21,8 @@ class StrategyImputation:
 		self.strategy = strategy
 		if strategy == 'local':
 			self.initial_strategy = 'local'
+		elif strategy == 'central':
+			self.initial_strategy = 'central'
 		elif strategy.startswith('fedavg'):
 			self.initial_strategy = 'fedavg'
 		elif strategy == 'testavg':
@@ -53,6 +55,8 @@ class StrategyImputation:
 
 		w = None
 		if self.strategy == 'local':
+			agg_weight = None
+		elif self.strategy == 'central':
 			agg_weight = None
 		# ==============================================================================================================
 		# Average Algorithm

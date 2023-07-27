@@ -193,9 +193,11 @@ class ServerBase:
 			imputed_datas = np.concatenate(imputed_datas, axis=0)
 			origin_datas = np.concatenate(origin_datas, axis=0)
 			missing_masks = np.concatenate(missing_masks, axis=0)
-			coefs = np.stack([final_local_coefs, final_mm_ceofs], axis=1)
+			local_coefs = final_local_coefs
+			mm_coefs = final_mm_ceofs
 		else:
 			imputed_datas, origin_datas, missing_masks, test_data = None, None, None, None
+			local_coefs, mm_coefs = None, None
 
 		###############################################################################################
 		# Post processing
@@ -221,7 +223,8 @@ class ServerBase:
 				'missing_mask': missing_masks,
 				'test_data': test_data,
 				'split_indices': split_indices,
-				'coef': coefs
+				'local_coef': local_coefs,
+				'mm_coef': mm_coefs,
 			}
 		}
 
@@ -321,7 +324,7 @@ class ServerBase:
 
 			return {
 				'local_coefs': weights_new, 
-				"mm_ceofs":ms_coefs_new
+				"mm_coefs":ms_coefs_new
 			}
 
 	@staticmethod
@@ -339,10 +342,13 @@ class ServerBase:
 		sample_sizes = np.array(sample_sizes).T
 		for feature_idx in range(sample_sizes.shape[0]):
 			sample_size = sample_sizes[feature_idx]
-			agg = AgglomerativeClustering(
-				n_clusters=None, metric='l1', linkage='average', distance_threshold=0.05
-			)
-			cluster_labels = agg.fit_predict(sample_size.reshape(-1, 1))
+			if len(sample_size) == 1:
+				cluster_labels = np.zeros(len(sample_size), dtype=np.int32)
+			else:
+				agg = AgglomerativeClustering(
+					n_clusters=None, metric='l1', linkage='average', distance_threshold=0.05
+				)
+				cluster_labels = agg.fit_predict(sample_size.reshape(-1, 1))
 			groups = [[] for _ in range(len(set(cluster_labels)))]
 			for i in range(len(sample_size)):
 				cluster_idx = cluster_labels[i]

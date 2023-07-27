@@ -5,7 +5,7 @@ from dython.nominal import correlation_ratio
 from loguru import logger
 from sklearn.datasets import fetch_openml
 import numpy as np
-from data_prep_utils import (
+from .data_prep_utils import (
     convert_gaussian, normalization, drop_unique_cols, one_hot_categorical, move_target_to_end
 )
 from sklearn.feature_selection import mutual_info_classif
