@@ -142,14 +142,18 @@ class ServerBase:
 		###############################################################################################
 		# N rounds imputation
 		###############################################################################################
+		final_local_coefs, final_mm_ceofs = None, None
 		for current_round in range(1, self.num_rounds_imp + 1):
 			if current_round % 10 == 0 or current_round == 1:
 				logger.info("=" * 50)
 				logger.info("Imputation Round {}".format(current_round))
 
-			self._run_round_impute(
+			imp_ret_dict = self._run_round_impute(
 				server_round=current_round, client_imp_history=clients_imp_history, total_rounds=self.num_rounds_imp
 			)
+
+			if current_round == self.num_rounds_imp:
+				final_local_coefs, final_mm_ceofs = imp_ret_dict['local_coefs'], imp_ret_dict['mm_coefs']
 
 		###################################################################################################
 		# Prediction
@@ -189,6 +193,7 @@ class ServerBase:
 			imputed_datas = np.concatenate(imputed_datas, axis=0)
 			origin_datas = np.concatenate(origin_datas, axis=0)
 			missing_masks = np.concatenate(missing_masks, axis=0)
+			coefs = np.stack([final_local_coefs, final_mm_ceofs], axis=1)
 		else:
 			imputed_datas, origin_datas, missing_masks, test_data = None, None, None, None
 
@@ -216,6 +221,7 @@ class ServerBase:
 				'missing_mask': missing_masks,
 				'test_data': test_data,
 				'split_indices': split_indices,
+				'coef': coefs
 			}
 		}
 
@@ -235,7 +241,7 @@ class ServerBase:
 		###########################################################################################
 		# print("server round: {}".format(server_round))
 		# print("====" * 20)
-		self._imp_round_instant(
+		imp_info_dict = self._imp_round_instant(
 			num_cols=self.config['n_cols'], clients=self.clients,
 			strategy_imp=self.strategy_imp, aggregate=True, server_round=server_round
 		)
@@ -253,6 +259,8 @@ class ServerBase:
 		if server_round % 1 == 0 or server_round >= (total_rounds - 3):
 			rets = self._imp_evaluation(self.clients)
 			client_imp_history.append(('server', server_round, rets))
+		
+		return imp_info_dict
 
 	####################################################################################################################
 	# Imputation Utils function
@@ -296,11 +304,10 @@ class ServerBase:
 					)
 
 			# stats tracking
+			weights_new = [weights[client_id] for client_id in range(0, len(clients))]
+			losses_new = [losses[client_id] for client_id in range(0, len(clients))]
+			ms_coefs_new = [ms_coefs[client_id] for client_id in range(0, len(clients))]
 			if self.track:
-				weights_new = [weights[client_id] for client_id in range(0, len(clients))]
-				losses_new = [losses[client_id] for client_id in range(0, len(clients))]
-				ms_coefs_new = [ms_coefs[client_id] for client_id in range(0, len(clients))]
-
 				self.stats_tracker.records.append(
 					EMPRecord(
 						iteration=server_round, feature_idx=col_idx,
@@ -311,6 +318,11 @@ class ServerBase:
 						losses=np.array(losses_new).copy(),
 					)
 				)
+
+			return {
+				'local_coefs': weights_new, 
+				"mm_ceofs":ms_coefs_new
+			}
 
 	@staticmethod
 	def _imp_evaluation(clients):
