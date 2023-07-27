@@ -5,6 +5,6 @@ experiment_marker:
   - server@imp_round
 defaults:
   - config_tmpl: imp4
-  - config_vars/imp4:
-      - pendigits
+  - config_vars/imp_pc1:
+      - nhis
   - _self_
