@@ -22,7 +22,7 @@ class StrategyImputation:
 		if strategy == 'local':
 			self.initial_strategy = 'local'
 		elif strategy == 'central':
-			self.initial_strategy = 'central'
+			self.initial_strategy = 'local'
 		elif strategy.startswith('fedavg'):
 			self.initial_strategy = 'fedavg'
 		elif strategy == 'testavg':

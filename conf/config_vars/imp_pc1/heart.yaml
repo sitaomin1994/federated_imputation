@@ -2,7 +2,7 @@
 ijcnn:
   # dataset_name
   - name: dataset_name
-    value: [nhis_income_pca]
+    value: [heart]
     keys:
       - data
       - dataset_name

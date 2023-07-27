@@ -6,11 +6,12 @@ from loguru import logger
 from sklearn.datasets import fetch_openml
 import numpy as np
 from .data_prep_utils import (
-	normalization, move_target_to_end, convert_gaussian, drop_unique_cols, one_hot_categorical
+	normalization, move_target_to_end, convert_gaussian, drop_unique_cols, one_hot_categorical,
 )
 from .data_prep_his import (
-	process_NHIS_income
+	process_NHIS_income, process_heart,
 )
+
 
 ########################################################################################################################
 # Iris
@@ -516,7 +517,7 @@ def process_sonar(normalize=True, verbose=False, threshold=0.15):
 ########################################################################################################################
 # Sensor
 ########################################################################################################################
-def process_sensor(normalize=True, verbose=False, threshold=0.2, pca = False):
+def process_sensor(normalize=True, verbose=False, threshold=0.2, pca=False):
 	if threshold is None:
 		threshold = 0.2
 	data = pd.read_csv("./data/sensor/Sensorless_drive_diagnosis.csv", delimiter='\s+', header=None)
@@ -942,7 +943,7 @@ def process_wifi(normalize=True, verbose=False, threshold=None):
 	return data, data_config
 
 
-def process_adult(normalize=True, verbose=False, threshold=None, sample=False, pca = False, gaussian = False):
+def process_adult(normalize=True, verbose=False, threshold=None, sample=False, pca=False, gaussian=False):
 
 	if threshold is None:
 		threshold = 0.1
@@ -1289,7 +1290,7 @@ def process_codrna(normalize=True, verbose=False, threshold=None, sample=True, g
 	return data, data_config
 
 
-def process_bank_market(normalize=True, verbose=False, threshold=None, sample=False, pca = False, gaussian=False):
+def process_bank_market(normalize=True, verbose=False, threshold=None, sample=False, pca=False, gaussian=False):
 	if threshold is None:
 		threshold = 0.1
 	data = pd.read_csv("./data/bank_market/bank-full.csv", sep=';')
@@ -1348,7 +1349,7 @@ def process_bank_market(normalize=True, verbose=False, threshold=None, sample=Fa
 	return data, data_config
 
 
-def process_ijcnn(normalize=True, verbose=False, threshold=None, sample=False, pca = False, gaussian=False):
+def process_ijcnn(normalize=True, verbose=False, threshold=None, sample=False, pca=False, gaussian=False):
 	if threshold is None:
 		threshold = 0.1
 
@@ -1534,7 +1535,7 @@ def process_pendigits(normalize=True, verbose=False, threshold=None, gaussian=Fa
 	return data, data_config
 
 
-def process_statlog(normalize=True, verbose=False, threshold=None, pca = False, gaussian=False):
+def process_statlog(normalize=True, verbose=False, threshold=None, pca=False, gaussian=False):
 	if threshold is None:
 		threshold = 0.1
 	data_train = pd.read_csv("./data/statlog/shuttle.trn.trn", sep='\s+', header=None)
@@ -1631,6 +1632,7 @@ def process_avila(normalize=True, verbose=False, threshold=None):
 		logger.debug(data_config)
 
 	return data, data_config
+
 
 ########################################################################################################################
 #
@@ -1863,6 +1865,7 @@ def process_susy(normalize=True, verbose=False, threshold=0.15, gaussian=False):
 
 	return data, data_config
 
+
 def process_higgs(verbose=False, threshold=0.15):
 
 	if threshold is None:
@@ -1894,6 +1897,7 @@ def process_higgs(verbose=False, threshold=0.15):
 		logger.debug(data_config)
 
 	return data, data_config
+
 
 ########################################################################################################################
 # factory function to load dataset
@@ -1930,7 +1934,7 @@ def load_data(dataset_name, normalize=True, verbose=False, threshold=None):
 	elif dataset_name == 'sensor':
 		return process_sensor(normalize, verbose, threshold)
 	elif dataset_name == 'sensor_pca':
-		return process_sensor(normalize, verbose, threshold, pca = True)
+		return process_sensor(normalize, verbose, threshold, pca=True)
 	elif dataset_name == 'waveform':
 		return process_waveform(normalize, verbose, threshold)
 	elif dataset_name == 'yeast':
@@ -1954,7 +1958,7 @@ def load_data(dataset_name, normalize=True, verbose=False, threshold=None):
 	elif dataset_name == 'adult':
 		return process_adult(normalize, verbose, threshold)
 	elif dataset_name == 'adult_pca':
-		return process_adult(normalize, verbose, threshold, sample = False, pca=True, gaussian=True)
+		return process_adult(normalize, verbose, threshold, sample=False, pca=True, gaussian=True)
 	elif dataset_name == 'adult_balanced':
 		return process_adult(normalize, verbose, threshold, sample=True)
 	elif dataset_name == 'adult_balanced_pca':
@@ -2006,7 +2010,11 @@ def load_data(dataset_name, normalize=True, verbose=False, threshold=None):
 	elif dataset_name == 'higgs':
 		return process_higgs(verbose, threshold)
 	elif dataset_name == 'nhis_income':
-		return process_NHIS_income()
+		return process_NHIS_income(pca=False)
+	elif dataset_name == 'nhis_income_pca':
+		return process_NHIS_income(pca=True)
+	elif dataset_name == 'heart':
+		return process_heart(pca=True)
 	#######################################################################################################################
 	# Regression
 	#######################################################################################################################
@@ -2022,7 +2030,6 @@ def load_data(dataset_name, normalize=True, verbose=False, threshold=None):
 		return process_white_reg(normalize, verbose, threshold)
 	else:
 		raise Exception("Unknown dataset name {}".format(dataset_name))
-
 
 
 if __name__ == '__main__':

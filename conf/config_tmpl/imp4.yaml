@@ -86,7 +86,7 @@ algo_params:
   fedmechw:
     client_thres: 1.0
     alpha: 1.0
-    beta: 0.15
+    beta: 0.0
   fedmechclw:
     client_thres: 1.0
     thres1: 0.2

@@ -270,6 +270,7 @@ class ServerBase:
 	####################################################################################################################
 	def _imp_round_instant(self, num_cols, clients, strategy_imp, aggregate=True, server_round=None):
 
+		local_coefs, mm_coefs = [], []
 		for col_idx in range(num_cols):
 
 			weights, losses, missing_infos, proj_matrix, ms_coefs, top_k_idx_clients = {}, {}, {}, {}, {}, {}
@@ -322,10 +323,13 @@ class ServerBase:
 					)
 				)
 
-			return {
-				'local_coefs': weights_new, 
-				"mm_coefs":ms_coefs_new
-			}
+			local_coefs.append(weights_new)
+			mm_coefs.append(ms_coefs_new)
+
+		return {
+			'local_coefs': np.stack(local_coefs),
+			"mm_coefs": np.stack(mm_coefs)
+		}
 
 	@staticmethod
 	def _imp_evaluation(clients):
