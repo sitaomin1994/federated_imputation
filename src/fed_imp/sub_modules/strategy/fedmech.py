@@ -158,11 +158,12 @@ def fedmechw(weights, missing_infos, ms_coefs, params, sigmoid = False, filter_s
 
         # adjust weights
         mech_sim_w = (mech_sim_dist[client_idx][top_k_idx] + 0.00001) ** scale_factor
-        mech_sim_w = mech_sim_w / np.sum(mech_sim_w)
 
+        # normalized sample sizes weights - same as simple average
         sample_size_w = (sample_sizes[top_k_idx]) ** scale_factor
         sample_size_w = sample_size_w / np.sum(sample_size_w)
 
+        # missing pct weights
         missing_pct_w = (missing_pct[top_k_idx]) ** scale_factor
         missing_pct_w = missing_pct_w / np.sum(missing_pct_w)
 

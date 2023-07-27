@@ -59,6 +59,9 @@ def main_func(
 			configuration['imputation'], seed=new_seed
 		)
 
+		#####################################################################################################
+		# Create Strategy
+		#####################################################################################################
 		# Create Imputation Strategy
 		if param is None:
 			imp_strategy = configuration['agg_strategy_imp']['strategy']
@@ -69,6 +72,18 @@ def main_func(
 
 		strategy_imp = StrategyImputation(strategy=imp_strategy, params=params)
 
+		if imp_strategy == 'central':
+			data_ms_new = [np.concatenate(data_ms_clients, axis = 0)]
+			data_partitions_new = [np.concatenate(data_partitions, axis = 0)]
+			clients = client_factory.generate_clients(
+				1, data_partitions_new, data_ms_new, test_data.values, data_config,
+				configuration['imputation'], seed=new_seed
+			)
+
+			assert len(clients.keys()) == 1
+			strategy_imp = StrategyImputation(strategy='local', params={})
+		
+		#####################################################################################################
 		# Create Server
 		server_type = configuration['server_type']
 		server_config = configuration['server']

@@ -78,6 +78,7 @@ save_state: true
 
 # params
 algo_params:
+  central: {}
   local: {}
   fedavg-s: {}
   fedwavg:
