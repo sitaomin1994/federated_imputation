@@ -187,61 +187,181 @@ def process_NHIS_income(
 	return data, data_config
 
 
-def process_heart(verbose=False, threshold=None, pca=False):
+def process_heart(verbose=False, threshold=None, pca=False, sample = False):
+
+	if threshold is None:
+		threshold = 0.1
+	df = pd.read_csv('./data/heart/heart_2020_cleaned.csv')
+	target_col = 'HeartDisease'
+	df['HeartDisease'] = df['HeartDisease'].map({"No": 0, "Yes": 1})
+	df[target_col].value_counts()
+	df = move_target_to_end(df, target_col)
+
+	categorical_columns = [
+		'Smoking', 'AlcoholDrinking', 'Stroke', 'DiffWalking', 
+		'Sex', 'AgeCategory', 'Race', 'Diabetic', 'PhysicalActivity', 'GenHealth', 
+		'Asthma', 'KidneyDisease', 'SkinCancer'
+	]
+
+	numerical_cols = [col for col in df.columns if col not in categorical_columns and col != target_col]
+	print(numerical_cols)
+	oh_encoder = OneHotEncoder(max_categories=10, drop='first', sparse_output = False)
+	X_cat = oh_encoder.fit_transform(df[categorical_columns])
+	X_num = df[numerical_cols].values
+	robust_scaler = MinMaxScaler()
+	X_num = robust_scaler.fit_transform(df[numerical_cols])
+	X = np.concatenate([X_num, X_cat], axis=1)
+
+	# pca
+	pca = PCA(n_components=0.95)
+	X_new = pca.fit_transform(X)
+	y_new = df[target_col].values
+
+	# new dataframe
+	df_new = pd.DataFrame(np.concatenate([X_new, y_new.reshape(-1, 1)], axis=1))
+	df_new.columns = df_new.columns.astype(str)
+
+	target_col = df_new.columns[-1]
+	df_new = move_target_to_end(df_new, target_col)
+	df_new[target_col] = pd.factorize(df_new[target_col])[0]
+	df_new = convert_gaussian(df_new, target_col)
+	df_new = normalization(df_new, target_col)
+	print(df_new.shape)
+
+	data = df_new
+
+	if sample:
+		# sampling
+		target_col = data.columns[-1]
+		print(data.shape)
+		under = RandomUnderSampler(random_state=42)
+		X = data.drop([target_col], axis=1).values
+		X_new, y_new = under.fit_resample(X, data[target_col].values)
+		data = pd.DataFrame(np.concatenate([X_new, y_new.reshape(-1, 1)], axis = 1))
+		print(data.shape)
+		target_col = data.columns[-1]
+		df0 = data[data[target_col] == 0]
+		df1 = data[data[target_col] == 1]
+		if df0.shape[0] > df1.shape[0]:
+			df0 = df0.sample(n=df1.shape[0], random_state=42)
+		elif df0.shape[0] < df1.shape[0]:
+			df1 = df1.sample(n=df0.shape[0], random_state=42)
+		
+		data = pd.concat([df0, df1], axis=0)
+		print(data.shape)
+	
+	if len(data) >= 20000:
+		data = data.sample(n = 20000, random_state=42).reset_index(drop=True)
+
+	correlation_ret = data.corrwith(data[target_col], method=correlation_ratio).sort_values(ascending=False)
+	important_features = correlation_ret[correlation_ret >= threshold].index.tolist()
+	important_features.remove(target_col)
+
+	print(data.shape)
+
+	data_config = {
+		'target': target_col,
+		'important_features_idx': [data.columns.tolist().index(feature) for feature in important_features],
+		'features_idx': [idx for idx in range(0, data.shape[1]) if data.columns[idx] != target_col],
+		"num_cols": data.shape[1] - 1,
+		'task_type': 'classification',
+		'clf_type': 'multi-class',
+		'data_type': 'tabular'
+	}
+
+	if verbose:
+		logger.debug("Important features {}".format(important_features))
+		logger.debug("Data shape {}".format(data.shape, data.shape))
+		logger.debug(data_config)
+
+	return data, data_config
+
+
+def process_codrna(normalize=True, verbose=False, threshold=None, sample=True, gaussian=True):
 
 	if threshold is None:
 		threshold = 0.1
 
-	df = pd.read_csv('./data/heart/heart_2020_cleaned.csv')
-	target_col = 'HeartDisease'
-	df[target_col].value_counts()
-	df = move_target_to_end(df, target_col)
+	data_obj = fetch_openml(data_id=351, as_frame='auto', parser='auto')
+	X = pd.DataFrame(data_obj.data.todense(), columns=data_obj.feature_names)
+	y = pd.DataFrame(data_obj.target, columns=data_obj.target_names)
+	data = pd.concat([X, y], axis=1)
 
-	if pca:
-		categorical_columns = [
-			'Smoking', 'AlcoholDrinking', 'Stroke', 'PhysicalHealth', 'DiffWalking',
-			'Sex', 'AgeCategory', 'Race', 'Diabetic', 'PhysicalActivity', 'GenHealth',
-			'Asthma', 'KidneyDisease', 'SkinCancer'
-		]
+	target_col = 'Y'
+	data[target_col] = pd.factorize(data[target_col])[0]
+	data = data.dropna()
 
-		numerical_columns = [col for col in df.columns if col not in categorical_columns and col != target_col]
-		robust_scaler = MinMaxScaler()
-		oh_encoder = OneHotEncoder(max_categories=10, drop='first', sparse_output=False)
+	if gaussian:
+		data = convert_gaussian(data, target_col)
 
-		X_cat = oh_encoder.fit_transform(df[categorical_columns])
-		print(X_cat.shape)
-		X_num = robust_scaler.fit_transform(df[numerical_columns])
-		print(X_num.shape)
-		X = np.concatenate([X_num, X_cat], axis=1)
+	if normalize:
+		data = normalization(data, target_col)
 
-	# # label=LabelEncoder()
-	# # for col in df:
-	# #     df[col]=label.fit_transform(df[col])
-		under = RandomUnderSampler(random_state=42)
-		X_new, y_new = under.fit_resample(X, df[target_col].values)
+	data = move_target_to_end(data, target_col)
+	correlation_ret = data.corrwith(data[target_col], method=correlation_ratio).sort_values(ascending=False)
+	important_features = correlation_ret[correlation_ret >= threshold].index.tolist()
+	important_features.remove(target_col)
 
-		# pca
-		pca = PCA(n_components=0.90)
-		X_pca = pca.fit_transform(X_new)
-		print(X_pca.shape)
+	if sample:
+		data_y0 = data[data[target_col] == 0]
+		data_y1 = data[data[target_col] == 1]
+		if data_y0.shape[0] > data_y1.shape[0]:
+			data_y0 = data_y0.sample(n=data_y1.shape[0], random_state=0)
+		elif data_y0.shape[0] < data_y1.shape[0]:
+			data_y1 = data_y1.sample(n=data_y0.shape[0], random_state=0)
+		data = pd.concat([data_y0, data_y1], axis=0).reset_index(drop=True)
+	
+	if len(data) >= 20000:
+		data = data.sample(n=20000).reset_index(drop=True)
 
-		df_new = pd.DataFrame(np.concatenate([X_pca, y_new.reshape(-1, 1)], axis=1))
-		df_new.columns = df_new.columns.astype(str)
+	data_config = {
+		'target': target_col,
+		'important_features_idx': [data.columns.tolist().index(feature) for feature in important_features],
+		'features_idx': [idx for idx in range(0, data.shape[1]) if data.columns[idx] != target_col],
+		"num_cols": data.shape[1] - 1,
+		'task_type': 'classification',
+		'clf_type': 'binary-class',
+		'data_type': 'tabular'
+	}
 
-		target_col = '25'
-		df_new = move_target_to_end(df_new, target_col)
-		df_new[target_col] = pd.factorize(df_new[target_col])[0]
-		df_new = convert_gaussian(df_new, target_col)
-		df_new = normalization(df_new, target_col)
-		print(df_new.shape)
+	if verbose:
+		logger.debug("Important features {}".format(important_features))
+		logger.debug("Data shape {}".format(data.shape, data.shape))
+		logger.debug(data_config)
 
-		data = df_new
+	return data, data_config
 
-	else:
-		# label=LabelEncoder()
-		# for col in df:
-		# 	df[col]=label.fit_transform(df[col])
-		raise NotImplementedError
+
+def process_skin(normalize=True, verbose=False, threshold=None, sample=False):
+	if threshold is None:
+		threshold = 0.1
+
+	data_obj = fetch_openml(data_id=1502, as_frame='auto', parser='auto')
+	X = pd.DataFrame(data_obj.data, columns=data_obj.feature_names)
+	y = pd.DataFrame(data_obj.target, columns=data_obj.target_names)
+	data = pd.concat([X, y], axis=1)
+
+	target_col = 'Class'
+	data[target_col] = pd.factorize(data[target_col])[0]
+	data = data.dropna()
+
+	if normalize:
+		data = normalization(data, target_col)
+
+	data = move_target_to_end(data, target_col)
+
+	# # # sample balance
+	if sample:
+		data_y0 = data[data[target_col] == 0]
+		data_y1 = data[data[target_col] == 1]
+		if data_y0.shape[0] > data_y1.shape[0]:
+			data_y0 = data_y0.sample(n=data_y1.shape[0], random_state=0)
+		elif data_y0.shape[0] < data_y1.shape[0]:
+			data_y1 = data_y1.sample(n=data_y0.shape[0], random_state=0)
+		data = pd.concat([data_y0, data_y1], axis=0).reset_index(drop=True)
+	
+	if len(data) >= 20000:
+		data = data.sample(n = 20000).reset_index(drop=True)
 
 	correlation_ret = data.corrwith(data[target_col], method=correlation_ratio).sort_values(ascending=False)
 	important_features = correlation_ret[correlation_ret >= threshold].index.tolist()

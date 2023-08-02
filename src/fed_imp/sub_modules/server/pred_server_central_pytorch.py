@@ -1,7 +1,7 @@
 import numpy as np
 import torch
 from loguru import logger
-from sklearn.metrics import f1_score, accuracy_score
+from sklearn.metrics import f1_score, accuracy_score, roc_auc_score
 from src.fed_imp.sub_modules.client.simple_client import SimpleClient
 from typing import Dict, List
 from src.utils import set_seed
@@ -9,6 +9,7 @@ from src.fed_imp.sub_modules.model.TwoNN import TwoNN
 from src.fed_imp.sub_modules.model.logistic import LogisticRegression
 from src.fed_imp.sub_modules.model.utils import EarlyStopping
 from torch.utils.data import DataLoader, TensorDataset
+import torch.nn.functional as F
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -33,20 +34,20 @@ class PredServerCentralPytorch:
 		self.pred_model_params = pred_config.get(
 			'model_params', {
 				"num_hiddens": 64,
-				}
-			)
+			}
+		)
 
 		self.pred_model_params['input_feature_dim'] = test_data.shape[1] - 1
 		self.pred_model_params['output_classes_dim'] = len(np.unique(test_data[:, -1]))
 
 		self.pred_training_params = pred_config.get(
 			'train_params', {
-					"batch_size": 128,
-					"learning_rate": 0.001,
-					"weight_decay": 1e-4,
-					"pred_round": 300
-				}
-			)
+				"batch_size": 128,
+				"learning_rate": 0.001,
+				"weight_decay": 1e-4,
+				"pred_round": 300
+			}
+		)
 
 		# test data
 		self.test_data = test_data
@@ -87,10 +88,10 @@ class PredServerCentralPytorch:
 		train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 
 		# centralized evaluation
-		accus, f1s = [], []
+		accus, f1s, roc_aucs = [], [], []
 		for s in seeds:
 			set_seed(s)
-			#early_stopping = EarlyStopping()
+			# early_stopping = EarlyStopping()
 
 			# Model. loss and optimizer
 			if self.base_model == 'twonn':
@@ -112,7 +113,7 @@ class PredServerCentralPytorch:
 
 			# Train the model
 			train_losses, val_losses = [], []
-			best_accus, best_f1s = [], []
+			best_accus, best_f1s, best_rocs = [], [], []
 			for epoch in range(train_epochs):
 				model.to(DEVICE)
 				model.train()  # prep model for training
@@ -139,15 +140,25 @@ class PredServerCentralPytorch:
 
 				train_epoch_loss = train_running_loss / counter
 				train_losses.append(train_epoch_loss)
-				#early_stopping(train_epoch_loss)
+				# early_stopping(train_epoch_loss)
 
 				model.eval()  # prep model for evaluation
 				outputs = model(torch.FloatTensor(X_test).to(DEVICE))
 				_, predicted = torch.max(outputs.data, 1)
+				probabilities = F.softmax(outputs, dim=1)
 				accu = accuracy_score(y_test, predicted.to('cpu').numpy())
-				f1 = f1_score(y_test, predicted.to('cpu').numpy(), average='macro')
+				f1 = f1_score(y_test, predicted.to('cpu').numpy(), average='weighted')
+				if probabilities.shape[1] == 2:
+					roc_auc = roc_auc_score(
+						y_test, probabilities.detach().to('cpu').numpy()[:, 1], average='micro'
+					)
+				else:
+					roc_auc = roc_auc_score(
+						y_test, probabilities.detach().to('cpu').numpy(), multi_class='ovr', average='micro'
+					)
 				best_accus.append(accu)
 				best_f1s.append(f1)
+				best_rocs.append(roc_auc)
 
 				outputs = model(torch.FloatTensor(X_validate).to(DEVICE))
 				_, predicted = torch.max(outputs.data, 1)
@@ -156,23 +167,28 @@ class PredServerCentralPytorch:
 
 				if epoch % 100 == 0:
 					logger.info(
-						'Round: {}, test_accu: {:.4f}, train_loss: {:.4f} val_accu: {:.4f} val_f1: {:.4f}'.format(
-							epoch, accu, train_epoch_loss, val_accu, val_f1
-						))
+						'Round: {}, test_accu: {:.4f}, test_f1: {:.4f} test_auroc: {:.4f} train_loss: {:.4f} '
+						'val_accu: '
+						'{:.4f} val_f1: {:.4f}'.format(
+							epoch, accu, f1, roc_auc, train_epoch_loss, val_accu, val_f1
+						)
+					)
 
-				# if early_stopping.early_stop:
-				# 	break
+			# if early_stopping.early_stop:
+			# 	break
 
 			# Test the model
 			accus.append(np.array(best_accus).max())
 			f1s.append(np.array(best_f1s).max())
+			roc_aucs.append(np.array(best_rocs).max())
 
 			model.to('cpu')
 
 		return {
 			"accu_mean": np.array(accus).mean(),
 			"f1_mean": np.array(f1s).mean(),
+			"roc_auc_mean": np.array(roc_aucs).mean(),
 			"accu_std": np.array(accus).std(),
-			"f1_std": np.array(f1s).std()
+			"f1_std": np.array(f1s).std(),
+			"roc_auc_std": np.array(roc_aucs).std()
 		}
-

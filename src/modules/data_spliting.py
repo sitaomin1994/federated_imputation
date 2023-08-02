@@ -25,11 +25,11 @@ def split_train_test(dataset: pd.DataFrame, n_folds=5, seed=0, test_size = 0.1, 
 		if regression:
 			X_train, X_test, y_train, y_test = \
 				train_test_split(
-					dataset.iloc[:, :-1], dataset.iloc[:, -1], test_size=0.3, random_state=seed)
+					dataset.iloc[:, :-1], dataset.iloc[:, -1], test_size=test_size, random_state=seed)
 		else:
 			X_train, X_test, y_train, y_test = \
 				train_test_split(
-					dataset.iloc[:, :-1], dataset.iloc[:, -1], test_size=0.3, random_state=seed, stratify=dataset.iloc[:, -1])
+					dataset.iloc[:, :-1], dataset.iloc[:, -1], test_size=test_size, random_state=seed, stratify=dataset.iloc[:, -1])
 		train_set = pd.concat([X_train, y_train], axis=1).reset_index(drop=True).copy()
 		test_set = pd.concat([X_test, y_test], axis=1).reset_index(drop=True).copy()
 		train_test_sets.append((train_set, test_set))

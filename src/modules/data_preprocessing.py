@@ -9,7 +9,7 @@ from .data_prep_utils import (
 	normalization, move_target_to_end, convert_gaussian, drop_unique_cols, one_hot_categorical,
 )
 from .data_prep_his import (
-	process_NHIS_income, process_heart,
+	process_NHIS_income, process_heart, process_codrna, process_skin
 )
 
 
@@ -1238,58 +1238,6 @@ def process_dry_bean(normalize=True, verbose=False, threshold=None, guassian=Fal
 
 	return data, data_config
 
-
-def process_codrna(normalize=True, verbose=False, threshold=None, sample=True, gaussian=True):
-
-	if threshold is None:
-		threshold = 0.1
-
-	data_obj = fetch_openml(data_id=351, as_frame='auto', parser='auto')
-	X = pd.DataFrame(data_obj.data.todense(), columns=data_obj.feature_names)
-	y = pd.DataFrame(data_obj.target, columns=data_obj.target_names)
-	data = pd.concat([X, y], axis=1)
-
-	target_col = 'Y'
-	data[target_col] = pd.factorize(data[target_col])[0]
-	data = data.dropna()
-
-	if gaussian:
-		data = convert_gaussian(data, target_col)
-
-	if normalize:
-		data = normalization(data, target_col)
-
-	data = move_target_to_end(data, target_col)
-	correlation_ret = data.corrwith(data[target_col], method=correlation_ratio).sort_values(ascending=False)
-	important_features = correlation_ret[correlation_ret >= threshold].index.tolist()
-	important_features.remove(target_col)
-
-	if sample:
-		data_y0 = data[data[target_col] == 0]
-		data_y1 = data[data[target_col] == 1]
-		data_y0 = data_y0.sample(n=data_y1.shape[0], random_state=0)
-		data = pd.concat([data_y0, data_y1], axis=0).reset_index(drop=True)
-
-	data = data.sample(n=50000).reset_index(drop=True)
-
-	data_config = {
-		'target': target_col,
-		'important_features_idx': [data.columns.tolist().index(feature) for feature in important_features],
-		'features_idx': [idx for idx in range(0, data.shape[1]) if data.columns[idx] != target_col],
-		"num_cols": data.shape[1] - 1,
-		'task_type': 'classification',
-		'clf_type': 'binary-class',
-		'data_type': 'tabular'
-	}
-
-	if verbose:
-		logger.debug("Important features {}".format(important_features))
-		logger.debug("Data shape {}".format(data.shape, data.shape))
-		logger.debug(data_config)
-
-	return data, data_config
-
-
 def process_bank_market(normalize=True, verbose=False, threshold=None, sample=False, pca=False, gaussian=False):
 	if threshold is None:
 		threshold = 0.1
@@ -1406,52 +1354,6 @@ def process_ijcnn(normalize=True, verbose=False, threshold=None, sample=False, p
 
 	return data, data_config
 
-
-def process_skin(normalize=True, verbose=False, threshold=None, sample=False):
-	if threshold is None:
-		threshold = 0.1
-
-	data_obj = fetch_openml(data_id=1502, as_frame='auto', parser='auto')
-	X = pd.DataFrame(data_obj.data, columns=data_obj.feature_names)
-	y = pd.DataFrame(data_obj.target, columns=data_obj.target_names)
-	data = pd.concat([X, y], axis=1)
-
-	target_col = 'Class'
-	data[target_col] = pd.factorize(data[target_col])[0]
-	data = data.dropna()
-
-	if normalize:
-		data = normalization(data, target_col)
-
-	data = move_target_to_end(data, target_col)
-
-	# # # sample balance
-	if sample:
-		data_y0 = data[data[target_col] == 0]
-		data_y1 = data[data[target_col] == 1]
-		data_y1 = data_y1.sample(n=data_y0.shape[0], random_state=0)
-		data = pd.concat([data_y0, data_y1], axis=0).reset_index(drop=True)
-
-	correlation_ret = data.corrwith(data[target_col], method=correlation_ratio).sort_values(ascending=False)
-	important_features = correlation_ret[correlation_ret >= threshold].index.tolist()
-	important_features.remove(target_col)
-
-	data_config = {
-		'target': target_col,
-		'important_features_idx': [data.columns.tolist().index(feature) for feature in important_features],
-		'features_idx': [idx for idx in range(0, data.shape[1]) if data.columns[idx] != target_col],
-		"num_cols": data.shape[1] - 1,
-		'task_type': 'classification',
-		'clf_type': 'binary-class',
-		'data_type': 'tabular'
-	}
-
-	if verbose:
-		logger.debug("Important features {}".format(important_features))
-		logger.debug("Data shape {}".format(data.shape, data.shape))
-		logger.debug(data_config)
-
-	return data, data_config
 
 
 def process_svm(normalize=True, verbose=False, threshold=None, gaussian=False):
@@ -1971,8 +1873,6 @@ def load_data(dataset_name, normalize=True, verbose=False, threshold=None):
 		return process_dry_bean(normalize, verbose, threshold)
 	elif dataset_name == 'dry_bean_g':
 		return process_dry_bean(normalize, verbose, threshold, guassian=True)
-	elif dataset_name == 'codrna':
-		return process_codrna(normalize, verbose, threshold, sample=True, pca=True, gaussian=True)
 	elif dataset_name == 'bank_marketing':
 		return process_bank_market(normalize, verbose, threshold)
 	elif dataset_name == 'bank_marketing_balanced':
@@ -1985,10 +1885,6 @@ def load_data(dataset_name, normalize=True, verbose=False, threshold=None):
 		return process_ijcnn(normalize, verbose, threshold, sample=True)
 	elif dataset_name == 'ijcnn_balanced_pca':
 		return process_ijcnn(normalize, verbose, threshold, sample=True, pca=True, gaussian=True)
-	elif dataset_name == 'skin':
-		return process_skin(normalize, verbose, threshold)
-	elif dataset_name == 'skin_balanced':
-		return process_skin(normalize, verbose, threshold, sample=True)
 	elif dataset_name == 'svm':
 		return process_svm(normalize, verbose, threshold)
 	elif dataset_name == 'svm_g':
@@ -2009,12 +1905,25 @@ def load_data(dataset_name, normalize=True, verbose=False, threshold=None):
 		return process_susy(normalize, verbose, threshold, gaussian=True)
 	elif dataset_name == 'higgs':
 		return process_higgs(verbose, threshold)
+	#######################################################################################################################
+	# Healthcare Dataset
+	#######################################################################################################################
 	elif dataset_name == 'nhis_income':
 		return process_NHIS_income(pca=False)
 	elif dataset_name == 'nhis_income_pca':
 		return process_NHIS_income(pca=True)
+	elif dataset_name == 'heart_balanced':
+		return process_heart(pca=True, sample=True)
 	elif dataset_name == 'heart':
-		return process_heart(pca=True)
+		return process_heart(pca=True, sample=False)
+	elif dataset_name == 'skin':
+		return process_skin(normalize, verbose, threshold, sample=False)
+	elif dataset_name == 'skin_balanced':
+		return process_skin(normalize, verbose, threshold, sample=True)
+	elif dataset_name == 'codrna':
+		return process_codrna(normalize, verbose, threshold, sample=False)
+	elif dataset_name == 'codrna_balanced':
+		return process_codrna(normalize, verbose, threshold, sample=True)
 	#######################################################################################################################
 	# Regression
 	#######################################################################################################################

@@ -15,6 +15,7 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn import metrics
+from imblearn.over_sampling import SMOTE, RandomOverSampler, ADASYN
 
 def run_simulation(configuration, clients, test_data, seed):
     # Create Imputation Strategy
@@ -77,6 +78,32 @@ def simulate_scenario(configuration):
 
     # n rounds average
     train_data, test_data = n_rounds_data[0]
+    print(train_data.shape, test_data.shape)
+
+    imbalance_strategy = configuration.get('handle_imbalance', None)
+    if imbalance_strategy == 'oversampling':
+        columns = train_data.columns
+        X_train = train_data.iloc[:, :-1].values
+        y_train = train_data.iloc[:, -1].values
+        ros = RandomOverSampler(random_state=seed)
+        X_train, y_train = ros.fit_resample(X_train, y_train)
+        train_data = pd.DataFrame(np.concatenate([X_train, y_train.reshape(-1, 1)], axis=1), columns=columns)
+    elif imbalance_strategy == 'smote':
+        columns = train_data.columns
+        X_train = train_data.iloc[:, :-1].values
+        y_train = train_data.iloc[:, -1].values
+        smote = SMOTE(random_state=seed, n_jobs=-1)
+        X_train, y_train = smote.fit_resample(X_train, y_train)
+        train_data = pd.DataFrame(np.concatenate([X_train, y_train.reshape(-1, 1)], axis=1), columns=columns)
+    elif imbalance_strategy == 'adasyn':
+        columns = train_data.columns
+        X_train = train_data.iloc[:, :-1].values
+        y_train = train_data.iloc[:, -1].values
+        ada = ADASYN(random_state=seed, n_jobs=-1)
+        X_train, y_train = ada.fit_resample(X_train, y_train)
+        train_data = pd.DataFrame(np.concatenate([X_train, y_train.reshape(-1, 1)], axis=1), columns=columns)
+
+    print(train_data.shape)
 
     new_seed = (seed + 10087 * 0) % (2 ^ 23)
     regression = data_config['task_type'] == 'regression'
@@ -135,7 +162,7 @@ def NN_evaluation(ret0, type='centralized', n_rounds = 500, server_config_tmpl =
         )
 
     pred_ret2 = server_.prediction()
-    print(pred_ret2["accu_mean"])
+    print(pred_ret2["accu_mean"], pred_ret2['roc_auc_mean'], pred_ret2['f1_mean'])
     return pred_ret2
 
 def visualize_ms(clients_ms_datas:list, sort_patterns: bool = False):
