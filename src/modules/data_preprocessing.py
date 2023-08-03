@@ -9,7 +9,8 @@ from .data_prep_utils import (
 	normalization, move_target_to_end, convert_gaussian, drop_unique_cols, one_hot_categorical,
 )
 from .data_prep_his import (
-	process_NHIS_income, process_heart, process_codrna, process_skin
+	process_NHIS_income, process_heart, process_codrna, process_skin, process_codon, process_sepsis,
+	process_diabetic
 )
 
 
@@ -1912,10 +1913,10 @@ def load_data(dataset_name, normalize=True, verbose=False, threshold=None):
 		return process_NHIS_income(pca=False)
 	elif dataset_name == 'nhis_income_pca':
 		return process_NHIS_income(pca=True)
-	elif dataset_name == 'heart_balanced':
-		return process_heart(pca=True, sample=True)
 	elif dataset_name == 'heart':
 		return process_heart(pca=True, sample=False)
+	elif dataset_name == 'heart_balanced':
+		return process_heart(pca=True, sample=True)
 	elif dataset_name == 'skin':
 		return process_skin(normalize, verbose, threshold, sample=False)
 	elif dataset_name == 'skin_balanced':
@@ -1924,6 +1925,14 @@ def load_data(dataset_name, normalize=True, verbose=False, threshold=None):
 		return process_codrna(normalize, verbose, threshold, sample=False)
 	elif dataset_name == 'codrna_balanced':
 		return process_codrna(normalize, verbose, threshold, sample=True)
+	elif dataset_name == 'codon':
+		return process_codon(verbose, threshold)
+	elif dataset_name == 'sepsis':
+		return process_sepsis(verbose, threshold)
+	elif dataset_name == 'diabetic':
+		return process_diabetic(verbose, threshold)
+	elif dataset_name == 'diabetic_balanced':
+		return process_diabetic(verbose, threshold, sample=True)
 	#######################################################################################################################
 	# Regression
 	#######################################################################################################################

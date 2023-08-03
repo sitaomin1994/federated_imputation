@@ -1,6 +1,6 @@
 import pandas as pd
 from sklearn.decomposition import PCA
-from sklearn.preprocessing import MinMaxScaler, OneHotEncoder, PowerTransformer, LabelEncoder
+from sklearn.preprocessing import MinMaxScaler, OneHotEncoder, PowerTransformer, LabelEncoder, StandardScaler
 from dython.nominal import correlation_ratio
 from loguru import logger
 from sklearn.datasets import fetch_openml
@@ -374,6 +374,194 @@ def process_skin(normalize=True, verbose=False, threshold=None, sample=False):
 		"num_cols": data.shape[1] - 1,
 		'task_type': 'classification',
 		'clf_type': 'binary-class',
+		'data_type': 'tabular'
+	}
+
+	if verbose:
+		logger.debug("Important features {}".format(important_features))
+		logger.debug("Data shape {}".format(data.shape, data.shape))
+		logger.debug(data_config)
+
+	return data, data_config
+
+def process_codon(verbose=False, threshold=None):
+	if threshold is None:
+		threshold = 0.1
+	data = pd.read_csv("./data/codon/codon_usage.csv", sep=',', low_memory=False)
+
+	data = data.dropna()
+	#data.columns = [str(i) for i in range(data.sh
+	data = data.drop(['SpeciesID', 'Ncodons', 'SpeciesName', 'DNAtype'], axis=1)
+	target_col = 'Kingdom'
+	data = data[data[target_col] != 'plm']
+	data[target_col], codes = pd.factorize(data[target_col])
+	data = move_target_to_end(data, target_col)
+	data = normalization(data, target_col)
+
+	# pca
+	pca = PCA(n_components=0.9)
+	X = pca.fit_transform(data.drop(target_col, axis=1).values)
+	y = data[target_col].values
+
+	# new dataframe
+	df_new = pd.DataFrame(np.concatenate([X, y.reshape(-1, 1)], axis=1))
+	df_new.columns = df_new.columns.astype(str)
+
+	target_col = df_new.columns[-1]
+	data = df_new
+	print(data.shape)
+
+	correlation_ret = data.corrwith(data[target_col], method=correlation_ratio).sort_values(ascending=False)
+	important_features = correlation_ret[correlation_ret >= threshold].index.tolist()
+	important_features.remove(target_col)
+
+	data_config = {
+		'target': target_col,
+		'important_features_idx': [data.columns.tolist().index(feature) for feature in important_features],
+		'features_idx': [idx for idx in range(0, data.shape[1]) if data.columns[idx] != target_col],
+		"num_cols": data.shape[1] - 1,
+		'task_type': 'classification',
+		'clf_type': 'multi-class',
+		'data_type': 'tabular'
+	}
+
+	if verbose:
+		logger.debug("Important features {}".format(important_features))
+		logger.debug("Data shape {}".format(data.shape, data.shape))
+		logger.debug(data_config)
+
+	return data, data_config
+
+
+def process_sepsis(verbose=False, threshold=None):
+	if threshold is None:
+		threshold = 0.1
+	data = pd.read_csv('./data/sepsis/sepsis_survival_primary_cohort.csv')
+	data = data.dropna()
+	target_col = 'hospital_outcome_1alive_0dead'
+	data[target_col] = data[target_col].astype(int)
+	#data = convert_gaussian(data, target_col)
+	data = normalization(data, target_col)
+
+	# sample balanced
+	# data0 = data[data[target_col] == 0]
+	# data1 = data[data[target_col] == 1]
+	# if data0.shape[0] > data1.shape[0]:
+	#     data0 = data0.sample(data1.shape[0])
+	# else:
+	#     data1 = data1.sample(data0.shape[0])
+
+	# data = pd.concat([data0, data1], axis=0)
+
+	data = data.sample(n = 20000, random_state=42)
+
+	correlation_ret = data.corrwith(data[target_col], method=correlation_ratio).sort_values(ascending=False)
+	important_features = correlation_ret[correlation_ret >= threshold].index.tolist()
+	important_features.remove(target_col)
+
+	data_config = {
+		'target': target_col,
+		'important_features_idx': [data.columns.tolist().index(feature) for feature in important_features],
+		'features_idx': [idx for idx in range(0, data.shape[1]) if data.columns[idx] != target_col],
+		"num_cols": data.shape[1] - 1,
+		'task_type': 'classification',
+		'clf_type': 'multi-class',
+		'data_type': 'tabular'
+	}
+
+	if verbose:
+		logger.debug("Important features {}".format(important_features))
+		logger.debug("Data shape {}".format(data.shape, data.shape))
+		logger.debug(data_config)
+
+	return data, data_config
+
+
+def process_diabetic(verbose=False, threshold=None, sample=False):
+
+	if threshold is None:
+		threshold = 0.1
+
+	data = pd.read_csv('./data/diabetic/diabetic_data.csv')
+	data = data.replace('?', np.nan)
+	print(data.shape)
+	target_col = 'readmitted'
+	data[target_col] = data[target_col].map({'NO': 1, '>30': 1, '<30': 0})
+	data = move_target_to_end(data, target_col)
+
+	# drop columns and handle missing values
+	drop_cols = [
+		'max_glu_serum', 'A1Cresult', 'weight', 'encounter_id', 'patient_nbr', 
+		'examide', 'citoglipton'
+	]
+	data = data.drop(drop_cols, axis=1)
+	data['payer_code'] = data['payer_code'].fillna('None')
+	data['medical_specialty'] = data['medical_specialty'].fillna('None')
+	data['diag_1'] = data['diag_1'].fillna('None')
+	data['diag_2'] = data['diag_2'].fillna('None')
+	data['diag_3'] = data['diag_3'].fillna('None')
+
+	data = data[data['race'].isnull() == False]
+	data = data[data['gender'].isin(['Male', 'Female'])]
+	print(data.shape)
+
+	num_cols = [
+		'time_in_hospital', 'num_lab_procedures', 'num_procedures', 'num_medications', 
+		'number_outpatient', 'number_emergency', 'number_inpatient', 'number_diagnoses', 
+		]
+
+	cat_cols = [col for col in data.columns if col not in num_cols and col != target_col]
+
+	# one-hot encoding
+	oh_encoder = OneHotEncoder(
+		sparse_output=False, handle_unknown='ignore', max_categories=10, drop='first'
+	)
+
+	X_cat = oh_encoder.fit_transform(data[cat_cols].values)
+
+	# min-max scaling
+	scaler = StandardScaler()
+	X_num = scaler.fit_transform(data[num_cols].values)
+
+	# combine
+	X = np.concatenate([X_num, X_cat], axis=1)
+	y = data[target_col].values
+
+	# pca
+	pca = PCA(n_components=0.8)
+	X = pca.fit_transform(X)
+
+	# combine
+	data = pd.DataFrame(np.concatenate([X, y.reshape(-1, 1)], axis=1))
+	target_col = data.columns[-1]
+	data = convert_gaussian(data, target_col)
+	data = normalization(data, target_col)
+
+	if sample:
+		data0 = data[data[target_col] == 0]
+		data1 = data[data[target_col] == 1]
+		if data0.shape[0] > data1.shape[0]:
+			data0 = data0.sample(data1.shape[0])
+		else:
+			data1 = data1.sample(data0.shape[0])
+		
+		data = pd.concat([data0, data1], axis=0)
+
+	if data.shape[0] > 20000:
+		data = data.sample(n = 20000, random_state=42)
+	print(data.shape)
+
+	correlation_ret = data.corrwith(data[target_col], method=correlation_ratio).sort_values(ascending=False)
+	important_features = correlation_ret[correlation_ret >= threshold].index.tolist()
+	important_features.remove(target_col)
+
+	data_config = {
+		'target': target_col,
+		'important_features_idx': [data.columns.tolist().index(feature) for feature in important_features],
+		'features_idx': [idx for idx in range(0, data.shape[1]) if data.columns[idx] != target_col],
+		"num_cols": data.shape[1] - 1,
+		'task_type': 'classification',
+		'clf_type': 'multi-class',
 		'data_type': 'tabular'
 	}
 

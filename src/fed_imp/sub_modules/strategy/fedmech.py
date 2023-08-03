@@ -457,7 +457,7 @@ def mech_cos_sim_distance(coef_client, coefs_centroid):
 def mech_cos_sim_matrix(ms_coefs):
     coef_df = pd.DataFrame([coef for coef in ms_coefs]).T
     weight = coef_df.corr(
-        method=lambda x, y: np.dot(x, y) / (np.linalg.norm(x) * np.linalg.norm(y))
+        method=lambda x, y: np.dot(x, y) / (np.linalg.norm(x) * np.linalg.norm(y) + 0.000001)
     ).values
     weight = 1 - (weight + 1) / 2
     return weight
