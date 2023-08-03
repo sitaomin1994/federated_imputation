@@ -19,6 +19,7 @@ import multiprocessing as mp
 import itertools
 from config import settings
 from imblearn.over_sampling import SMOTE, RandomOverSampler, ADASYN
+import pandas as pd
 
 
 def main_func(
