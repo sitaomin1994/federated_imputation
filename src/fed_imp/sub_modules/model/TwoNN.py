@@ -9,7 +9,6 @@ class TwoNN(nn.Module):
 	def __init__(self, in_features, num_classes, num_hiddens=128):
 		super(TwoNN, self).__init__()
 		self.activation = nn.ReLU(True)
-
 		self.fc1 = nn.Linear(in_features=in_features, out_features=num_hiddens, bias=True)
 		self.dropout = nn.Dropout(p=0.5)
 		self.fc2 = nn.Linear(in_features=num_hiddens, out_features=num_hiddens, bias=True)

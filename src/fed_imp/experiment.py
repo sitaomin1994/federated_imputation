@@ -18,6 +18,7 @@ from loguru import logger
 import multiprocessing as mp
 import itertools
 from config import settings
+from imblearn.over_sampling import SMOTE, RandomOverSampler, ADASYN
 
 
 def main_func(
@@ -153,6 +154,33 @@ class Experiment:
 
 		# n rounds average
 		train_data, test_data = n_rounds_data[0]
+
+		imbalance_strategy = configuration.get('handle_imbalance', None)
+		if imbalance_strategy == 'oversampling':
+			columns = train_data.columns
+			X_train = train_data.iloc[:, :-1].values
+			y_train = train_data.iloc[:, -1].values
+			ros = RandomOverSampler(random_state=seed)
+			X_train, y_train = ros.fit_resample(X_train, y_train)
+			train_data = pd.DataFrame(np.concatenate([X_train, y_train.reshape(-1, 1)], axis=1), columns=columns)
+		elif imbalance_strategy == 'smote':
+			columns = train_data.columns
+			X_train = train_data.iloc[:, :-1].values
+			y_train = train_data.iloc[:, -1].values
+			smote = SMOTE(random_state=seed, n_jobs=-1)
+			X_train, y_train = smote.fit_resample(X_train, y_train)
+			train_data = pd.DataFrame(np.concatenate([X_train, y_train.reshape(-1, 1)], axis=1), columns=columns)
+		elif imbalance_strategy == 'adasyn':
+			columns = train_data.columns
+			X_train = train_data.iloc[:, :-1].values
+			y_train = train_data.iloc[:, -1].values
+			ada = ADASYN(random_state=seed, n_jobs=-1)
+			X_train, y_train = ada.fit_resample(X_train, y_train)
+			train_data = pd.DataFrame(np.concatenate([X_train, y_train.reshape(-1, 1)], axis=1), columns=columns)
+
+		print(train_data.shape)
+
+
 		stat_trackers = []
 		if tune_params:
 			param_grid = settings['algo_params_grids'][configuration['agg_strategy_imp']['strategy']]
