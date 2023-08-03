@@ -147,7 +147,7 @@ class PredServerCentralPytorch:
 				_, predicted = torch.max(outputs.data, 1)
 				probabilities = F.softmax(outputs, dim=1)
 				accu = accuracy_score(y_test, predicted.to('cpu').numpy())
-				f1 = f1_score(y_test, predicted.to('cpu').numpy(), average='weighted')
+				f1 = f1_score(y_test, predicted.to('cpu').numpy(), average='micro')
 				if probabilities.shape[1] == 2:
 					roc_auc = roc_auc_score(
 						y_test, probabilities.detach().to('cpu').numpy()[:, 1], average='micro'
@@ -165,7 +165,7 @@ class PredServerCentralPytorch:
 				val_accu = accuracy_score(y_validate, predicted.to('cpu').numpy())
 				val_f1 = f1_score(y_validate, predicted.to('cpu').numpy(), average='macro')
 
-				if epoch % 100 == 0:
+				if epoch % 20 == 0:
 					logger.info(
 						'Round: {}, test_accu: {:.4f}, test_f1: {:.4f} test_auroc: {:.4f} train_loss: {:.4f} '
 						'val_accu: '
