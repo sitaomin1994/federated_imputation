@@ -1,8 +1,8 @@
 # @package config_vars
-ijcnn:
+heart2:
   # dataset_name
   - name: dataset_name
-    value: [heart]
+    value: [heart_balanced]
     keys:
       - data
       - dataset_name
@@ -10,7 +10,7 @@ ijcnn:
 
   # num_client
   - name: n_client
-    value: [3, 5, 7, 9, 11]
+    value: [10]
     save_mode: dir2
     keys:
       - num_clients
@@ -26,8 +26,12 @@ ijcnn:
   # missing scenario
   - name: mm_strategy
     value:
-      - mnar_lr@sp=extremel1
-      - mnar_lr@sp=extremer1
+      - mnar_lr@sp=extreme_r=0.0    # 0: 10
+      - mnar_lr@sp=extreme_r=0.1    # 1: 9
+      - mnar_lr@sp=extreme_r=0.3    # 3: 7
+      - mnar_lr@sp=extreme_r=0.5    # 5: 5
+      - mnar_lr@sp=extreme_r=0.7    # 7: 3
+      - mnar_lr@sp=extreme_r=1.0    # 10: 0
     save_mode: dir4
     keys:
       - missing_simulate
