@@ -122,7 +122,7 @@ class PredServerFedAvgPytorch:
 
 			# N epochs of federated training
 			clients_prediction_history = []
-			best_accu, counter, patience = 0, 0, 300
+			best_accu, counter, patience = 0, 0, 150
 			for current_round in range(1, train_epochs + 1):
 				train_loss, test_loss, test_accu, test_f1, val_loss, val_accu, val_f1 = self._run_round_prediction(
 					pred_model, server_round=current_round, lr=learning_rate, wd=weight_decay, local_epoch=local_epoch

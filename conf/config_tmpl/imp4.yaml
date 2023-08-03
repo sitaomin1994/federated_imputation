@@ -13,6 +13,8 @@ data_partition:
   strategy: full
   params: {}
 
+handle_imbalance: null
+
 # missing data simulation
 missing_simulate:
   mr_strategy: random

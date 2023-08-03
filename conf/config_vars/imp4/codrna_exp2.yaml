@@ -1,8 +1,8 @@
 # @package config_vars
-ijcnn:
+codrna2:
   # dataset_name
   - name: dataset_name
-    value: [ijcnn_balanced_pca]
+    value: [codrna]
     keys:
       - data
       - dataset_name
@@ -10,14 +10,14 @@ ijcnn:
 
   # num_client
   - name: n_client
-    value: [ 20 ]
+    value: [10]
     save_mode: dir2
     keys:
       - num_clients
 
   # data partition
   - name: data_partition
-    value: [sample@p=500]
+    value: [sample-evenly]
     save_mode: dir3
     keys:
       - data_partition
@@ -26,13 +26,12 @@ ijcnn:
   # missing scenario
   - name: mm_strategy
     value:
-      - mnar_lr@sp=extreme_r=0.0
-      - mnar_lr@sp=extreme_r=0.05
-      - mnar_lr@sp=extreme_r=0.25
-      - mnar_lr@sp=extreme_r=0.5
-      - mnar_lr@sp=extreme_r=0.75
-      - mnar_lr@sp=extreme_r=0.95
-      - mnar_lr@sp=extreme_r=1.0
+      - mnar_lr@sp=extreme_r=0.0    # 0: 10
+      - mnar_lr@sp=extreme_r=0.1    # 1: 9
+      - mnar_lr@sp=extreme_r=0.3    # 3: 7
+      - mnar_lr@sp=extreme_r=0.5    # 5: 5
+      - mnar_lr@sp=extreme_r=0.7    # 7: 3
+      - mnar_lr@sp=extreme_r=1.0    # 10: 0
     save_mode: dir4
     keys:
       - missing_simulate
@@ -40,7 +39,7 @@ ijcnn:
 
   # missing scenario
   - name: mr_strategy
-    value: [compl@mr=0.1, compl@mr=0.3, compl@mr=0.7]
+    value: [fixed@mr=0.5]
     save_mode: dir5
     keys:
       - missing_simulate
@@ -55,7 +54,7 @@ ijcnn:
 
   # aggregation strategy
   - name: agg_strategy
-    value: [local, fedavg-s, fedmechw]
+    value: [central, local, fedavg-s, fedmechw]
     save_mode:
     keys:
       - agg_strategy_imp

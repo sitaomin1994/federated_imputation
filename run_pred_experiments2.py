@@ -251,13 +251,13 @@ if __name__ == '__main__':
     seed = 21
     mtp = True
 
-    dataset = 'fed_imp_pc2/0721/ijcnn_balanced'
+    dataset = 'fed_imp_pc2/0722/ijcnn_balanced_pca'
     sample_size = 500
     n_clients = 20
     scenario = "mnar_lr@sp=extreme_r="
-    r = ['0.0', '0.05', '0.25', '0.5', '0.75', '1.0']
-    mr_strategy = "fixed@mr="
-    mr = ['0.7']
+    r = ['0.0', '0.05', '0.25', '0.5', '0.75', '0.95', '1.0']
+    mr_strategy = "compl@mr="
+    mr = ['0.1']
 
     main_config = copy.deepcopy(main_config_tmpl)
     main_config['data'] = dataset

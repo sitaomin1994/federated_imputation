@@ -6,5 +6,8 @@ experiment_marker:
 defaults:
   - config_tmpl: imp4
   - config_vars/imp4:
-      - ijcnn_pca
+      - codrna_exp1
+      - codrna_exp2
+      - codon_exp1
+      - codon_exp2
   - _self_
