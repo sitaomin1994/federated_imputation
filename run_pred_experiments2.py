@@ -10,30 +10,31 @@ import copy
 from loguru import logger
 
 
-def main_prediction(data_dir, server_name, server_config, server_pred_config, test_data, n_clients, round_):
-    print("round: {}".format(round_))
+def main_prediction(data_dir, server_name, server_config, server_pred_config, round_):
     data_imp = np.load(os.path.join(data_dir, "imputed_data_{}.npy".format(round_)))
     data_true = np.load(os.path.join(data_dir, "origin_data_{}.npy".format(round_)))
     missing_mask = np.load(os.path.join(data_dir, "missing_mask_{}.npy".format(round_)))
-    # print("data_imp.shape: {}".format(data_imp.shape))
-    # print("data_true.shape: {}".format(data_true.shape))
-    # print("missing_mask.shape: {}".format(missing_mask.shape))
+    test_data = np.load(os.path.join(data_dir, "test_data_{}.npy".format(round_)))
+    sp = np.load(os.path.join(data_dir, "split_indices_{}.npy".format(round_)))
+    data_imps = np.split(data_imp, sp, axis=0)
+    data_trues = np.split(data_true, sp, axis=0)
+    missing_masks = np.split(missing_mask, sp, axis=0)
 
     # setup client
     clients = {}
-    for client_id in range(n_clients):
+    for client_id in range(len(data_imps)):
         clients[client_id] = SimpleClient(
             client_id=client_id,
-            data_imp=data_imp[client_id],
-            missing_mask=missing_mask[client_id],
-            data_true=data_true[client_id],
-            data_test=test_data.values
+            data_imp=data_imps[client_id],
+            missing_mask=missing_masks[client_id],
+            data_true=data_trues[client_id],
+            data_test=test_data
         )
 
     # setup server
     server = load_server(
         server_name, clients=clients, server_config=server_config, pred_config=server_pred_config,
-        test_data=test_data.values
+        test_data=test_data
     )
 
     # prediction
@@ -71,7 +72,7 @@ def prediction(main_config, server_config_, pred_rounds, seed, mtp=False):
             ###################################################################################
             # Main part
             ###################################################################################
-            root_dir = "./results/raw_results/{}/{}/sample@p={}/{}/{}/".format(
+            root_dir = "./results/raw_results/{}/{}/{}/{}/{}/".format(
                 dataname, n_clients, sample_size, scenario + scenario_param, mr_strategy + mr_param
             )
 
@@ -81,29 +82,7 @@ def prediction(main_config, server_config_, pred_rounds, seed, mtp=False):
             ####################################################################################
             # Find overall train and test data
             ####################################################################################
-            with open(os.path.join(exp_file), 'r') as fp:
-                exp_ret = json.load(fp)
-            exp_config = exp_ret["params"]["config"]
-
-            dataset_params = exp_config['data']
-            data, data_config = load_data(**dataset_params)
-            seed = exp_config['experiment']['seed']
-            n_rounds = exp_config['experiment']['n_rounds']
-            if n_rounds == 1:
-                n_rounds_data = split_train_test(data, n_folds=2, seed=seed)
-            else:
-                n_rounds_data = split_train_test(data, n_folds=n_rounds, seed=seed)
-
-            # n rounds average
-            train_data, test_data = n_rounds_data[0]
-            print("train_data.shape: {}".format(train_data.shape))
-            print("test_data.shape: {}".format(test_data.shape))
-
-            ####################################################################################
-            # load clients imputed and original datas
-            ####################################################################################
-            print("==============================================================")
-            print("n_rounds: {}".format(n_rounds))
+            print("====================================================================================")
 
             rets = []
             n_rounds = main_config['n_rounds']
@@ -113,24 +92,27 @@ def prediction(main_config, server_config_, pred_rounds, seed, mtp=False):
                     data_imp = np.load(os.path.join(data_dir, "imputed_data_{}.npy".format(round_)))
                     data_true = np.load(os.path.join(data_dir, "origin_data_{}.npy".format(round_)))
                     missing_mask = np.load(os.path.join(data_dir, "missing_mask_{}.npy".format(round_)))
-                    # print("data_imp.shape: {}".format(data_imp.shape))
-                    # print("data_true.shape: {}".format(data_true.shape))
-                    # print("missing_mask.shape: {}".format(missing_mask.shape))
+                    test_data = np.load(os.path.join(data_dir, "test_data_{}.npy".format(round_)))
+                    sp = np.load(os.path.join(data_dir, "split_indices_{}.npy".format(round_)))
+                    data_imps = np.split(data_imp, sp, axis=0)
+                    data_trues = np.split(data_true, sp, axis=0)
+                    missing_masks = np.split(missing_mask, sp, axis=0)
+
                     # setup client
                     clients = {}
-                    for client_id in range(n_clients):
+                    for client_id in range(len(data_imps)):
                         clients[client_id] = SimpleClient(
                             client_id=client_id,
-                            data_imp=data_imp[client_id],
-                            missing_mask=missing_mask[client_id],
-                            data_true=data_true[client_id],
-                            data_test=test_data.values
+                            data_imp=data_imps[client_id],
+                            missing_mask=missing_masks[client_id],
+                            data_true=data_trues[client_id],
+                            data_test=test_data
                         )
 
                     # setup server
                     server = load_server(
                         server_name, clients=clients, server_config=server_config, pred_config=server_pred_config,
-                        test_data=test_data.values
+                        test_data=test_data
                     )
 
                     # prediction
@@ -143,7 +125,7 @@ def prediction(main_config, server_config_, pred_rounds, seed, mtp=False):
 
                 with mp.Pool(n_process) as pool:
                     process_args = [
-                        (data_dir, server_name, server_config, server_pred_config, test_data, n_clients, round_)
+                        (data_dir, server_name, server_config, server_pred_config, round_)
                         for round_ in rounds]
                     process_results = pool.starmap(main_prediction, process_args, chunksize=chunk_size)
 
@@ -213,7 +195,7 @@ if __name__ == '__main__':
     main_config_tmpl = {
         "data": "fed_imp12/0717/ijcnn_balanced",
         "n_clients": 20,
-        "sample_size": 0.01,
+        "sample_size": "sample-evenly",
         "scenario": "mary_lr",
         'scenario_list': [],
         "mr": "random_in_group2",
@@ -243,7 +225,8 @@ if __name__ == '__main__':
         },
         "server_config": {
             'pred_rounds': 3,
-            'seed': 21
+            'seed': 21,
+            "metric": "roc"
         }
     }
 
@@ -251,13 +234,13 @@ if __name__ == '__main__':
     seed = 21
     mtp = True
 
-    dataset = 'fed_imp_pc2/0722/ijcnn_balanced_pca'
-    sample_size = 500
-    n_clients = 20
+    dataset = 'fed_imp_pc2/0802/codrna'
+    sample_size = 'sample-evenly'
+    n_clients = 10
     scenario = "mnar_lr@sp=extreme_r="
-    r = ['0.0', '0.05', '0.25', '0.5', '0.75', '0.95', '1.0']
-    mr_strategy = "compl@mr="
-    mr = ['0.1']
+    r = ['0.0', '0.1', '0.3', '0.5', '0.7', '1.0']
+    mr_strategy = "fixed@mr="
+    mr = ['0.5']
 
     main_config = copy.deepcopy(main_config_tmpl)
     main_config['data'] = dataset
@@ -271,7 +254,7 @@ if __name__ == '__main__':
 
     server_config = copy.deepcopy(server_config_tmpl)
     server_config['server_name'] = 'fedavg_mlp_pytorch_pred'
-    methods = ['local', 'fedavg-s', 'fedmechw']  # 'fedmechw'
+    methods = ['central', 'local', 'fedavg-s', 'fedmechw']  # 'fedmechw'
 
     for method in methods:
         main_config['method'] = method

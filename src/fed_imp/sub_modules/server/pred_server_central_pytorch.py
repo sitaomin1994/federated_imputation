@@ -7,7 +7,6 @@ from typing import Dict, List
 from src.utils import set_seed
 from src.fed_imp.sub_modules.model.TwoNN import TwoNN
 from src.fed_imp.sub_modules.model.logistic import LogisticRegression
-from src.fed_imp.sub_modules.model.utils import EarlyStopping
 from torch.utils.data import DataLoader, TensorDataset
 import torch.nn.functional as F
 
@@ -147,7 +146,8 @@ class PredServerCentralPytorch:
 				_, predicted = torch.max(outputs.data, 1)
 				probabilities = F.softmax(outputs, dim=1)
 				accu = accuracy_score(y_test, predicted.to('cpu').numpy())
-				f1 = f1_score(y_test, predicted.to('cpu').numpy(), average='micro')
+
+				f1 = f1_score(y_test, predicted.to('cpu').numpy(), average='macro')
 				if probabilities.shape[1] == 2:
 					roc_auc = roc_auc_score(
 						y_test, probabilities.detach().to('cpu').numpy()[:, 1], average='micro'
