@@ -78,7 +78,8 @@ import sys
 
 import os
 type = ''
-dir_path = './results/raw_results/fed_imp_pc2{}/0727/nhis_income_pca/'.format(type)
+dir_path = './results/raw_results/fed_imp9{}/0803/skin_balanced/'.format(type)
+print(dir_path)
 all_dirs, all_files = [], []
 for root, dirs, files in os.walk(dir_path):
     for dir in dirs:
@@ -107,7 +108,6 @@ for file in filtered_files:
         datas.append(file_record)
 
 print(len(datas))
-
 df = pd.DataFrame(datas)
 print(df.head())
 print(df.shape)
@@ -128,6 +128,7 @@ mapping1 = {
 }
 
 mapping2 = {
+    'central': 'central',
     'local': 'local',
     'fedavg-s': 'simpleavg',
     'fedmechw': 'fedmechw',
@@ -145,12 +146,42 @@ def func(x):
 df = df.applymap(lambda x: func(x) if isinstance(x, str) else x)
 # df[2] = df[2].apply(lambda x: x.split('=')[-1])
 #
-# order1 = ['local', 'simpleavg', 'fedmechw']
+order1 = ["central", 'local', 'simpleavg', 'fedmechw']
+order2 = [
+    'mnar_lr@sp=extreme_r=0.0', 
+    'mnar_lr@sp=extreme_r=0.1', 
+    'mnar_lr@sp=extreme_r=0.3', 
+    'mnar_lr@sp=extreme_r=0.5', 
+    'mnar_lr@sp=extreme_r=0.7', 
+    'mnar_lr@sp=extreme_r=0.9', 
+    'mnar_lr@sp=extreme_r=1.0'
+]
 # order2 = ['0.1 0.1', '0.3 0.3', '0.3 0.7', '0.5 0.5', '0.7 0.7', '0.7 0.3', '0.1 0.9']
 #
 # df[3] = pd.Categorical(df[3], categories=order2, ordered=True)
-# df[4] = pd.Categorical(df[4], categories=order1, ordered=True)
+df[4] = pd.Categorical(df[4], categories=order1, ordered=True)
+
+df[0] = df[0].astype(int)
+
+df1 = df[df[0] == 10].copy()
+df1[2] = pd.Categorical(df1[2], categories=order2, ordered=True)
+df1[2] = df1[2].str.replace('mnar_lr@sp=extreme_r=', '')
+df1 = df1.sort_values([4, 2])
+
+df2 = df[(df[0] != 10) & (df[2] == 'mnar_lr@sp=extremer1')].copy()
+df2.sort_values([4, 0], inplace=True)
+
+df3 = df[(df[0] != 10) & (df[2] == 'mnar_lr@sp=extremel1')].copy()
+df3.sort_values([4, 0], inplace=True)
+
+columns = ['n_clients', 'sample_size', 'mechanism', 'mr', 'method', 'rmse', 'ws', 'sliced-ws']
+df1.columns = columns
+df2.columns = columns
+df3.columns = columns
 # df = df.sort_values([2, 3, 4])
 with pd.ExcelWriter(os.path.join(output_dir, 'result{}.xlsx'.format(type))) as writer:
-    for value in df[2].unique():
-        df[df[2] == value].to_excel(writer, index=False, sheet_name = 'sp_{}'.format(value)) 
+    df1.to_excel(writer, index=False, sheet_name = 'exp2')
+    df2.to_excel(writer, index=False, sheet_name = 'exp1-lr')
+    df3.to_excel(writer, index=False, sheet_name = 'exp1-rl')
+    # for value in df[2].unique():
+    #     df[df[2] == value].to_excel(writer, index=False, sheet_name = 'sp_{}'.format(value)) 

@@ -136,7 +136,7 @@ class PredServerFedAvgPytorch:
                     }
                 )
 
-                if current_round % 50 == 0:
+                if current_round % 10 == 0:
                     logger.info(
                         'Round: {}, test_accu: {:.4f}, test_f1: {:.4f}, test_roc: {:.4f}, '
                         'val_loss: {:.4f}, val_accu: {:.4f}, val_f1: {:.4f}'.format(

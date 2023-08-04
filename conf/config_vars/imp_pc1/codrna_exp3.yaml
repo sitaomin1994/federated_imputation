@@ -26,12 +26,7 @@ codrna2:
   # missing scenario
   - name: mm_strategy
     value:
-      - mnar_lr@sp=extreme_r=0.0    # 0: 10
-      - mnar_lr@sp=extreme_r=0.1    # 1: 9
-      - mnar_lr@sp=extreme_r=0.3    # 3: 7
-      - mnar_lr@sp=extreme_r=0.5    # 5: 5
-      - mnar_lr@sp=extreme_r=0.7    # 7: 3
-      - mnar_lr@sp=extreme_r=1.0    # 10: 0
+      - mnar_lr@sp=extreme_r=0.9    # 9: 1
     save_mode: dir4
     keys:
       - missing_simulate

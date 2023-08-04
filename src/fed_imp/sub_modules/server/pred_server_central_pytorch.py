@@ -1,14 +1,15 @@
 import numpy as np
 import torch
 from loguru import logger
-from sklearn.metrics import f1_score, accuracy_score, roc_auc_score
+from sklearn.metrics import f1_score, accuracy_score, roc_auc_score, recall_score, precision_score, balanced_accuracy_score
 from src.fed_imp.sub_modules.client.simple_client import SimpleClient
 from typing import Dict, List
 from src.utils import set_seed
 from src.fed_imp.sub_modules.model.TwoNN import TwoNN
 from src.fed_imp.sub_modules.model.logistic import LogisticRegression
-from torch.utils.data import DataLoader, TensorDataset
+from torch.utils.data import DataLoader, TensorDataset, WeightedRandomSampler
 import torch.nn.functional as F
+from sklearn.utils import class_weight
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -74,6 +75,14 @@ class PredServerCentralPytorch:
 		validate_dataset = np.concatenate(validate_data, axis=0)
 		X_validate, y_validate = validate_dataset[:, :-1], validate_dataset[:, -1].astype(int)
 
+		# label_unique, counts = np.unique(y_train, return_counts=True)
+		# class_weights = [(sum(counts)/c) for c in counts]
+		# example_weights = [class_weights[y] for y in y_train]
+		# sampler = WeightedRandomSampler(example_weights, len(example_weights), replacement=True)
+		# class_weights = class_weight.compute_class_weight(
+		# 	class_weight='balanced', classes = np.unique(y_train), y = y_train)
+		#class_weights = torch.tensor(class_weights,dtype=torch.float)
+
 		################################################################################################
 		# Training prediction model
 		################################################################################################
@@ -83,13 +92,13 @@ class PredServerCentralPytorch:
 		learning_rate = self.pred_training_params['learning_rate']
 		weight_decay = self.pred_training_params['weight_decay']
 
-		train_dataset = TensorDataset(torch.FloatTensor(X_train), torch.LongTensor(y_train))
-		train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-
 		# centralized evaluation
 		accus, f1s, roc_aucs = [], [], []
 		for s in seeds:
 			set_seed(s)
+			train_dataset = TensorDataset(torch.FloatTensor(X_train), torch.LongTensor(y_train))
+			train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+			# train_dataloader = DataLoader(train_dataset, batch_size=batch_size, sampler=sampler, shuffle=False)
 			# early_stopping = EarlyStopping()
 
 			# Model. loss and optimizer
@@ -107,7 +116,8 @@ class PredServerCentralPytorch:
 			else:
 				raise ValueError('base model not found')
 
-			criterion = torch.nn.CrossEntropyLoss()
+			#criterion = torch.nn.CrossEntropyLoss(weight=class_weights.to(DEVICE),reduction='mean')
+			criterion = torch.nn.CrossEntropyLoss(reduction='mean')
 			optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
 
 			# Train the model
@@ -146,11 +156,14 @@ class PredServerCentralPytorch:
 				_, predicted = torch.max(outputs.data, 1)
 				probabilities = F.softmax(outputs, dim=1)
 				accu = accuracy_score(y_test, predicted.to('cpu').numpy())
+				if len(np.unique(y_test)) > 2:	
+					f1 = f1_score(y_test, predicted.to('cpu').numpy())
+				else:
+					f1 = f1_score(y_test, predicted.to('cpu').numpy())
 
-				f1 = f1_score(y_test, predicted.to('cpu').numpy(), average='macro')
 				if probabilities.shape[1] == 2:
 					roc_auc = roc_auc_score(
-						y_test, probabilities.detach().to('cpu').numpy()[:, 1], average='micro'
+						y_test, probabilities.detach().to('cpu').numpy()[:, 1]
 					)
 				else:
 					roc_auc = roc_auc_score(
@@ -159,18 +172,22 @@ class PredServerCentralPytorch:
 				best_accus.append(accu)
 				best_f1s.append(f1)
 				best_rocs.append(roc_auc)
+				recall = recall_score(y_test, predicted.to('cpu').numpy())
+				precision = precision_score(y_test, predicted.to('cpu').numpy())
+				balanced_accu = balanced_accuracy_score(y_test, predicted.to('cpu').numpy())
 
 				outputs = model(torch.FloatTensor(X_validate).to(DEVICE))
 				_, predicted = torch.max(outputs.data, 1)
 				val_accu = accuracy_score(y_validate, predicted.to('cpu').numpy())
 				val_f1 = f1_score(y_validate, predicted.to('cpu').numpy(), average='macro')
+				
 
-				if epoch % 20 == 0:
+				if epoch % 1 == 0:
 					logger.info(
 						'Round: {}, test_accu: {:.4f}, test_f1: {:.4f} test_auroc: {:.4f} train_loss: {:.4f} '
 						'val_accu: '
-						'{:.4f} val_f1: {:.4f}'.format(
-							epoch, accu, f1, roc_auc, train_epoch_loss, val_accu, val_f1
+						'{:.4f} val_f1: {:.4f} test recall {:.4f} precision {:.4f} b-accu {:.4f}'.format(
+							epoch, accu, f1, roc_auc, train_epoch_loss, val_accu, val_f1, recall, precision, balanced_accu
 						)
 					)
 

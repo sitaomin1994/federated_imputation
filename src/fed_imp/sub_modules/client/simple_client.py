@@ -4,6 +4,8 @@ from torch.utils.data import DataLoader
 from src.modules.evaluation.evaluation import Evaluator
 import numpy as np
 from src.fed_imp.sub_modules.dataloader import construct_tensor_dataset
+from imblearn.over_sampling import SMOTE, RandomOverSampler, BorderlineSMOTE
+from imblearn.under_sampling import RandomUnderSampler
 
 
 class SimpleClient:
@@ -23,11 +25,19 @@ class SimpleClient:
 		################################################################################################################
 		# Data
 		################################################################################################################
-		self.X_train_filled, y_train_filled = data_imp[:, :-1], data_imp[:, -1]
+		self.X_train_filled, self.y_train_filled = data_imp[:, :-1], data_imp[:, -1]
 		self.client_id = client_id
 		self.X_train, self.y_train = data_true[:, :-1], data_true[:, -1]
 		self.X_test, self.y_test = data_test[:, :-1], data_test[:, -1]
 		self.missing_mask = missing_mask
+
+		# print(self.X_train_filled.shape, self.y_train_filled.shape)
+		# print(self.X_train.shape, self.y_train.shape, self.X_test.shape, self.y_test.shape)
+
+		# smote
+		sm = BorderlineSMOTE(random_state = 42, kind = 'borderline-2')
+		# sm = RandomOverSampler(random_state=seed)
+		self.X_train_filled, self.y_train_filled = sm.fit_resample(self.X_train_filled, self.y_train_filled)
 
 		################################################################################################################
 		# prediction
@@ -41,7 +51,7 @@ class SimpleClient:
 		# split training and validation data
 		################################################################################################################
 		X_train_filled, X_val_filled, y_train, y_val = train_test_split(
-			self.X_train_filled, self.y_train, test_size=0.2, random_state=self.seed, stratify=self.y_train
+			self.X_train_filled, self.y_train_filled, test_size=0.2, random_state=self.seed, stratify=self.y_train_filled
 		)
 
 		self.train_data = np.concatenate((X_train_filled, y_train.reshape(-1, 1)), axis=1)

@@ -10,7 +10,7 @@ from .data_prep_utils import (
 )
 from .data_prep_his import (
 	process_NHIS_income, process_heart, process_codrna, process_skin, process_codon, process_sepsis,
-	process_diabetic
+	process_diabetic, process_cardio
 )
 
 
@@ -1933,6 +1933,8 @@ def load_data(dataset_name, normalize=True, verbose=False, threshold=None):
 		return process_diabetic(verbose, threshold)
 	elif dataset_name == 'diabetic_balanced':
 		return process_diabetic(verbose, threshold, sample=True)
+	elif dataset_name == 'cardio':
+		return process_cardio(verbose, threshold)
 	#######################################################################################################################
 	# Regression
 	#######################################################################################################################

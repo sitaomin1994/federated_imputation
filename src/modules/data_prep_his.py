@@ -1,6 +1,8 @@
 import pandas as pd
 from sklearn.decomposition import PCA
-from sklearn.preprocessing import MinMaxScaler, OneHotEncoder, PowerTransformer, LabelEncoder, StandardScaler
+from sklearn.preprocessing import (
+    MinMaxScaler, OneHotEncoder, PowerTransformer, LabelEncoder, StandardScaler, RobustScaler
+)
 from dython.nominal import correlation_ratio
 from loguru import logger
 from sklearn.datasets import fetch_openml
@@ -384,6 +386,7 @@ def process_skin(normalize=True, verbose=False, threshold=None, sample=False):
 
 	return data, data_config
 
+
 def process_codon(verbose=False, threshold=None):
 	if threshold is None:
 		threshold = 0.1
@@ -486,8 +489,9 @@ def process_diabetic(verbose=False, threshold=None, sample=False):
 	data = data.replace('?', np.nan)
 	print(data.shape)
 	target_col = 'readmitted'
-	data[target_col] = data[target_col].map({'NO': 1, '>30': 1, '<30': 0})
+	data[target_col] = data[target_col].map({'NO': 0, '>30': 0, '<30': 1})
 	data = move_target_to_end(data, target_col)
+	data = data.drop_duplicates(subset= ['patient_nbr'], keep = 'first')
 
 	# drop columns and handle missing values
 	drop_cols = [
@@ -528,7 +532,7 @@ def process_diabetic(verbose=False, threshold=None, sample=False):
 	y = data[target_col].values
 
 	# pca
-	pca = PCA(n_components=0.8)
+	pca = PCA(n_components=0.9)
 	X = pca.fit_transform(X)
 
 	# combine
@@ -570,4 +574,110 @@ def process_diabetic(verbose=False, threshold=None, sample=False):
 		logger.debug("Data shape {}".format(data.shape, data.shape))
 		logger.debug(data_config)
 
+	return data, data_config
+
+
+def process_cardio(verbose = False, threshold = None):
+	if threshold is None:
+		threshold = 0.1
+
+	data = pd.read_csv("./data/cardio/cardio_train.csv", sep=";")
+	data = data.drop("id", axis=1)
+	target_col = "cardio"
+	data = move_target_to_end(data, target_col)
+	data["age"] = round(data["age"] / 365)
+
+	###############################################################################
+	# outliers and missing values
+	def outlier_thresholds(dataframe, col_name, q1=0.10, q3=0.90):
+		quartile1 = dataframe[col_name].quantile(q1)
+		quartile3 = dataframe[col_name].quantile(q3)
+		interquantile_range = quartile3 - quartile1
+		up_limit = quartile3 + 1.5 * interquantile_range
+		low_limit = quartile1 - 1.5 * interquantile_range
+		return low_limit, up_limit
+
+	def replace_with_thresholds(dataframe, variable):
+		low_limit, up_limit = outlier_thresholds(dataframe, variable)
+		dataframe.loc[(dataframe[variable] < low_limit), variable] = low_limit
+		dataframe.loc[(dataframe[variable] > up_limit), variable] = up_limit
+    
+	num_cols = ['age', 'height', 'weight', 'ap_hi', 'ap_lo']
+
+	for col in num_cols:
+		replace_with_thresholds(data, col)
+
+	###############################################################################
+	# feature engineering
+	data.loc[(data["age"] < 18), "NEW_AGE"] = "Young"
+	data.loc[(data["age"] > 18) & (data["age"] < 56), "NEW_AGE"] = "Mature"
+	data.loc[(data["age"] >= 56), "NEW_AGE"] = "Old"
+
+	cols1 = data["weight"]
+	cols2 = data["height"] / 100
+	data["bmi"] = cols1 / (cols2 ** 2)
+	data.loc[(data["bmi"] < 18.5), "NEW_BMI"] = "under"
+	data.loc[(data["bmi"] >= 18.5) & (data["bmi"] <= 24.99) ,"NEW_BMI"] = "healthy"
+	data.loc[(data["bmi"] >= 25) & (data["bmi"] <= 29.99) ,"NEW_BMI"]= "over"
+	data.loc[(data["bmi"] >= 30), "NEW_BMI"] = "obese"
+
+	data.loc[(data["ap_lo"])<=89, "BLOOD_PRESSURE"] = "normal"
+	data.loc[(data["ap_lo"])>=90, "BLOOD_PRESSURE"] = "hyper"
+	data.loc[(data["ap_hi"])<=120, "BLOOD_PRESSURE"] = "normal"
+	data.loc[(data["ap_hi"])>120, "BLOOD_PRESSURE"] = "normal"
+	data.loc[(data["ap_hi"])>=140, "BLOOD_PRESSURE"] = "hyper"
+
+	###############################################################################
+	#encoding
+	rs = RobustScaler()
+	data[num_cols] = rs.fit_transform(data[num_cols])
+
+	def one_hot_encoder(dataframe, categorical_cols, drop_first=False):
+		dataframe = pd.get_dummies(dataframe, columns=categorical_cols, drop_first=drop_first)
+		return dataframe
+
+	ohe_cols = [col for col in data.columns if 10 >= len(data[col].unique()) >= 2 and col != target_col]
+	print(ohe_cols)
+	data = one_hot_encoder(data, ohe_cols, drop_first=True)
+	print(data.shape)
+
+	###############################################################################
+	# pca
+	data = move_target_to_end(data, target_col)
+	pca = PCA(n_components=0.99)
+	X = pca.fit_transform(data.iloc[:, :-1].values)
+	data  = pd.DataFrame(np.concatenate((X, data.iloc[:, -1:].values), axis=1))
+	print(data.shape)
+	target_col = data.columns[-1]
+
+	###############################################################################
+	# scaling
+	data = convert_gaussian(data, target_col)
+	data = normalization(data, target_col)
+
+	if data.shape[0] > 20000:
+		data = data.sample(n = 20000, random_state=42)
+
+	correlation_ret = data.corrwith(data[target_col], method=correlation_ratio).sort_values(ascending=False)
+	important_features = correlation_ret[correlation_ret >= threshold].index.tolist()
+	important_features.remove(target_col)
+
+	data_config = {
+		'target': target_col,
+		'important_features_idx': [data.columns.tolist().index(feature) for feature in important_features],
+		'features_idx': [idx for idx in range(0, data.shape[1]) if data.columns[idx] != target_col],
+		"num_cols": data.shape[1] - 1,
+		'task_type': 'classification',
+		'clf_type': 'multi-class',
+		'data_type': 'tabular'
+	}
+
+	print(data.shape)
+	print(data[target_col].value_counts())
+	
+	if verbose:
+		logger.debug("Important features {}".format(important_features))
+		logger.debug("Data shape {}".format(data.shape, data.shape))
+		logger.debug(data_config)
+	
 	return data, data_config
