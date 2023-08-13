@@ -236,16 +236,36 @@ if __name__ == '__main__':
     seed = 21
     mtp = True
 
-    dataset = 'fed_imp_pc2/0802/codrna'
+    dataset = 'fed_imp_pc2/0807/cardio'
     sample_size = 'sample-evenly'
-    #n_clients = [10]
-    # scenario = "mnar_lr@sp=extreme_r="
-    # r = ['0.0', '0.1', '0.3', '0.5', '0.7', '1.0']
     n_clients = [3, 5, 7, 9, 11]
     scenario = "mnar_lr@sp=extreme"
     r = ["l1", "r1"]
     mr_strategy = "fixed@mr="
     mr = ['0.5']
+
+    main_config = copy.deepcopy(main_config_tmpl)
+    main_config['data'] = dataset
+    main_config['n_clients'] = n_clients
+    main_config['sample_size'] = sample_size
+    main_config['scenario'] = scenario
+    main_config['scenario_list'] = r
+    main_config['mr'] = mr_strategy
+    main_config['mr_list'] = mr
+    main_config["n_rounds"] = 3
+
+    server_config = copy.deepcopy(server_config_tmpl)
+    server_config['server_name'] = 'fedavg_mlp_pytorch_pred'
+    methods = ['central', 'local', 'fedavg-s', 'fedmechw']  # 'fedmechw'
+
+    for method in methods:
+        main_config['method'] = method
+        prediction(main_config, server_config, pred_rounds, seed, mtp=mtp)
+
+    #####################################################################################
+    n_clients = [10]
+    scenario = "mnar_lr@sp=extreme_r="
+    r = ['0.0', '0.1', '0.3', '0.5', '0.7', '0.9', '1.0']
 
     main_config = copy.deepcopy(main_config_tmpl)
     main_config['data'] = dataset
