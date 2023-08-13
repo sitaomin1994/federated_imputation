@@ -77,8 +77,7 @@ import sys
 #     df.to_csv(processed_dir+"result.csv", index=False)
 
 import os
-type = ''
-dir_path = './results/raw_results/fed_imp9{}/0803/cardio/'.format(type)
+dir_path = './results/raw_results/fed_imp10_pred_fed/0807/cardio/'
 print(dir_path)
 all_dirs, all_files = [], []
 for root, dirs, files in os.walk(dir_path):
@@ -103,8 +102,9 @@ for file in filtered_files:
         data = json.load(fp)
         file_record = []
         file_record.extend(file.split('\\'))
-        file_record.extend(list(data['results']['avg_imp_final'].values())[0:3])
-        #file_record.append(data['results']['accu_mean'])
+        #file_record.extend(list(data['results']['avg_imp_final'].values())[0:3])
+        file_record.extend([data['results']['accu_mean'], data['results']['f1_mean'], data['results']['roc_mean']])
+        # file_record.append(data['results']['roc_mean'])
         datas.append(file_record)
 
 print(len(datas))
@@ -174,12 +174,12 @@ df2.sort_values([4, 0], inplace=True)
 df3 = df[(df[0] != 10) & (df[2] == 'mnar_lr@sp=extremel1')].copy()
 df3.sort_values([4, 0], inplace=True)
 
-columns = ['n_clients', 'sample_size', 'mechanism', 'mr', 'method', 'rmse', 'ws', 'sliced-ws']
+columns = ['n_clients', 'sample_size', 'mechanism', 'mr', 'method', 'accu', 'f1', 'roc']
 df1.columns = columns
 df2.columns = columns
 df3.columns = columns
 # df = df.sort_values([2, 3, 4])
-with pd.ExcelWriter(os.path.join(output_dir, 'result{}.xlsx'.format(type))) as writer:
+with pd.ExcelWriter(os.path.join(output_dir, 'result_pred.xlsx')) as writer:
     df1.to_excel(writer, index=False, sheet_name = 'exp2')
     df2.to_excel(writer, index=False, sheet_name = 'exp1-lr')
     df3.to_excel(writer, index=False, sheet_name = 'exp1-rl')
