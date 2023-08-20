@@ -10,7 +10,8 @@ from .data_prep_utils import (
 )
 from .data_prep_his import (
 	process_NHIS_income, process_heart, process_codrna, process_skin, process_codon, process_sepsis,
-	process_diabetic, process_cardio
+	process_diabetic, process_diabetic2, process_cardio, process_mimiciii_mortality, process_genetic,
+	process_mimiciii_mo2, process_mimic_icd, process_mimic_icd2, process_mimic_mo, process_mimic_los
 )
 
 
@@ -1933,8 +1934,22 @@ def load_data(dataset_name, normalize=True, verbose=False, threshold=None):
 		return process_diabetic(verbose, threshold)
 	elif dataset_name == 'diabetic_balanced':
 		return process_diabetic(verbose, threshold, sample=True)
+	elif dataset_name == 'diabetic2':
+		return process_diabetic2(verbose, threshold, sample=True)
 	elif dataset_name == 'cardio':
 		return process_cardio(verbose, threshold)
+	elif dataset_name == 'mimiciii_mo':
+		return process_mimiciii_mortality()
+	elif dataset_name == 'mimiciii_icd':
+		return process_mimic_icd2()
+	elif dataset_name == 'mimiciii_mo2':
+		return process_mimic_mo()
+	elif dataset_name == 'mimiciii_los':
+		return process_mimic_los()
+	elif dataset_name == 'genetic':
+		return process_genetic(sample=False)
+	elif dataset_name == 'genetic_balanced':
+		return process_genetic(sample=True)
 	#######################################################################################################################
 	# Regression
 	#######################################################################################################################

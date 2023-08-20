@@ -4,7 +4,8 @@ from torch.utils.data import DataLoader
 from src.modules.evaluation.evaluation import Evaluator
 import numpy as np
 from src.fed_imp.sub_modules.dataloader import construct_tensor_dataset
-from imblearn.over_sampling import SMOTE, RandomOverSampler, BorderlineSMOTE
+from imblearn.over_sampling import SMOTE, RandomOverSampler
+from imblearn.combine import SMOTETomek, SMOTEENN
 from imblearn.under_sampling import RandomUnderSampler
 
 
@@ -20,7 +21,8 @@ class SimpleClient:
 			data_imp,
 			missing_mask,
 			data_test,
-			seed: int = 21
+			seed: int = 21,
+			imbalance = None
 	):
 		################################################################################################################
 		# Data
@@ -34,10 +36,28 @@ class SimpleClient:
 		# print(self.X_train_filled.shape, self.y_train_filled.shape)
 		# print(self.X_train.shape, self.y_train.shape, self.X_test.shape, self.y_test.shape)
 
-		# smote
-		sm = BorderlineSMOTE(random_state = 42, kind = 'borderline-2')
-		# sm = RandomOverSampler(random_state=seed)
-		self.X_train_filled, self.y_train_filled = sm.fit_resample(self.X_train_filled, self.y_train_filled)
+		if imbalance is not None:
+			if imbalance == 'smote':
+				sm = SMOTE(random_state = seed)
+				self.X_train_filled, self.y_train_filled = sm.fit_resample(self.X_train_filled, self.y_train_filled)
+			elif imbalance == 'smotetm':
+				sm = SMOTETomek(random_state = seed)
+				# sm = RandomOverSampler(random_state=seed)
+				self.X_train_filled, self.y_train_filled = sm.fit_resample(self.X_train_filled, self.y_train_filled)
+			elif imbalance == 'smoteenn':
+				sm = SMOTEENN(random_state = seed)
+				# sm = RandomOverSampler(random_state=seed)
+				self.X_train_filled, self.y_train_filled = sm.fit_resample(self.X_train_filled, self.y_train_filled)
+			elif imbalance == 'rus':
+				sm = RandomUnderSampler(random_state = seed)
+				# sm = RandomOverSampler(random_state=seed)
+				self.X_train_filled, self.y_train_filled = sm.fit_resample(self.X_train_filled, self.y_train_filled)
+			elif imbalance == 'ros':
+				#sm = RandomUnderSampler(random_state = 42)
+				sm = RandomOverSampler(random_state=seed)
+				self.X_train_filled, self.y_train_filled = sm.fit_resample(self.X_train_filled, self.y_train_filled)
+			else:
+				raise ValueError('Invalid imbalance method')
 
 		################################################################################################################
 		# prediction

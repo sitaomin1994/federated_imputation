@@ -10,7 +10,8 @@ import copy
 from loguru import logger
 
 
-def main_prediction(data_dir, server_name, server_config, server_pred_config, round_):
+def main_prediction(data_dir, server_name, server_config, server_pred_config, round_, imbalance):
+
     data_imp = np.load(os.path.join(data_dir, "imputed_data_{}.npy".format(round_)))
     data_true = np.load(os.path.join(data_dir, "origin_data_{}.npy".format(round_)))
     missing_mask = np.load(os.path.join(data_dir, "missing_mask_{}.npy".format(round_)))
@@ -28,7 +29,8 @@ def main_prediction(data_dir, server_name, server_config, server_pred_config, ro
             data_imp=data_imps[client_id],
             missing_mask=missing_masks[client_id],
             data_true=data_trues[client_id],
-            data_test=test_data
+            data_test=test_data,
+            imbalance = imbalance
         )
 
     # setup server
@@ -51,6 +53,7 @@ def prediction(main_config, server_config_, pred_rounds, seed, mtp=False):
     mr_strategy = main_config["mr"]
     mr_list = main_config["mr_list"]
     method = main_config["method"]
+    imbalance = main_config["imbalance"]
 
     # server
     server_name = server_config_["server_name"]
@@ -108,7 +111,8 @@ def prediction(main_config, server_config_, pred_rounds, seed, mtp=False):
                                 data_imp=data_imps[client_id],
                                 missing_mask=missing_masks[client_id],
                                 data_true=data_trues[client_id],
-                                data_test=test_data
+                                data_test=test_data,
+                                imbalance = imbalance
                             )
 
                         # setup server
@@ -127,7 +131,7 @@ def prediction(main_config, server_config_, pred_rounds, seed, mtp=False):
 
                     with mp.Pool(n_process) as pool:
                         process_args = [
-                            (data_dir, server_name, server_config, server_pred_config, round_)
+                            (data_dir, server_name, server_config, server_pred_config, round_, imbalance)
                             for round_ in rounds]
                         process_results = pool.starmap(main_prediction, process_args, chunksize=chunk_size)
 
@@ -203,7 +207,8 @@ if __name__ == '__main__':
         "mr": "random_in_group2",
         'mr_list': [],
         "method": "fedavg-s",
-        "n_rounds": 3
+        "n_rounds": 3,
+        "imbalance": None
     }
 
     server_config_tmpl = {
@@ -211,24 +216,24 @@ if __name__ == '__main__':
         "server_pred_config": {
             "model_params": {
                 "model": "2nn",
-                "num_hiddens": 32,
+                "num_hiddens": 64,
                 "model_init_config": None,
                 "model_other_params": None
             },
             "train_params": {
-                "batch_size": 128,
+                "batch_size": 300,
                 "learning_rate": 0.001,
-                "weight_decay": 0.001,
-                "pred_round": 800,
+                "weight_decay": 0.000,
+                "pred_round": 500,
                 "pred_local_epochs": 3,
                 'local_epoch': 5,
                 'sample_pct': 1
             }
         },
         "server_config": {
-            'pred_rounds': 3,
+            'pred_rounds': 1,
             'seed': 21,
-            "metric": "roc"
+            "metric": "f1"
         }
     }
 
@@ -236,9 +241,10 @@ if __name__ == '__main__':
     seed = 21
     mtp = True
 
-    dataset = 'fed_imp_pc2/0807/cardio'
+    dataset = 'fed_imp_pc2/0817/mimiciii_icd'
     sample_size = 'sample-evenly'
-    n_clients = [3, 5, 7, 9, 11]
+    n_clients = [3, 11, 15, 9, 7, 5]
+    #n_clients = [3]
     scenario = "mnar_lr@sp=extreme"
     r = ["l1", "r1"]
     mr_strategy = "fixed@mr="
@@ -256,7 +262,8 @@ if __name__ == '__main__':
 
     server_config = copy.deepcopy(server_config_tmpl)
     server_config['server_name'] = 'fedavg_mlp_pytorch_pred'
-    methods = ['central', 'local', 'fedavg-s', 'fedmechw']  # 'fedmechw'
+    methods = ['fedavg-s', 'fedmechw', 'central', 'local']  # 'fedmechw'
+    #methods = ['fedavg-s', 'fedmechw']  # 'fedmechw'
 
     for method in methods:
         main_config['method'] = method
@@ -275,11 +282,11 @@ if __name__ == '__main__':
     main_config['scenario_list'] = r
     main_config['mr'] = mr_strategy
     main_config['mr_list'] = mr
-    main_config["n_rounds"] = 3
+    main_config["n_rounds"] = 1
 
     server_config = copy.deepcopy(server_config_tmpl)
     server_config['server_name'] = 'fedavg_mlp_pytorch_pred'
-    methods = ['central', 'local', 'fedavg-s', 'fedmechw']  # 'fedmechw'
+    methods = ['fedavg-s', 'fedmechw', 'central', 'local']  # 'fedmechw'
 
     for method in methods:
         main_config['method'] = method

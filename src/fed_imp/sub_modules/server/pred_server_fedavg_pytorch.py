@@ -3,10 +3,11 @@ from copy import deepcopy
 import random
 import numpy as np
 import torch
-from sklearn.metrics import f1_score, accuracy_score, roc_auc_score
+from sklearn.metrics import f1_score, accuracy_score, roc_auc_score, average_precision_score
 
 from src.fed_imp.sub_modules.client.simple_client import SimpleClient
 from src.fed_imp.sub_modules.model.logistic import LogisticRegression
+from sklearn.preprocessing import MultiLabelBinarizer
 from src.fed_imp.sub_modules.model.TwoNN import TwoNN
 from src.fed_imp.sub_modules.model.utils import init_net
 from src.fed_imp.sub_modules.dataloader import construct_tensor_dataset
@@ -100,7 +101,7 @@ class PredServerFedAvgPytorch:
         weight_decay = self.pred_training_params['weight_decay']
         local_epoch = self.pred_training_params['local_epoch']
 
-        best_accus, best_f1s, best_rocs, histories = [], [], [], []
+        best_accus, best_f1s, best_rocs, best_prcs, histories = [], [], [], [], []
         for s in seeds:
 
             set_seed(s)
@@ -121,10 +122,11 @@ class PredServerFedAvgPytorch:
 
             # N epochs of federated training
             clients_prediction_history = []
-            best_accu, best_roc, counter, patience = 0, 0, 0, 100
+            best_accu, best_roc, best_f1, best_prc, counter, patience = 0, 0, 0, 0, 0, 100
             for current_round in range(1, train_epochs + 1):
-                train_loss, test_loss, test_accu, test_f1, test_roc_auc, val_loss, val_accu, val_f1, val_roc_auc \
-                    = self._run_round_prediction(
+
+                (train_loss, test_loss, test_accu, test_f1, test_roc_auc, test_prc_auc, val_loss, val_accu, val_f1,
+                 val_roc_auc, val_prc_auc) = self._run_round_prediction(
                     pred_model, server_round=current_round, lr=learning_rate, wd=weight_decay,
                     local_epoch=local_epoch
                 )
@@ -132,15 +134,16 @@ class PredServerFedAvgPytorch:
                 clients_prediction_history.append(
                     {
                         'test_loss': test_loss, 'test_accu': test_accu, 'test_f1': test_f1, 'test_roc': test_roc_auc,
+                        'test_prc': test_prc_auc, 'val_prc': val_prc_auc,
                         'val_loss': val_loss, 'val_accu': val_accu, 'val_f1': val_f1, 'val_roc': val_roc_auc
                     }
                 )
 
-                if current_round % 10 == 0:
+                if current_round % 100 == 0:
                     logger.info(
-                        'Round: {}, test_accu: {:.4f}, test_f1: {:.4f}, test_roc: {:.4f}, '
+                        'Round: {}, test_accu: {:.4f}, test_f1: {:.4f}, test_roc: {:.4f},  test_prc: {:.4f},'
                         'val_loss: {:.4f}, val_accu: {:.4f}, val_f1: {:.4f}'.format(
-                            current_round, test_accu, test_f1, test_roc_auc, val_loss, val_accu, val_f1
+                            current_round, test_accu, test_f1, test_roc_auc, test_prc_auc, val_loss, val_accu, val_f1
                         )
                     )
 
@@ -165,6 +168,26 @@ class PredServerFedAvgPytorch:
                         if counter >= patience:
                             logger.info("Early stop at round {}".format(current_round))
                             break
+                    elif self.metric == 'f1':
+                        if test_f1 > best_f1:
+                            best_f1 = test_f1
+                            counter = 0
+                        else:
+                            counter += 1
+
+                        if counter >= patience:
+                            logger.info("Early stop at round {}".format(current_round))
+                            break
+                    elif self.metric == 'prc':
+                        if test_prc_auc > best_prc:
+                            best_prc = test_prc_auc
+                            counter = 0
+                        else:
+                            counter += 1
+
+                        if counter >= patience:
+                            logger.info("Early stop at round {}".format(current_round))
+                            break
 
             # Test the model
             accu_rounds_average = [item['test_accu'] for item in clients_prediction_history]
@@ -172,30 +195,35 @@ class PredServerFedAvgPytorch:
             best_accus.append(np.max(accu_rounds_average))
             best_f1s.append(np.max(f1_rounds_average))
             best_rocs.append(np.max([item['test_roc'] for item in clients_prediction_history]))
+            best_prcs.append(np.max([item['test_prc'] for item in clients_prediction_history]))
             histories.append(clients_prediction_history)
 
-        logger.info(
-            "model1 test acc: {:.6f} ({:.3f}), test f1: {:.6f} ({:.3f})".format(
-                np.array(best_accus).mean(), np.array(best_accus).std(), np.array(best_f1s).mean(),
-                np.array(best_f1s).std()
+            logger.info(
+                "model1 test acc: {:.6f} ({:.3f}), test f1: {:.6f} ({:.3f}) test roc: {:.6f}({:.3f}) "
+                "test prc: {:.6f}({:.3f}))".format(
+                    np.array(best_accus).mean(), np.array(best_accus).std(), np.array(best_f1s).mean(),
+                    np.array(best_f1s).std(), np.array(best_rocs).mean(), np.array(best_rocs).std(),
+                    np.array(best_prcs).mean(), np.array(best_prcs).std()
+                )
             )
-        )
 
         return {
             "accu_mean": np.array(best_accus).mean(),
             "f1_mean": np.array(best_f1s).mean(),
             'roc_mean': np.array(best_rocs).mean(),
+            'prc_mean': np.array(best_prcs).mean(),
             "accu_std": np.array(best_accus).std(),
             "f1_std": np.array(best_f1s).std(),
             'roc_std': np.array(best_rocs).std(),
+            'prc_std': np.array(best_prcs).std(),
             'history': histories,
         }
 
-    ####################################################################################################################
-    # Prediction
-    ####################################################################################################################
-    def _run_round_prediction(self, pred_model, server_round, lr, wd, local_epoch):
 
+####################################################################################################################
+# Prediction
+####################################################################################################################
+    def _run_round_prediction(self, pred_model, server_round, lr, wd, local_epoch):
         np.random.seed(self.seed + server_round)
         selected_clients_ids = random.sample(self.clients.keys(), k=int(len(self.clients.keys()) * self.sample_pct))
 
@@ -213,17 +241,17 @@ class PredServerFedAvgPytorch:
         self.average_model(pred_model, selected_clients_ids)
 
         # evaluation
-        val_loss, val_acc, val_f1, val_roc = self.evaluate_pred_model(pred_model, validate=True)
-        test_loss, test_acc, test_f1, test_roc = self.evaluate_pred_model(pred_model, validate=False)
+        val_loss, val_acc, val_f1, val_roc, val_prc_auc = self.evaluate_pred_model(pred_model, validate=True)
+        test_loss, test_acc, test_f1, test_roc, test_prc_auc = self.evaluate_pred_model(pred_model, validate=False)
 
         return (
             np.array(train_losses).mean(),
-            test_loss, test_acc, test_f1, test_roc,
-            val_loss, val_acc, val_f1, val_roc
+            test_loss, test_acc, test_f1, test_roc,test_prc_auc,
+            val_loss, val_acc, val_f1, val_roc, val_prc_auc
         )
 
-    def average_model(self, pred_model, selected_clients_ids):
 
+    def average_model(self, pred_model, selected_clients_ids):
         averaged_weights = OrderedDict()
         clients = [self.clients[idx] for idx in selected_clients_ids]
         sample_sizes = [client.get_sample_size() for client in clients]
@@ -236,6 +264,7 @@ class PredServerFedAvgPytorch:
                 else:
                     averaged_weights[key] += normalized_coefficient[it] * local_weights[key]
         pred_model.load_state_dict(averaged_weights)
+
 
     def evaluate_pred_model(self, pred_model, validate=False):
         pred_model.eval()
@@ -267,14 +296,23 @@ class PredServerFedAvgPytorch:
         probabilities = F.softmax(outputs, dim=1)
 
         test_accuracy = accuracy_score(y_test, predicted.to('cpu').numpy())
-        test_f1 = f1_score(y_test, predicted.to('cpu').numpy(), average='macro')
         if probabilities.shape[1] == 2:
+            test_f1 = f1_score(y_test, predicted.to('cpu').numpy(), zero_division=0, average='binary')
             test_roc_auc = roc_auc_score(
-                y_test, probabilities.detach().to('cpu').numpy()[:, 1], average='macro'
+                y_test, probabilities.detach().to('cpu').numpy()[:, 1],
+            )
+            test_prc_auc = average_precision_score(
+                y_test, probabilities.detach().to('cpu').numpy()[:, 1],
             )
         else:
+            test_f1 = f1_score(y_test, predicted.to('cpu').numpy(), zero_division=0, average='macro')
             test_roc_auc = roc_auc_score(
                 y_test, probabilities.detach().to('cpu').numpy(), multi_class='ovr', average='macro'
             )
+            mlb = MultiLabelBinarizer()
+            y_test_onehot = mlb.fit_transform([[i] for i in y_test])
+            test_prc_auc =  average_precision_score(
+                y_test_onehot, probabilities.detach().to('cpu').numpy()
+            )
 
-        return test_epoch_loss, test_accuracy, test_f1, test_roc_auc
+        return test_epoch_loss, test_accuracy, test_f1, test_roc_auc, test_prc_auc

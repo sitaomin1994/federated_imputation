@@ -128,7 +128,7 @@ def simulate_scenario(configuration):
 
     return clients, test_data, new_seed
 
-def NN_evaluation(ret0, type='centralized', n_rounds = 500, server_config_tmpl = None):
+def NN_evaluation(ret0, type='centralized', n_rounds = 500, server_config_tmpl = None, imbalance = None):
     clients_ = {}
     split_indices = ret0['data']['split_indices'].tolist()
     data_imp = np.split(ret0['data']['imputed_data'], split_indices)
@@ -143,7 +143,8 @@ def NN_evaluation(ret0, type='centralized', n_rounds = 500, server_config_tmpl =
             data_imp=data_imp[client_id],
             missing_mask=missing_mask[client_id],
             data_true=data_true[client_id],
-            data_test=test_data
+            data_test=test_data,
+            imbalance=imbalance,
         )
 
     pred_config = server_config_tmpl.copy()
@@ -162,7 +163,7 @@ def NN_evaluation(ret0, type='centralized', n_rounds = 500, server_config_tmpl =
         )
 
     pred_ret2 = server_.prediction()
-    print(pred_ret2["accu_mean"], pred_ret2['roc_auc_mean'], pred_ret2['f1_mean'])
+    print(pred_ret2["accu_mean"], pred_ret2['f1_mean'], pred_ret2['roc_auc_mean'], pred_ret2['prc_auc_mean'])
     return pred_ret2
 
 def visualize_ms(clients_ms_datas:list, sort_patterns: bool = False):

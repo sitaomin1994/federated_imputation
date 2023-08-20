@@ -1,7 +1,7 @@
 import numpy as np
 import torch
 from loguru import logger
-from sklearn.metrics import f1_score, accuracy_score, roc_auc_score, recall_score, precision_score, balanced_accuracy_score
+from sklearn.metrics import f1_score, accuracy_score, roc_auc_score, recall_score, precision_score, balanced_accuracy_score, average_precision_score
 from src.fed_imp.sub_modules.client.simple_client import SimpleClient
 from typing import Dict, List
 from src.utils import set_seed
@@ -42,9 +42,9 @@ class PredServerCentralPytorch:
 
 		self.pred_training_params = pred_config.get(
 			'train_params', {
-				"batch_size": 128,
+				"batch_size": 300,
 				"learning_rate": 0.001,
-				"weight_decay": 1e-4,
+				"weight_decay": 0,
 				"pred_round": 300
 			}
 		)
@@ -93,7 +93,7 @@ class PredServerCentralPytorch:
 		weight_decay = self.pred_training_params['weight_decay']
 
 		# centralized evaluation
-		accus, f1s, roc_aucs = [], [], []
+		accus, f1s, roc_aucs, prc_aucs = [], [], [], []
 		for s in seeds:
 			set_seed(s)
 			train_dataset = TensorDataset(torch.FloatTensor(X_train), torch.LongTensor(y_train))
@@ -122,7 +122,7 @@ class PredServerCentralPytorch:
 
 			# Train the model
 			train_losses, val_losses = [], []
-			best_accus, best_f1s, best_rocs = [], [], []
+			best_accus, best_f1s, best_rocs, best_prcs = [], [], [], []
 			for epoch in range(train_epochs):
 				model.to(DEVICE)
 				model.train()  # prep model for training
@@ -157,24 +157,33 @@ class PredServerCentralPytorch:
 				probabilities = F.softmax(outputs, dim=1)
 				accu = accuracy_score(y_test, predicted.to('cpu').numpy())
 				if len(np.unique(y_test)) > 2:	
-					f1 = f1_score(y_test, predicted.to('cpu').numpy())
+					f1 = f1_score(y_test, predicted.to('cpu').numpy(), zero_division=0, average='micro')
 				else:
-					f1 = f1_score(y_test, predicted.to('cpu').numpy())
+					f1 = f1_score(y_test, predicted.to('cpu').numpy(), zero_division=0)
 
 				if probabilities.shape[1] == 2:
 					roc_auc = roc_auc_score(
+						y_test, probabilities.detach().to('cpu').numpy()[:, 1]
+					)
+					prc_auc = average_precision_score(
 						y_test, probabilities.detach().to('cpu').numpy()[:, 1]
 					)
 				else:
 					roc_auc = roc_auc_score(
 						y_test, probabilities.detach().to('cpu').numpy(), multi_class='ovr', average='micro'
 					)
+					prc_auc = average_precision_score(
+						y_test, probabilities.detach().to('cpu').numpy(), average='micro'
+					)
+				
+				
 				best_accus.append(accu)
 				best_f1s.append(f1)
 				best_rocs.append(roc_auc)
-				recall = recall_score(y_test, predicted.to('cpu').numpy())
-				precision = precision_score(y_test, predicted.to('cpu').numpy())
-				balanced_accu = balanced_accuracy_score(y_test, predicted.to('cpu').numpy())
+				best_prcs.append(prc_auc)
+				# recall = recall_score(y_test, predicted.to('cpu').numpy(), zero_division=0)
+				# precision = precision_score(y_test, predicted.to('cpu').numpy(), zero_division=0)
+				# balanced_accu = balanced_accuracy_score(y_test, predicted.to('cpu').numpy())
 
 				outputs = model(torch.FloatTensor(X_validate).to(DEVICE))
 				_, predicted = torch.max(outputs.data, 1)
@@ -184,10 +193,10 @@ class PredServerCentralPytorch:
 
 				if epoch % 1 == 0:
 					logger.info(
-						'Round: {}, test_accu: {:.4f}, test_f1: {:.4f} test_auroc: {:.4f} train_loss: {:.4f} '
+						'Round: {}, test_accu: {:.4f}, test_f1: {:.4f} test_auroc: {:.4f} test_auprc: {:.4f} train_loss: {:.4f} '
 						'val_accu: '
-						'{:.4f} val_f1: {:.4f} test recall {:.4f} precision {:.4f} b-accu {:.4f}'.format(
-							epoch, accu, f1, roc_auc, train_epoch_loss, val_accu, val_f1, recall, precision, balanced_accu
+						'{:.4f} val_f1: {:.4f}'.format(
+							epoch, accu, f1, roc_auc, prc_auc, train_epoch_loss, val_accu, val_f1, 
 						)
 					)
 
@@ -198,6 +207,7 @@ class PredServerCentralPytorch:
 			accus.append(np.array(best_accus).max())
 			f1s.append(np.array(best_f1s).max())
 			roc_aucs.append(np.array(best_rocs).max())
+			prc_aucs.append(np.array(best_prcs).max())
 
 			model.to('cpu')
 
@@ -205,7 +215,9 @@ class PredServerCentralPytorch:
 			"accu_mean": np.array(accus).mean(),
 			"f1_mean": np.array(f1s).mean(),
 			"roc_auc_mean": np.array(roc_aucs).mean(),
+			"prc_auc_mean": np.array(prc_aucs).mean(),
 			"accu_std": np.array(accus).std(),
 			"f1_std": np.array(f1s).std(),
-			"roc_auc_std": np.array(roc_aucs).std()
+			"roc_auc_std": np.array(roc_aucs).std(),
+			"prc_auc_std": np.array(prc_aucs).std()
 		}

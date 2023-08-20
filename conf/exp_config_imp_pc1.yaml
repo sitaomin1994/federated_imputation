@@ -6,8 +6,10 @@ experiment_marker:
 defaults:
   - config_tmpl: imp4
   - config_vars/imp_pc1:
-      - codrna_exp3
-      - codon_exp3
-      - skin_exp3
-      - heart_exp3
+      - heart_exp1
+      - heart_exp2
+      - diabetic_exp1
+      - diabetic_exp2
+      - skin_exp1
+      - skin_exp2
   - _self_
