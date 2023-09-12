@@ -47,7 +47,7 @@ def fedmodelw(weights, missing_infos, ms_coefs, params):
 
 
 def fedmechclw(weights, missing_infos, ms_coefs, params):
-    scale_factor = settings['algo_params']['scale_factor']
+    #scale_factor = settings['algo_params']['scale_factor']
 
     # parameters of every model
     weights = np.array(list(weights.values()))
@@ -62,6 +62,7 @@ def fedmechclw(weights, missing_infos, ms_coefs, params):
 
     cluster_thres = params['thres1']
     alpha = params['alpha']
+    scale_factor = params['scale_factor']
 
     ################################################################################################
     # Cluster clients based on cosine similarity of missing mechanisms
@@ -123,7 +124,8 @@ def fedmechclw(weights, missing_infos, ms_coefs, params):
 def fedmechw(weights, missing_infos, ms_coefs, params, sigmoid = False, filter_sim_mm = False, filter_sim_lm = False):
     '''Three factors Weighted Average'''
 
-    scale_factor = settings['algo_params']['scale_factor']
+    #scale_factor = settings['algo_params']['scale_factor']
+    scale_factor = params['scale_factor']
     alpha = params['alpha']
     beta = params['beta']
 
@@ -156,18 +158,18 @@ def fedmechw(weights, missing_infos, ms_coefs, params, sigmoid = False, filter_s
         top_k_idx = np.argsort(mech_sim_dist[client_idx])[-client_thres:]
 
         # adjust weights
-        mech_sim_w = (mech_sim_dist[client_idx][top_k_idx] + 0.00001) ** scale_factor
-        mech_sim_w = mech_sim_w / np.sum(mech_sim_w)
+        mech_sim_w = (mech_sim_dist[client_idx][top_k_idx] + 0.00001)
+        #mech_sim_w = mech_sim_w / np.sum(mech_sim_w)
 
         # normalized sample sizes weights - same as simple average
-        sample_size_w = (sample_sizes[top_k_idx]) ** scale_factor
+        sample_size_w = (sample_sizes[top_k_idx])
         sample_size_w = sample_size_w / np.sum(sample_size_w)
 
         # missing pct weights
-        missing_pct_w = (missing_pct[top_k_idx]) ** scale_factor
-        missing_pct_w = missing_pct_w / np.sum(missing_pct_w)
+        # missing_pct_w = (missing_pct[top_k_idx]) ** scale_factor
+        # missing_pct_w = missing_pct_w / np.sum(missing_pct_w)
 
-        final_w = (alpha * (mech_sim_w) + beta * (sample_size_w) + (1 - alpha - beta) * (missing_pct_w))** scale_factor
+        final_w = (alpha * (mech_sim_w) + (1 - alpha) * (sample_size_w))**scale_factor #(1 - alpha - beta) * (missing_pct_w))** scale_factor
 
         # average parameters
         avg_parameters = np.average(weights[top_k_idx], axis=0, weights=final_w)

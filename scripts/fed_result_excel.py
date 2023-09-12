@@ -78,7 +78,7 @@ import sys
 
 import os
 type = ''
-dir_path = './results/raw_results/fed_imp_pc2{}/0817/mimiciii_mo2/'.format(type)
+dir_path = './results/raw_results/fed_imp_pc2{}/0821/mimiciii_los/'.format(type)
 print(dir_path)
 all_dirs, all_files = [], []
 for root, dirs, files in os.walk(dir_path):

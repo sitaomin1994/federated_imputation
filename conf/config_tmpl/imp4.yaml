@@ -89,6 +89,16 @@ algo_params:
     client_thres: 1.0
     alpha: 1.0
     beta: 0.0
+  fedmechw_p:
+    client_thres: 1.0
+    alpha: 0.9
+    beta: 0.1
+    scale_factor: 3
+  fedmechw_p_sigmoid:
+    client_thres: 1.0
+    alpha: 0.9
+    beta: 0.1
+    scale_factor: 3
   fedmechclw:
     client_thres: 1.0
     thres1: 0.2

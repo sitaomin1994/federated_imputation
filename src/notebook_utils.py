@@ -48,7 +48,7 @@ def run_simulation(configuration, clients, test_data, seed):
 
     # return server
     ret00 = server.run()
-    vis_imp(ret00)
+    #vis_imp(ret00)
     print(ret00['imp_result'])
     #sklearn_evaluation(ret00)
 
@@ -124,7 +124,7 @@ def simulate_scenario(configuration):
         num_clients, data_partitions, data_ms_clients2, test_data.values, data_config,
         configuration['imputation'], seed=new_seed
     )
-    visualize_ms(data_ms_clients2)
+    #visualize_ms(data_ms_clients2)
 
     return clients, test_data, new_seed
 

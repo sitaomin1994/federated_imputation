@@ -93,6 +93,14 @@ class StrategyImputation:
 			agg_weight, w = fedmechclw(weights, missing_infos, ms_coefs, self.params)
 		elif self.strategy == 'fedmechw':
 			agg_weight, w = fedmechw(weights, missing_infos, ms_coefs, self.params)
+		elif self.strategy == 'fedmechw_p':
+			agg_weight, w = fedmechw(weights, missing_infos, ms_coefs, {
+				'alpha': 0.95, 'beta': 0.05, 'client_thres': 1.0, 'scale_factor': 4
+			}, sigmoid=False)
+		elif self.strategy == 'fedmechw_p_sigmoid':
+			agg_weight, w = fedmechw(weights, missing_infos, ms_coefs, {
+				'alpha': 0.95, 'beta': 0.05, 'client_thres': 1.0, 'scale_factor': 4
+			}, sigmoid=False)
 		elif self.strategy == 'fedmechw_sigmoid':
 			agg_weight, w = fedmechw(weights, missing_infos, ms_coefs, self.params, sigmoid=True)
 		elif self.strategy == 'fedmechw_fmm':
