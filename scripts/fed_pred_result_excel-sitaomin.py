@@ -25,14 +25,14 @@ import sys
 #             # ret['fed_accu_std'] = data["results"]["avg_pred_final_model1"]["accu_std"]
 #             # ret['fed_f1_std'] = data["results"]["avg_pred_final_model1"]["f1_std"]
 #             df_data.append(ret)
-
+    
 #     df = pd.DataFrame(df_data)
 #     sort_order = ['local', 'fedavg', 'fedavg-s', 'fedwavg', 'fedmechw', 'fedmechclw', 'fedwavgcl', 'fedmechcl4', 'fedmechclwcl']
 #     df['method'] = pd.Categorical(df['method'], categories=sort_order, ordered=True)
 
 #     # sort the dataframe by the specified column
 #     df = df.sort_values('method')
-
+    
 #     return df
 
 # if __name__ == "__main__":
@@ -54,7 +54,7 @@ import sys
 #     processed_dir = "./results/processed_results/{}/{}/sample@p={}/".format(data, n_clients, sample_size)
 #     if not os.path.exists(processed_dir):
 #         os.makedirs(processed_dir)
-
+    
 #     df = pd.concat(dfs, axis= 0)
 #     df.to_csv(processed_dir+"result.csv", index=False)
 
@@ -72,12 +72,11 @@ import sys
 #     processed_dir = "./results/processed_results/{}/{}/sample@p={}/".format(data, n_clients, sample_size)
 #     if not os.path.exists(processed_dir):
 #         os.makedirs(processed_dir)
-
+    
 #     df = pd.concat(dfs, axis= 0)
 #     df.to_csv(processed_dir+"result.csv", index=False)
 
 import os
-
 dir_path = './results/raw_results/fed_imp_pc2_pred_fed/0802/codon/'
 print(dir_path)
 all_dirs, all_files = [], []
@@ -99,11 +98,11 @@ print(len(filtered_files))
 datas = []
 
 for file in filtered_files:
-    with open(os.path.join(dir_path + file), 'r') as fp:
+    with open(os.path.join(dir_path+file), 'r') as fp:
         data = json.load(fp)
         file_record = []
         file_record.extend(file.split('\\'))
-        # file_record.extend(list(data['results']['avg_imp_final'].values())[0:3])
+        #file_record.extend(list(data['results']['avg_imp_final'].values())[0:3])
         # file_record.extend([data['results']['mse_mean'], data['results']['r2_mean']])
         file_record.extend([data['results']['accu_mean'], data['results']['f1_mean'], data['results']['roc_mean']])
         datas.append(file_record)
@@ -135,29 +134,28 @@ mapping2 = {
     'fedmechw': 'fedmechw',
 }
 
-df = df.applymap(lambda x: mapping1[x] if x in mapping1 else x)
 
+df = df.applymap(lambda x: mapping1[x] if x in mapping1 else x)
 
 def func(x):
     x = x.replace('_fedavg_mlp_pytorch_pred.json', '')
     for key in mapping2:
         if key in x:
             return x.replace(key, mapping2[key])
-
+    
     return x
-
 
 df[4] = df[4].apply(lambda x: func(x) if isinstance(x, str) else x)
 # df[2] = df[2].apply(lambda x: x.split('=')[-1])
 #
 order1 = ["central", 'local', 'simpleavg', 'fedmechw', 'fedmechw_p']
 order2 = [
-    'mnar_lr@sp=extreme_r=0.0',
-    'mnar_lr@sp=extreme_r=0.1',
-    'mnar_lr@sp=extreme_r=0.3',
-    'mnar_lr@sp=extreme_r=0.5',
-    'mnar_lr@sp=extreme_r=0.7',
-    'mnar_lr@sp=extreme_r=0.9',
+    'mnar_lr@sp=extreme_r=0.0', 
+    'mnar_lr@sp=extreme_r=0.1', 
+    'mnar_lr@sp=extreme_r=0.3', 
+    'mnar_lr@sp=extreme_r=0.5', 
+    'mnar_lr@sp=extreme_r=0.7', 
+    'mnar_lr@sp=extreme_r=0.9', 
     'mnar_lr@sp=extreme_r=1.0'
 ]
 # order2 = ['0.1 0.1', '0.3 0.3', '0.3 0.7', '0.5 0.5', '0.7 0.7', '0.7 0.3', '0.1 0.9']
@@ -180,7 +178,7 @@ df2.sort_values([4, 0], inplace=True)
 df3 = df[(df[0] != 10) & (df[2] == 'mnar_lr@sp=extremel1')].copy()
 df3.sort_values([4, 0], inplace=True)
 
-# columns = ['n_clients', 'sample_size', 'mechanism', 'mr', 'method', 'mse', 'r2']
+#columns = ['n_clients', 'sample_size', 'mechanism', 'mr', 'method', 'mse', 'r2']
 
 columns = ['n_clients', 'sample_size', 'mechanism', 'mr', 'method', 'accu', 'f1', 'roc']
 
@@ -190,8 +188,8 @@ df3.columns = columns
 # df = df.sort_values([2, 3, 4])
 output_dir = './'
 with pd.ExcelWriter(os.path.join(output_dir, 'result_pred.xlsx')) as writer:
-    df1.to_excel(writer, index=False, sheet_name='exp2')
-    df2.to_excel(writer, index=False, sheet_name='exp1-lr')
-    df3.to_excel(writer, index=False, sheet_name='exp1-rl')
+    df1.to_excel(writer, index=False, sheet_name = 'exp2')
+    df2.to_excel(writer, index=False, sheet_name = 'exp1-lr')
+    df3.to_excel(writer, index=False, sheet_name = 'exp1-rl')
     # for value in df[2].unique():
     #     df[df[2] == value].to_excel(writer, index=False, sheet_name = 'sp_{}'.format(value)) 

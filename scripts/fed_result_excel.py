@@ -78,7 +78,7 @@ import sys
 
 import os
 type = ''
-dir_path = './results/raw_results/fed_imp_pc2{}/0821/mimiciii_los/'.format(type)
+dir_path = './results/raw_results/fed_imp_pc2{}/0802/codrna/'.format(type)
 print(dir_path)
 all_dirs, all_files = [], []
 for root, dirs, files in os.walk(dir_path):
@@ -131,22 +131,24 @@ mapping2 = {
     'central': 'central',
     'local': 'local',
     'fedavg-s': 'simpleavg',
-    'fedmechw': 'fedmechw',
+    'fedmechw': 'fedmechw'
 }
 
 
 df = df.applymap(lambda x: mapping1[x] if x in mapping1 else x)
 
 def func(x):
+    x = x.split('@')[0]
+    x = x[3:]
     for key in mapping2:
         if key in x:
-            return mapping2[key]
+            return x.replace(key, mapping2[key])
     
     return x
-df = df.applymap(lambda x: func(x) if isinstance(x, str) else x)
+df[4] = df[4].apply(lambda x: func(x) if isinstance(x, str) else x)
 # df[2] = df[2].apply(lambda x: x.split('=')[-1])
 #
-order1 = ["central", 'local', 'simpleavg', 'fedmechw']
+order1 = ["central", 'local', 'simpleavg', 'fedmechw', 'fedmechw_p']
 order2 = [
     'mnar_lr@sp=extreme_r=0.0', 
     'mnar_lr@sp=extreme_r=0.1', 
@@ -160,7 +162,6 @@ order2 = [
 #
 # df[3] = pd.Categorical(df[3], categories=order2, ordered=True)
 df[4] = pd.Categorical(df[4], categories=order1, ordered=True)
-
 df[0] = df[0].astype(int)
 
 df1 = df[df[0] == 10].copy()
@@ -179,6 +180,9 @@ df1.columns = columns
 df2.columns = columns
 df3.columns = columns
 # df = df.sort_values([2, 3, 4])
+print(df1.head())
+print(df2.head())
+print(df3.head())
 with pd.ExcelWriter(os.path.join(output_dir, 'result{}.xlsx'.format(type))) as writer:
     df1.to_excel(writer, index=False, sheet_name = 'exp2')
     df2.to_excel(writer, index=False, sheet_name = 'exp1-lr')

@@ -220,14 +220,14 @@ if __name__ == '__main__':
         "server_pred_config": {
             "model_params": {
                 "model": "twonn",
-                "num_hiddens": 128,
+                "num_hiddens": 32,
                 "model_init_config": None,
                 "model_other_params": None
             },
             "train_params": {
                 "batch_size": 300,
                 "learning_rate": 0.001,
-                "weight_decay": 0.00,
+                "weight_decay": 0.000,
                 "pred_round": 500,
                 "pred_local_epochs": 3,
                 'local_epoch': 5,
@@ -245,12 +245,12 @@ if __name__ == '__main__':
     pred_rounds = 1
     seed = 21
     mtp = True
-    datasets = ['genetic']
+    datasets = ['0816/genetic']
     for d in datasets:
-        dataset = 'fed_imp_pc2/0816/{}'.format(d)
+        dataset = 'fed_imp_pc2/{}'.format(d)
         sample_size = 'sample-evenly'
         n_clients = [3, 11, 15, 9, 7, 5]
-        #n_clients = [3]
+        #n_clients = [5,7,9]
         scenario = "mnar_lr@sp=extreme"
         r = ["l1", "r1"]
         mr_strategy = "fixed@mr="
@@ -268,8 +268,8 @@ if __name__ == '__main__':
 
         server_config = copy.deepcopy(server_config_tmpl)
         server_config['server_name'] = 'fedavg_mlp_pytorch_pred'
-        #methods = ['fedavg-s', 'fedmechw', 'central', 'local']  # 'fedmechw'
-        methods = ['fedmechw_p']  # 'fedmechw'
+        methods = ['fedavg-s', 'fedmechw', 'fedmechw_p', 'central', 'local']  # 'fedmechw'
+        #methods = ['fedavg-s', 'fedmechw', 'fedmechw_p']  # 'fedmechw'
 
         for method in methods:
             main_config['method'] = method
@@ -279,6 +279,7 @@ if __name__ == '__main__':
         n_clients = [10]
         scenario = "mnar_lr@sp=extreme_r="
         r = ['0.0', '0.1', '0.3', '0.5', '0.7', '0.9', '1.0']
+        #r = ['0.0', '1.0']
 
         main_config = copy.deepcopy(main_config_tmpl)
         main_config['data'] = dataset
@@ -292,8 +293,8 @@ if __name__ == '__main__':
 
         server_config = copy.deepcopy(server_config_tmpl)
         server_config['server_name'] = 'fedavg_mlp_pytorch_pred'
-        #methods = ['fedavg-s', 'fedmechw', 'central', 'local']  # 'fedmechw'
-        methods = ['fedmechw_p']  # 'fedmechw'
+        methods = ['fedavg-s', 'fedmechw', 'fedmechw_p', 'central', 'local']  # 'fedmechw'
+        #methods = ['fedavg-s', 'fedmechw', 'fedmechw_p']  # 'fedmechw'
 
         for method in methods:
             main_config['method'] = method
