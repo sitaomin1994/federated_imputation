@@ -2,7 +2,7 @@
 fedmech2:
   # dataset_name
   - name: dataset_name
-    value: [mimiciii_icd, codon, codrna, genetic, heart]
+    value: [codon, codrna, heart]
     keys:
       - data
       - dataset_name
@@ -55,7 +55,7 @@ fedmech2:
 
   # aggregation strategy
   - name: agg_strategy
-    value: [fedmechw_p]
+    value: [fedmechw_new]
     save_mode:
     keys:
       - agg_strategy_imp

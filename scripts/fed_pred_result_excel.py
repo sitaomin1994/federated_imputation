@@ -150,7 +150,7 @@ def func(x):
 df[4] = df[4].apply(lambda x: func(x) if isinstance(x, str) else x)
 # df[2] = df[2].apply(lambda x: x.split('=')[-1])
 #
-order1 = ["central", 'local', 'simpleavg', 'fedmechw', 'fedmechw_p']
+order1 = ["central", 'local', 'simpleavg', 'fedmechw', 'fedmechw_p', 'fedmechw_new']
 order2 = [
     'mnar_lr@sp=extreme_r=0.0',
     'mnar_lr@sp=extreme_r=0.1',

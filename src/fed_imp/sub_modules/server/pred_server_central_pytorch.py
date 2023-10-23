@@ -191,7 +191,7 @@ class PredServerCentralPytorch:
 				val_f1 = f1_score(y_validate, predicted.to('cpu').numpy(), average='macro')
 				
 
-				if epoch % 1 == 0:
+				if epoch % 100 == 0:
 					logger.info(
 						'Round: {}, test_accu: {:.4f}, test_f1: {:.4f} test_auroc: {:.4f} test_auprc: {:.4f} train_loss: {:.4f} '
 						'val_accu: '

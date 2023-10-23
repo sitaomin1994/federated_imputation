@@ -245,7 +245,7 @@ if __name__ == '__main__':
     pred_rounds = 1
     seed = 21
     mtp = True
-    datasets = ['0816/genetic']
+    datasets = ['1016/codon', '1016/codrna']
     for d in datasets:
         dataset = 'fed_imp_pc2/{}'.format(d)
         sample_size = 'sample-evenly'
@@ -268,8 +268,8 @@ if __name__ == '__main__':
 
         server_config = copy.deepcopy(server_config_tmpl)
         server_config['server_name'] = 'fedavg_mlp_pytorch_pred'
-        methods = ['fedavg-s', 'fedmechw', 'fedmechw_p', 'central', 'local']  # 'fedmechw'
-        #methods = ['fedavg-s', 'fedmechw', 'fedmechw_p']  # 'fedmechw'
+        #methods = ['fedavg-s', 'fedmechw', 'fedmechw_p', 'central', 'local']  # 'fedmechw'
+        methods = ['fedmechw_new']  # 'fedmechw'
 
         for method in methods:
             main_config['method'] = method
@@ -289,12 +289,12 @@ if __name__ == '__main__':
         main_config['scenario_list'] = r
         main_config['mr'] = mr_strategy
         main_config['mr_list'] = mr
-        main_config["n_rounds"] = 1
+        main_config["n_rounds"] = 3
 
         server_config = copy.deepcopy(server_config_tmpl)
         server_config['server_name'] = 'fedavg_mlp_pytorch_pred'
-        methods = ['fedavg-s', 'fedmechw', 'fedmechw_p', 'central', 'local']  # 'fedmechw'
-        #methods = ['fedavg-s', 'fedmechw', 'fedmechw_p']  # 'fedmechw'
+        #methods = ['fedavg-s', 'fedmechw', 'fedmechw_p', 'central', 'local']  # 'fedmechw'
+        methods = ['fedmechw_new']  # 'fedmechw'
 
         for method in methods:
             main_config['method'] = method

@@ -17,7 +17,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn import metrics
 from imblearn.over_sampling import SMOTE, RandomOverSampler, ADASYN
 
-def run_simulation(configuration, clients, test_data, seed):
+def run_simulation(configuration, clients, test_data, seed, vis = True):
     # Create Imputation Strategy
     imp_strategy = configuration['agg_strategy_imp']['strategy']
     params = configuration['algo_params'][imp_strategy]
@@ -48,7 +48,8 @@ def run_simulation(configuration, clients, test_data, seed):
 
     # return server
     ret00 = server.run()
-    #vis_imp(ret00)
+    if vis:
+        vis_imp(ret00)
     print(ret00['imp_result'])
     #sklearn_evaluation(ret00)
 

@@ -325,16 +325,6 @@ def ms_mechanism_strategy(n_clients, strategy):
 			mechanism = MS_MECHANISM_MAPPING[mech_cats[idx]]
 			group_mechs.append([mechanism for _ in range(group_len)])
 		client_mechs = np.concatenate(group_mechs)
-	# 1: 19
-	elif split_func == 'extreme2':
-		if strategy not in ['mnar_lr', 'mary_lr', 'mary_rl', 'mnar_rl', 'mary_sigmoid_lr', 'mary_sigmoid_rl']:
-			raise ValueError('extreme split only support mnar_lr and mary_lr')
-		group_lens = [int(n_clients * 0.05), int(n_clients * 0.95)]
-		group_mechs = []
-		for idx, group_len in enumerate(group_lens):
-			mechanism = MS_MECHANISM_MAPPING[mech_cats[idx]]
-			group_mechs.append([mechanism for _ in range(group_len)])
-		client_mechs = np.concatenate(group_mechs)
 	# three groups left, left, right
 	elif split_func == 'extreme3':
 		ratio1 = params.get('r1', 0.05)

@@ -288,7 +288,7 @@ class ServerBase:
 			# aggregate client weights
 			if aggregate:
 				aggregated_weight, w = strategy_imp.aggregate(
-					weights, losses, missing_infos, self.client_groups[col_idx], proj_matrix, ms_coefs
+					weights, losses, missing_infos, self.client_groups[col_idx], proj_matrix, ms_coefs, round = server_round	
 				)
 			else:
 				aggregated_weight, w = None, None

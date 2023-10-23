@@ -1,7 +1,7 @@
 import numpy as np
 
 from .fedavg import fedavg, fedavgs, fedavgh, fedavg2, fedavgcross, testavg
-from .fedmech import fedmechclw, fedmechclwcl, fedmechcl2, fedmechw, fedmechcl4
+from .fedmech import fedmechclw, fedmechclwcl, fedmechcl2, fedmechw, fedmechcl4, fedmechw_new, fedmechw_new2
 from .fedwavg import fedwavg, fedwavg2, fedwavg3
 from .fedwavgcl import fedwavgcl
 
@@ -51,7 +51,7 @@ class StrategyImputation:
 		self.params = params
 
 	def aggregate(
-			self, weights, losses, missing_infos, client_groups, project_matrix, ms_coefs, top_k_idx_clients = None):
+			self, weights, losses, missing_infos, client_groups, project_matrix, ms_coefs, top_k_idx_clients = None, round = None):
 
 		w = None
 		if self.strategy == 'local':
@@ -93,6 +93,10 @@ class StrategyImputation:
 			agg_weight, w = fedmechclw(weights, missing_infos, ms_coefs, self.params)
 		elif self.strategy == 'fedmechw':
 			agg_weight, w = fedmechw(weights, missing_infos, ms_coefs, self.params)
+		elif self.strategy == 'fedmechw_new':
+			agg_weight, w = fedmechw_new(weights, missing_infos, ms_coefs, self.params)
+		elif self.strategy == 'fedmechw_new2':
+			agg_weight, w = fedmechw_new2(weights, missing_infos, ms_coefs, self.params, round = round)
 		elif self.strategy == 'fedmechw_p':
 			agg_weight, w = fedmechw(weights, missing_infos, ms_coefs, {
 				'alpha': 0.95, 'beta': 0.05, 'client_thres': 1.0, 'scale_factor': 4
