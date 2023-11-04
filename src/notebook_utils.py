@@ -113,6 +113,9 @@ def simulate_scenario(configuration):
         **data_partition_params, data=train_data.values, n_clients=num_clients, seed=new_seed,
         regression=regression
     )
+    
+    print("sample sizes: ", [item.shape[0] for item in data_partitions])
+
     missing_params = configuration['missing_simulate']
     cols = np.arange(0, train_data.shape[1] - 1)
     scenario = missing_params
@@ -184,16 +187,16 @@ def visualize_ms(clients_ms_datas:list, sort_patterns: bool = False):
         ax.set_title('Client {}'.format(i))
     plt.tight_layout()
 
-def correlation(original_data, centralized_data):
-    original_df = pd.DataFrame(original_data)
-    target_col = original_df.columns[-1]
-    correlation_ret = original_df.corrwith(original_df[target_col], method=correlation_ratio).sort_values(ascending=False)
-    print(correlation_ret)
+# def correlation(original_data, centralized_data):
+#     original_df = pd.DataFrame(original_data)
+#     target_col = original_df.columns[-1]
+#     correlation_ret = original_df.corrwith(original_df[target_col], method=correlation_ratio).sort_values(ascending=False)
+#     print(correlation_ret)
 
-    centralized_df = pd.DataFrame(centralized_data)
-    target_col = centralized_df.columns[-1]
-    correlation_ret = centralized_df.corrwith(original_df[target_col], method=correlation_ratio).sort_values(ascending=False)
-    print(correlation_ret)
+#     centralized_df = pd.DataFrame(centralized_data)
+#     target_col = centralized_df.columns[-1]
+#     correlation_ret = centralized_df.corrwith(original_df[target_col], method=correlation_ratio).sort_values(ascending=False)
+#     print(correlation_ret)
 
 def run_pred(clf_name, X_train, y_train, X_test, y_test):
     accus = []

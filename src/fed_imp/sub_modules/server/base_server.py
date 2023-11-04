@@ -50,6 +50,7 @@ class ServerBase:
 		# imputation parameters
 		self.num_rounds_imp = server_config.get('imp_round', 30)
 		self.imp_model_fit_mode = server_config.get('model_fit_mode', "one_shot")
+		self.froze_ms_coefs_round = server_config.get('froze_ms_coefs_round', 1)
 
 		# group clients
 		self.client_groups = {}
@@ -75,6 +76,8 @@ class ServerBase:
 						data_true=np.concatenate([client.X_train, client.y_train.reshape(-1, 1)], axis=1)
 					)
 				)
+    
+		self.ms_coefs = dict()
 
 	def run(self):
 
@@ -272,18 +275,36 @@ class ServerBase:
 
 		local_coefs, mm_coefs = [], []
 		for col_idx in range(num_cols):
+			
+			if server_round <= self.froze_ms_coefs_round:
+				weights, losses, missing_infos, proj_matrix, ms_coefs, top_k_idx_clients = {}, {}, {}, {}, {}, {}
+				for client_id, client in clients.items():
+					weight, loss, missing_info, projection_matrix, ms_coef = client.fit(
+						fit_task='fit_imputation_model', fit_instruction={'feature_idx': col_idx}
+					)
+					weights[client_id] = weight
+					losses[client_id] = loss
+					missing_infos[client_id] = missing_info
+					proj_matrix[client_id] = projection_matrix
+					ms_coefs[client_id] = ms_coef
+					top_k_idx_clients[client_id] = client.top_k_idx
 
-			weights, losses, missing_infos, proj_matrix, ms_coefs, top_k_idx_clients = {}, {}, {}, {}, {}, {}
-			for client_id, client in clients.items():
-				weight, loss, missing_info, projection_matrix, ms_coef = client.fit(
-					fit_task='fit_imputation_model', fit_instruction={'feature_idx': col_idx}
-				)
-				weights[client_id] = weight
-				losses[client_id] = loss
-				missing_infos[client_id] = missing_info
-				proj_matrix[client_id] = projection_matrix
-				ms_coefs[client_id] = ms_coef
-				top_k_idx_clients[client_id] = client.top_k_idx
+				# persist ms_coefs
+				self.ms_coefs[col_idx] = ms_coefs
+			else:
+				weights, losses, missing_infos, proj_matrix, ms_coefs, top_k_idx_clients = {}, {}, {}, {}, {}, {}
+				for client_id, client in clients.items():
+					weight, loss, missing_info, projection_matrix, ms_coef = client.fit(
+						fit_task='fit_imputation_model', fit_instruction={'feature_idx': col_idx}
+					)
+					weights[client_id] = weight
+					losses[client_id] = loss
+					missing_infos[client_id] = missing_info
+					proj_matrix[client_id] = projection_matrix
+					top_k_idx_clients[client_id] = client.top_k_idx
+
+				# fetch stored ms_coefs
+				ms_coefs = self.ms_coefs[col_idx]
 
 			# aggregate client weights
 			if aggregate:
@@ -292,6 +313,7 @@ class ServerBase:
 				)
 			else:
 				aggregated_weight, w = None, None
+
 
 			# distributed aggregated weights
 			if isinstance(aggregated_weight, list):

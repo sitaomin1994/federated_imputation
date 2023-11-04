@@ -1,0 +1,98 @@
+# @package config_vars
+extra1:
+  # dataset_name
+  - name: dataset_name
+    value: [codon, codrna, heart, mimiciii_mo2, mimiciii_icd, genetic, mimiciii_los]
+    keys:
+      - data
+      - dataset_name
+    save_mode: dir1
+
+  # num_client
+  - name: n_client
+    value: [11]
+    save_mode: dir2
+    keys:
+      - num_clients
+
+  # data partition
+  - name: data_partition
+    value: [sample-unevendirl1]
+    save_mode: dir3
+    keys:
+      - data_partition
+      - strategy
+
+  # missing scenario
+  - name: mm_strategy
+    value:
+      - mnar_lr@sp=extremel1
+    save_mode: dir4
+    keys:
+      - missing_simulate
+      - mm_strategy
+
+  # missing scenario
+  - name: mr_strategy
+    value: [fixed@mr=0.5]
+    save_mode: dir5
+    keys:
+      - missing_simulate
+      - mr_strategy
+
+  # missing scenario
+  - name: server_type
+    value: [fedavg_pytorch]
+    save_mode: none
+    keys:
+      - server_type
+
+  # aggregation strategy
+  - name: agg_strategy
+    value: [central, local, fedavg-s]
+    save_mode:
+    keys:
+      - agg_strategy_imp
+      - strategy
+
+  - name: seed
+    value: [102931466]
+    save_mode:
+    keys:
+      - experiment
+      - seed
+
+  - name: seed2
+    value: [ 50 ]
+    save_mode:
+    keys:
+      - experiment
+      - random_seed
+
+  - name: params
+    value: [false]
+    save_mode:
+    keys:
+      - tune_params
+
+  # n_rounds
+  - name: n_rounds
+    value: [3]
+    save_mode: none
+    keys:
+      - experiment
+      - n_rounds
+
+  - name: np
+    value: [3]
+    save_mode: none
+    keys:
+      - experiment
+      - num_process
+
+  - name: test_size
+    value: [ 0.1 ]
+    save_mode: none
+    keys:
+      - experiment
+      - test_size

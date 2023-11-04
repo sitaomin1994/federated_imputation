@@ -6,6 +6,7 @@ experiment_marker:
 defaults:
   - config_tmpl: imp4
   - config_vars/imp4:
-      - fedmech_exp1
-      - fedmech_exp2
+      - extra_exp1
+      - extra_exp2
+      - extra_exp3
   - _self_

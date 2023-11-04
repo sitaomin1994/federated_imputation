@@ -178,7 +178,7 @@ def fedmechw(weights, missing_infos, ms_coefs, params, sigmoid = False, filter_s
     return final_parameters, w
 
 
-def fedmechw_new(weights, missing_infos, ms_coefs, params, sigmoid = False, filter_sim_mm = False, filter_sim_lm = False):
+def fedmechw_new(weights, missing_infos, ms_coefs, params, sigmoid = False, filter_sim_mm = False, filter_sim_lm = False, round = None):
     '''Three factors Weighted Average'''
 
     #scale_factor = settings['algo_params']['scale_factor']
@@ -193,7 +193,7 @@ def fedmechw_new(weights, missing_infos, ms_coefs, params, sigmoid = False, filt
     client_thres = int(len(weights) * params['client_thres'])
 
     # samples sizes
-    sample_sizes = np.array([v['sample_row_pct'] + 0.0001 for v in missing_infos.values()])
+    sample_sizes = np.array([v['sample_size'] + 1e-4 for v in missing_infos.values()])
     # missing_pct = np.array([(1 - v['missing_cell_pct']) + 0.0001 for v in missing_infos.values()])
 
     ms_coefs = np.array(list(ms_coefs.values()))
@@ -210,6 +210,7 @@ def fedmechw_new(weights, missing_infos, ms_coefs, params, sigmoid = False, filt
         mech_sim_dist = np.where(model_sim_dist > 0.05, mech_sim_dist, 0.001)
 
     final_parameters, w = [], []
+    stats_compl, stats_idx, stats_sampl = [], [], []
     for client_idx in range(len(weights)):
         
         other_clients_idx = [i for i in range(len(weights)) if i != client_idx]
@@ -226,12 +227,15 @@ def fedmechw_new(weights, missing_infos, ms_coefs, params, sigmoid = False, filt
 
         # normalized sample sizes weights - same as simple average
         sample_size_w = (sample_sizes[top_k_idx])
-        sample_size_w = sample_size_w / np.max(sample_size_w)
+        sample_size_w = sample_size_w / np.max(sample_sizes)
 
         # missing pct weights
         # missing_pct_w = (missing_pct[top_k_idx]) ** scale_factor
         # missing_pct_w = missing_pct_w / np.sum(missing_pct_w)
-
+        stats_compl.append(mech_sim_w)
+        stats_idx.append(top_k_idx)
+        stats_sampl.append(sample_size_w)
+        
         final_w = (alpha * (mech_sim_w) + (1 - alpha) * (sample_size_w))**scale_factor #(1 - alpha - beta) * (missing_pct_w))** scale_factor
         # average parameters of others
         other_avg_parameters = np.average(weights[top_k_idx], axis=0, weights=final_w)
@@ -241,7 +245,15 @@ def fedmechw_new(weights, missing_infos, ms_coefs, params, sigmoid = False, filt
         
         final_parameters.append(avg_parameters)
         w.append(final_w/np.sum(final_w))
-
+        
+    # if round == 19:
+    #     print('====================================================')
+    #     for row in range(len(stats_compl)):
+    #         print("idx: {}".format(stats_idx[row]))
+    #         print("cmp: {}".format(stats_compl[row]))
+    #         print("smp: {}".format(stats_sampl[row]))
+    #     print(sample_sizes)
+        
     return final_parameters, w
 
 
@@ -303,7 +315,7 @@ def fedmechw_new2(weights, missing_infos, ms_coefs, params, sigmoid = False, fil
         # missing_pct_w = (missing_pct[top_k_idx]) ** scale_factor
         # missing_pct_w = missing_pct_w / np.sum(missing_pct_w)
         
-        if round >= 20:
+        if round >= 19:
             if mech_sim_w.max() <= mm_thres:
                 alpha = 0
             else:

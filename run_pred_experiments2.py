@@ -245,7 +245,7 @@ if __name__ == '__main__':
     pred_rounds = 1
     seed = 21
     mtp = True
-    datasets = ['1016/codon', '1016/codrna']
+    datasets = ['1102/genetic']
     for d in datasets:
         dataset = 'fed_imp_pc2/{}'.format(d)
         sample_size = 'sample-evenly'

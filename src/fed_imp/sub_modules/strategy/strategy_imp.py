@@ -94,7 +94,7 @@ class StrategyImputation:
 		elif self.strategy == 'fedmechw':
 			agg_weight, w = fedmechw(weights, missing_infos, ms_coefs, self.params)
 		elif self.strategy == 'fedmechw_new':
-			agg_weight, w = fedmechw_new(weights, missing_infos, ms_coefs, self.params)
+			agg_weight, w = fedmechw_new(weights, missing_infos, ms_coefs, self.params, round = round)
 		elif self.strategy == 'fedmechw_new2':
 			agg_weight, w = fedmechw_new2(weights, missing_infos, ms_coefs, self.params, round = round)
 		elif self.strategy == 'fedmechw_p':

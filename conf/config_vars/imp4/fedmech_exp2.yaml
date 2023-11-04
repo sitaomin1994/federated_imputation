@@ -2,7 +2,7 @@
 fedmech2:
   # dataset_name
   - name: dataset_name
-    value: [codon, codrna, heart]
+    value: [mimiciii_mo2, mimiciii_icd, genetic]
     keys:
       - data
       - dataset_name
