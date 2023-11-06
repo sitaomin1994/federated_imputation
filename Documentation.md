@@ -1,0 +1,13 @@
+- codon
+  - 32 300 0.001 0
+- codrna
+  - 32 300 0.001 0
+- heart
+  - 32 128 0.001 0
+- genetic
+  - 32 300 0.001 0
+- mimiciii_mo
+  - 64 300 0.001 0
+- mimiciii_icd
+  - 64 300 0.001 0
+- mimiciii_los
