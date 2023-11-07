@@ -1,13 +1,26 @@
-- codon
-  - 32 300 0.001 0
-- codrna
-  - 32 300 0.001 0
-- heart
-  - 32 128 0.001 0
-- genetic
-  - 32 300 0.001 0
-- mimiciii_mo
-  - 64 300 0.001 0
-- mimiciii_icd
-  - 64 300 0.001 0
-- mimiciii_los
+- FedPred Params
+  - codon
+    - 32 300 0.001 0 
+  - codrna
+    - 32 300 0.001 0
+  - heart
+    - 32 128 0.001 0
+  - genetic
+    - 32 300 0.001 0
+  - mimiciii_mo
+    - 64 300 0.001 0
+  - mimiciii_icd
+    - 64 300 0.001 0
+  - mimiciii_los
+
+- Subcase Params (alpha)
+  - CodRNA
+    - S1l 0.95 S1r 0.7 S2 0.8
+  - Heart
+    - S1l 0.8 S1r 0.8 S2 0.9
+  - Genetic
+    - S1l 0.8 S1r 0.9 S2 
+  - Mimiciii_mo
+  - Mimiciii_icd
+  - Codon
+  - Mimiciii_los

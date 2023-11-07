@@ -141,20 +141,23 @@ def data_partition(strategy, params, data, n_clients, seed=201030, regression=Fa
         return ret
     elif strategy == 'sample-uneven10':
         sample_seed = 211
+        random.seed(sample_seed)
         # cluster 1
         n1 = random.randint(100, 500)
         n2 = random.randint(100, 500)
         n3 = random.randint(1000, 3000)
         n4 = random.randint(1000, 3000)
-        n5 = data.shape[0] - n1 - n2 - n3 - n4
+        n5 = data.shape[0]//2 - n1 - n2 - n3 - n4
         sample_fracs_sub1 = [n1, n2, n3, n4, n5]
 
         # cluster 2
+        sample_seed = 212
+        random.seed(sample_seed)
         n1 = random.randint(100, 500)
         n2 = random.randint(100, 500)
         n3 = random.randint(1000, 3000)
         n4 = random.randint(1000, 3000)
-        n5 = data.shape[0] - n1 - n2 - n3 - n4
+        n5 = data.shape[0]//2 - n1 - n2 - n3 - n4
 
         sample_fracs_sub2 = [n1, n2, n3, n4, n5]
         sample_fracs = sample_fracs_sub1 + sample_fracs_sub2
