@@ -16,11 +16,13 @@
 - Subcase Params (alpha)
   - CodRNA
     - S1l 0.95 S1r 0.7 S2 0.8
+  - Codon
+    - S1l 0.7 S1r 0.8 S2 0.8-1.0
   - Heart
     - S1l 0.8 S1r 0.8 S2 0.9
   - Genetic
     - S1l 0.8 S1r 0.9 S2 
   - Mimiciii_mo
+    - S1l 0.9 S1r 0.9 
   - Mimiciii_icd
-  - Codon
   - Mimiciii_los
