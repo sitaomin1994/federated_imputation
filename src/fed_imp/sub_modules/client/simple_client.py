@@ -72,17 +72,9 @@ class SimpleClient:
 		################################################################################################################
 		# split training and validation data
 		################################################################################################################
-		if self.regression:
-			X_train_filled, X_val_filled, y_train, y_val = train_test_split(
-				self.X_train_filled, self.y_train_filled, test_size=0.2, random_state=self.seed,
-			)
-		else:
-			X_train_filled, X_val_filled, y_train, y_val = train_test_split(
-				self.X_train_filled, self.y_train_filled, test_size=0.2, random_state=self.seed, stratify=self.y_train_filled
-			)
 
-		self.train_data = np.concatenate((X_train_filled, y_train.reshape(-1, 1)), axis=1)
-		self.val_data = np.concatenate((X_val_filled, y_val.reshape(-1, 1)), axis=1)
+		self.train_data = np.concatenate((self.X_train_filled, self.y_train_filled.reshape(-1, 1)), axis=1)
+		self.val_data = None
 		self.local_pred_dataset = None
 		self.val_data_loader = None
 		self.train_dataloader = None
@@ -141,7 +133,7 @@ class SimpleClient:
 	def pred_data_setup(self, batch_size):
 
 		self.local_pred_dataset = construct_tensor_dataset(self.train_data[:, :-1], self.train_data[:, -1])
-		self.local_pred_dataset_val = construct_tensor_dataset(self.val_data[:, :-1], self.val_data[:, -1])
+		self.local_pred_dataset_val = None
 		self.train_dataloader = DataLoader(self.local_pred_dataset, batch_size=batch_size, shuffle=True)
-		self.val_data_loader = DataLoader(self.local_pred_dataset_val, batch_size=batch_size, shuffle=False)
+		self.val_data_loader = None
 

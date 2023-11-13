@@ -76,15 +76,15 @@ class PredServerFedAvgPytorch:
             validate_datas.append(client.val_data)
             train_datas.append(client.train_data)
 
-        self.validate_data = np.concatenate(validate_datas, axis=0)
+        self.validate_data = None
         self.train_data = np.concatenate(train_datas, axis=0)
 
         self.batch_size = self.pred_training_params['batch_size']
         self.sample_pct = self.pred_training_params['sample_pct']
         self.test_dataset = construct_tensor_dataset(self.test_data[:, :-1], self.test_data[:, -1])
         self.test_dataloader = DataLoader(self.test_dataset, batch_size=self.batch_size, shuffle=False)
-        self.validate_dataset = construct_tensor_dataset(self.validate_data[:, :-1], self.validate_data[:, -1])
-        self.val_dataloader = DataLoader(self.validate_dataset, batch_size=self.batch_size, shuffle=False)
+        self.validate_dataset = None
+        self.val_dataloader = None
 
     def prediction(self):
         ###############################################################################################
@@ -103,13 +103,13 @@ class PredServerFedAvgPytorch:
         learning_rate = self.pred_training_params['learning_rate']
         weight_decay = self.pred_training_params['weight_decay']
         local_epoch = self.pred_training_params['local_epoch']
+        print(self.pred_training_params)
 
         best_accus, best_f1s, best_rocs, best_prcs, best_mses, best_r2s, histories = [], [], [], [], [], [], []
 
         for s in seeds:
 
             set_seed(s)
-
             if self.base_model == 'twonn':
                 pred_model = TwoNN(
                     in_features=self.train_data.shape[1] - 1, num_classes=len(np.unique(self.train_data[:, -1])),
@@ -137,7 +137,7 @@ class PredServerFedAvgPytorch:
 
                 for current_round in range(1, train_epochs + 1):
 
-                    train_loss, test_loss, test_mse, test_r2, val_loss, val_mse, val_r2 = self._run_round_prediction(
+                    train_loss, test_loss, test_mse, test_r2 = self._run_round_prediction(
                         pred_model, server_round=current_round, lr=learning_rate, wd=weight_decay,
                         local_epoch=local_epoch, regression=True
                     )
@@ -150,8 +150,8 @@ class PredServerFedAvgPytorch:
 
                     if current_round % 100 == 0:
                         logger.info(
-                            'Round: {}, test_mse: {:.4f}, test_r2: {:.4f}, val_mse: {:.4f}, val_r2: {:.4f}'.format(
-                                current_round, test_mse, test_r2, val_mse, val_r2
+                            'Round: {}, test_mse: {:.4f}, test_r2: {:.4f}'.format(
+                                current_round, test_mse, test_r2
                             )
                         )
 
@@ -184,8 +184,7 @@ class PredServerFedAvgPytorch:
 
                 for current_round in range(1, train_epochs + 1):
 
-                    (train_loss, test_loss, test_accu, test_f1, test_roc_auc, test_prc_auc, val_loss, val_accu, val_f1,
-                     val_roc_auc, val_prc_auc) = self._run_round_prediction(
+                    (train_loss, test_loss, test_accu, test_f1, test_roc_auc, test_prc_auc) = self._run_round_prediction(
                         pred_model, server_round=current_round, lr=learning_rate, wd=weight_decay,
                         local_epoch=local_epoch
                     )
@@ -193,16 +192,14 @@ class PredServerFedAvgPytorch:
                     clients_prediction_history.append(
                         {
                             'test_loss': test_loss, 'test_accu': test_accu, 'test_f1': test_f1, 'test_roc': test_roc_auc,
-                            'test_prc': test_prc_auc, 'val_prc': val_prc_auc,
-                            'val_loss': val_loss, 'val_accu': val_accu, 'val_f1': val_f1, 'val_roc': val_roc_auc
+                            'test_prc': test_prc_auc
                         }
                     )
 
                     if current_round % 100 == 0:
                         logger.info(
-                            'Round: {}, test_accu: {:.4f}, test_f1: {:.4f}, test_roc: {:.4f},  test_prc: {:.4f},'
-                            'val_loss: {:.4f}, val_accu: {:.4f}, val_f1: {:.4f}'.format(
-                                current_round, test_accu, test_f1, test_roc_auc, test_prc_auc, val_loss, val_accu, val_f1
+                            'Round: {}, test_accu: {:.4f}, test_f1: {:.4f}, test_roc: {:.4f},  test_prc: {:.4f}'.format(
+                                current_round, test_accu, test_f1, test_roc_auc, test_prc_auc,
                             )
                         )
 
@@ -310,22 +307,17 @@ class PredServerFedAvgPytorch:
 
         # evaluation
         if regression:
-            val_loss, val_mse, val_r2 = self.evaluate_pred_model_reg(pred_model, validate=True)
             test_loss, test_mse, test_r2 = self.evaluate_pred_model_reg(pred_model, validate=False)
 
             return (
-                np.array(train_losses).mean(),
-                test_loss, test_mse, test_r2, val_loss, val_mse, val_r2,
+                np.array(train_losses).mean(), test_loss, test_mse, test_r2,
             )
 
         else:
-            val_loss, val_acc, val_f1, val_roc, val_prc_auc = self.evaluate_pred_model(pred_model, validate=True)
             test_loss, test_acc, test_f1, test_roc, test_prc_auc = self.evaluate_pred_model(pred_model, validate=False)
 
             return (
-                np.array(train_losses).mean(),
-                test_loss, test_acc, test_f1, test_roc,test_prc_auc,
-                val_loss, val_acc, val_f1, val_roc, val_prc_auc
+                np.array(train_losses).mean(), test_loss, test_acc, test_f1, test_roc,test_prc_auc,
             )
 
 
@@ -348,12 +340,8 @@ class PredServerFedAvgPytorch:
         pred_model.eval()
         pred_model.to(DEVICE)
 
-        if validate:
-            test_dataloader = self.val_dataloader
-            X_test, y_test = self.validate_data[:, :-1], self.validate_data[:, -1]
-        else:
-            X_test, y_test = self.test_data[:, :-1], self.test_data[:, -1]
-            test_dataloader = self.test_dataloader
+        X_test, y_test = self.test_data[:, :-1], self.test_data[:, -1]
+        test_dataloader = self.test_dataloader
 
         with torch.no_grad():
             test_loss, counter = 0, 0
@@ -422,7 +410,6 @@ class PredServerFedAvgPytorch:
         pred_model.to(DEVICE)
         test_epoch_loss = test_loss / counter
         outputs = pred_model(torch.FloatTensor(X_test).to(DEVICE))
-
 
         test_mse = mean_squared_error(y_test, outputs.detach().to('cpu').numpy())
         test_r2 = r2_score(y_test, outputs.detach().to('cpu').numpy())

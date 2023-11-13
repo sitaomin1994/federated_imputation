@@ -25,4 +25,6 @@
   - Mimiciii_mo
     - S1l 0.9 S1r 0.9 
   - Mimiciii_icd
+    - S1l 0.9 S1r 0.9 S2 0.8 - 1.0
   - Mimiciii_los
+    - S1l 0.9 S1r 0.8 S2 0.8 - 1.0
