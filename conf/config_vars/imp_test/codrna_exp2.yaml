@@ -1,8 +1,8 @@
 # @package config_vars
-genetic2:
+codrna2:
   # dataset_name
   - name: dataset_name
-    value: [genetic]
+    value: [codrna]
     keys:
       - data
       - dataset_name
@@ -49,7 +49,7 @@ genetic2:
 
   # aggregation strategy
   - name: agg_strategy
-    value: [central, local, fedavg-s, fedmechw_new]
+    value: [fedmechw_new]
     save_mode:
     keys:
       - agg_strategy_imp

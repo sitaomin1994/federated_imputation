@@ -1,8 +1,8 @@
 # @package config_vars
-genetic2:
+codrna1:
   # dataset_name
   - name: dataset_name
-    value: [genetic]
+    value: [codrna]
     keys:
       - data
       - dataset_name
@@ -17,7 +17,7 @@ genetic2:
 
   # data partition
   - name: data_partition
-    value: [sample-unevenr1-1000]
+    value: [sample-unevenl1-1000]
     save_mode: dir3
     keys:
       - data_partition
@@ -26,7 +26,7 @@ genetic2:
   # missing scenario
   - name: mm_strategy
     value:
-      - mnar_lr@sp=extremer1
+      - mnar_lr@sp=extremel1
     save_mode: dir4
     keys:
       - missing_simulate
@@ -49,7 +49,7 @@ genetic2:
 
   # aggregation strategy
   - name: agg_strategy
-    value: [central, local, fedavg-s, fedmechw_new]
+    value: [fedmechw_new-a=0.95_g=0.0]
     save_mode:
     keys:
       - agg_strategy_imp

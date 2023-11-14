@@ -49,7 +49,7 @@ codon1:
 
   # aggregation strategy
   - name: agg_strategy
-    value: [central, local, fedavg-s, fedmechw]
+    value: [central, local, fedavg-s, fedmechw_new]
     save_mode:
     keys:
       - agg_strategy_imp

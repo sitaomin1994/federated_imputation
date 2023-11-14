@@ -83,7 +83,7 @@ save_state: true
 algo_params:
   central: {}
   local: {}
-  fedavg-s: {}
+  fedavg: {}
   fedwavg:
     alpha: 0.9
   fedmechw:

@@ -67,7 +67,8 @@ def main_func(
 		# Create Imputation Strategy
 		if param is None:
 			imp_strategy = configuration['agg_strategy_imp']['strategy']
-			params = configuration['algo_params'][imp_strategy]
+			strategy_name = imp_strategy.split('-')[0]
+			params = configuration['algo_params'][strategy_name]
 		else:
 			imp_strategy = configuration['agg_strategy_imp']['strategy']
 			params = param
