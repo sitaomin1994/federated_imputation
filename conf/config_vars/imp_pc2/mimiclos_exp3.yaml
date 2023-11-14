@@ -1,8 +1,8 @@
 # @package config_vars
-mimicmo2:
+mimiclos3:
   # dataset_name
   - name: dataset_name
-    value: [mimiciii_mo2]
+    value: [mimiciii_los]
     keys:
       - data
       - dataset_name

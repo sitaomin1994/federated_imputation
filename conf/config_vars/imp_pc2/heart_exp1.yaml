@@ -1,8 +1,8 @@
 # @package config_vars
-mimiclos2:
+heart1:
   # dataset_name
   - name: dataset_name
-    value: [mimiciii_los]
+    value: [heart]
     keys:
       - data
       - dataset_name
@@ -10,14 +10,14 @@ mimiclos2:
 
   # num_client
   - name: n_client
-    value: [10]
+    value: [3, 5, 7, 9, 11]
     save_mode: dir2
     keys:
       - num_clients
 
   # data partition
   - name: data_partition
-    value: [sample-evenly]
+    value: [sample-unevenl1-1000]
     save_mode: dir3
     keys:
       - data_partition
@@ -26,13 +26,7 @@ mimiclos2:
   # missing scenario
   - name: mm_strategy
     value:
-      - mnar_lr@sp=extreme_r=0.0    # 0: 10
-      - mnar_lr@sp=extreme_r=0.1    # 1: 9
-      - mnar_lr@sp=extreme_r=0.3    # 3: 7
-      - mnar_lr@sp=extreme_r=0.5    # 5: 5
-      - mnar_lr@sp=extreme_r=0.7    # 7: 3
-      - mnar_lr@sp=extreme_r=0.9    # 7: 3
-      - mnar_lr@sp=extreme_r=1.0    # 10: 0
+      - mnar_lr@sp=extremel1
     save_mode: dir4
     keys:
       - missing_simulate

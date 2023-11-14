@@ -1,8 +1,8 @@
 # @package config_vars
-diabetic2:
+heart3:
   # dataset_name
   - name: dataset_name
-    value: [diabetic, diabetic_balanced]
+    value: [heart]
     keys:
       - data
       - dataset_name

@@ -1,8 +1,8 @@
 # @package config_vars
-fedmech2:
+codon2:
   # dataset_name
   - name: dataset_name
-    value: [mimiciii_mo2, mimiciii_icd, genetic]
+    value: [codon]
     keys:
       - data
       - dataset_name
@@ -10,14 +10,14 @@ fedmech2:
 
   # num_client
   - name: n_client
-    value: [10]
+    value: [3, 5, 7, 9, 11]
     save_mode: dir2
     keys:
       - num_clients
 
   # data partition
   - name: data_partition
-    value: [sample-evenly]
+    value: [sample-unevenr1-600]
     save_mode: dir3
     keys:
       - data_partition
@@ -26,13 +26,7 @@ fedmech2:
   # missing scenario
   - name: mm_strategy
     value:
-      - mnar_lr@sp=extreme_r=0.0    # 0: 10
-      - mnar_lr@sp=extreme_r=0.1    # 1: 9
-      - mnar_lr@sp=extreme_r=0.3    # 3: 7
-      - mnar_lr@sp=extreme_r=0.5    # 5: 5
-      - mnar_lr@sp=extreme_r=0.7    # 7: 3
-      - mnar_lr@sp=extreme_r=0.9    # 7: 3
-      - mnar_lr@sp=extreme_r=1.0    # 10: 0
+      - mnar_lr@sp=extremer1
     save_mode: dir4
     keys:
       - missing_simulate
@@ -55,7 +49,7 @@ fedmech2:
 
   # aggregation strategy
   - name: agg_strategy
-    value: [fedmechw_new]
+    value: [central, local, fedavg-s, fedmechw]
     save_mode:
     keys:
       - agg_strategy_imp

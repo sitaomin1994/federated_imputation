@@ -33,8 +33,9 @@ def data_partition(strategy, params, data, n_clients, seed=201030, regression=Fa
                     )
                 ret.append(np.concatenate([X_test, y_test.reshape(-1, 1)], axis=1).copy())
         return ret
-    elif strategy == 'sample-unevenl1':
-        sample_fracs = [0.5] + [1 / (n_clients - 1) * 0.5 for _ in range(n_clients - 1)]
+    elif strategy == 'sample-unevenl1-1000':
+        N = data.shape[0]
+        sample_fracs = [0.5] + [1000/N for _ in range(n_clients - 1)]
         ret = []
         for idx, sample_frac in enumerate(sample_fracs):
             new_seed = seed + idx * seed + 990983
@@ -54,8 +55,53 @@ def data_partition(strategy, params, data, n_clients, seed=201030, regression=Fa
                     )
                 ret.append(np.concatenate([X_test, y_test.reshape(-1, 1)], axis=1).copy())
         return ret
-    elif strategy == 'sample-unevenr1':
-        sample_fracs = [1 / (n_clients - 1) * 0.5 for _ in range(n_clients - 1)] + [0.5]
+    elif strategy == 'sample-unevenr1-1000':
+        N = data.shape[0]
+        sample_fracs = [1000/N for _ in range(n_clients - 1)] + [0.5]
+        ret = []
+        for idx, sample_frac in enumerate(sample_fracs):
+            new_seed = seed + idx * seed + 990983
+            if sample_frac == 1.0:
+                ret.append(data.copy())
+            else:
+                # new_seed = seed
+                if regression:
+                    _, X_test, _, y_test = train_test_split(
+                        data[:, :-1], data[:, -1], test_size=sample_frac,
+                        random_state=(new_seed) % (2 ** 32)
+                    )
+                else:
+                    _, X_test, _, y_test = train_test_split(
+                        data[:, :-1], data[:, -1], test_size=sample_frac,
+                        random_state=(new_seed) % (2 ** 32), stratify=data[:, -1]
+                    )
+                ret.append(np.concatenate([X_test, y_test.reshape(-1, 1)], axis=1).copy())
+        return ret
+    elif strategy == 'sample-unevenl1-600':
+        N = data.shape[0]
+        sample_fracs = [0.5] + [600/N for _ in range(n_clients - 1)]
+        ret = []
+        for idx, sample_frac in enumerate(sample_fracs):
+            new_seed = seed + idx * seed + 990983
+            if sample_frac == 1.0:
+                ret.append(data.copy())
+            else:
+                # new_seed = seed
+                if regression:
+                    _, X_test, _, y_test = train_test_split(
+                        data[:, :-1], data[:, -1], test_size=sample_frac,
+                        random_state=(new_seed) % (2 ** 32)
+                    )
+                else:
+                    _, X_test, _, y_test = train_test_split(
+                        data[:, :-1], data[:, -1], test_size=sample_frac,
+                        random_state=(new_seed) % (2 ** 32), stratify=data[:, -1]
+                    )
+                ret.append(np.concatenate([X_test, y_test.reshape(-1, 1)], axis=1).copy())
+        return ret
+    elif strategy == 'sample-unevenr1-600':
+        N = data.shape[0]
+        sample_fracs = [600/N for _ in range(n_clients - 1)] + [0.5]
         ret = []
         for idx, sample_frac in enumerate(sample_fracs):
             new_seed = seed + idx * seed + 990983

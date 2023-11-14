@@ -1,8 +1,8 @@
 # @package config_vars
-cardio2:
+codrna3:
   # dataset_name
   - name: dataset_name
-    value: [cardio]
+    value: [codrna]
     keys:
       - data
       - dataset_name
@@ -31,7 +31,6 @@ cardio2:
       - mnar_lr@sp=extreme_r=0.3    # 3: 7
       - mnar_lr@sp=extreme_r=0.5    # 5: 5
       - mnar_lr@sp=extreme_r=0.7    # 7: 3
-      - mnar_lr@sp=extreme_r=0.9    # 9: 1
       - mnar_lr@sp=extreme_r=1.0    # 10: 0
     save_mode: dir4
     keys:

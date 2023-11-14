@@ -1,8 +1,8 @@
 # @package config_vars
-heart1:
+codrna1:
   # dataset_name
   - name: dataset_name
-    value: [heart]
+    value: [codrna]
     keys:
       - data
       - dataset_name
@@ -10,14 +10,14 @@ heart1:
 
   # num_client
   - name: n_client
-    value: [3, 5, 7, 9, 11, 15]
+    value: [3, 5, 7, 9, 11]
     save_mode: dir2
     keys:
       - num_clients
 
   # data partition
   - name: data_partition
-    value: [sample-evenly]
+    value: [sample-unevenl1-1000]
     save_mode: dir3
     keys:
       - data_partition
@@ -27,7 +27,6 @@ heart1:
   - name: mm_strategy
     value:
       - mnar_lr@sp=extremel1
-      - mnar_lr@sp=extremer1
     save_mode: dir4
     keys:
       - missing_simulate

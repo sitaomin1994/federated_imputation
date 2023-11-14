@@ -7,6 +7,7 @@
       "missing_evaluation_experiment"
     ]
   },
+  "data_dir": "data",
   "experiment_config_dir": "experiment_configs",
   "experiment_result_dir": "results",
   "processed_result_dir": "processed_results",
