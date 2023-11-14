@@ -7,6 +7,7 @@ from src.fed_imp.sub_modules.dataloader import construct_tensor_dataset
 from imblearn.over_sampling import SMOTE, RandomOverSampler
 from imblearn.combine import SMOTETomek, SMOTEENN
 from imblearn.under_sampling import RandomUnderSampler
+import random
 
 
 class SimpleClient:
@@ -134,6 +135,11 @@ class SimpleClient:
 
 		self.local_pred_dataset = construct_tensor_dataset(self.train_data[:, :-1], self.train_data[:, -1])
 		self.local_pred_dataset_val = None
-		self.train_dataloader = DataLoader(self.local_pred_dataset, batch_size=batch_size, shuffle=True)
+
+		g = torch.Generator()
+		g.manual_seed(self.seed)
+
+		self.train_dataloader = DataLoader(
+			self.local_pred_dataset, batch_size=batch_size, shuffle=True, generator=g)
 		self.val_data_loader = None
 

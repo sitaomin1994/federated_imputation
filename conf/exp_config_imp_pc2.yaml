@@ -6,5 +6,5 @@ experiment_marker:
 defaults:
   - config_tmpl: imp4
   - config_vars/imp4:
-      - extra_exp2
+      - extra_exp1
   - _self_

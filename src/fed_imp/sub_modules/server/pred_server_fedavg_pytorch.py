@@ -82,7 +82,10 @@ class PredServerFedAvgPytorch:
         self.batch_size = self.pred_training_params['batch_size']
         self.sample_pct = self.pred_training_params['sample_pct']
         self.test_dataset = construct_tensor_dataset(self.test_data[:, :-1], self.test_data[:, -1])
-        self.test_dataloader = DataLoader(self.test_dataset, batch_size=self.batch_size, shuffle=False)
+
+        self.test_dataloader = DataLoader(
+            self.test_dataset, batch_size=self.batch_size, shuffle=False
+        )
         self.validate_dataset = None
         self.val_dataloader = None
 

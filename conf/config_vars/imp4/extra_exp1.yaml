@@ -2,7 +2,7 @@
 extra1:
   # dataset_name
   - name: dataset_name
-    value: [codon]
+    value: [codrna]
     keys:
       - data
       - dataset_name

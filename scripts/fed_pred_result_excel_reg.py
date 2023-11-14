@@ -78,7 +78,7 @@ import sys
 
 import os
 
-dir_path = './results/raw_results/fed_imp_pc2_pred_fed/0816/genetic/'
+dir_path = './results/raw_results/fed_imp_pc2_pred_fed/1104/mimiciii_los/'
 print(dir_path)
 all_dirs, all_files = [], []
 for root, dirs, files in os.walk(dir_path):
@@ -105,7 +105,7 @@ for file in filtered_files:
         file_record.extend(file.split('\\'))
         # file_record.extend(list(data['results']['avg_imp_final'].values())[0:3])
         # file_record.extend([data['results']['mse_mean'], data['results']['r2_mean']])
-        file_record.extend([data['results']['accu_mean']*100, data['results']['f1_mean']*100, data['results']['roc_mean']*100, data['results']['prc_mean']*100 if 'prc_mean' in data['results'] else None])
+        file_record.extend([data['results']['mse_mean'], data['results']['r2_mean']])
         datas.append(file_record)
 
 print(len(datas))
@@ -182,7 +182,7 @@ df3.sort_values([4, 0], inplace=True)
 
 # columns = ['n_clients', 'sample_size', 'mechanism', 'mr', 'method', 'mse', 'r2']
 
-columns = ['n_clients', 'sample_size', 'mechanism', 'mr', 'method', 'accu', 'f1', 'roc', 'prc']
+columns = ['n_clients', 'sample_size', 'mechanism', 'mr', 'method', 'mse', 'r2']
 
 df1.columns = columns
 df2.columns = columns
