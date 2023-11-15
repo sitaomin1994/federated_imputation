@@ -1,8 +1,8 @@
 # @package config_vars
-susy:
+svm:
   # dataset_name
   - name: dataset_name
-    value: [susy_g]
+    value: [svm_g]
     keys:
       - data
       - dataset_name
@@ -17,7 +17,7 @@ susy:
 
   # data partition
   - name: data_partition
-    value: [sample@p=500, sample@1000, sample@2000]
+    value: [sample@p=500, sample@1000]
     save_mode: dir3
     keys:
       - data_partition
@@ -40,7 +40,7 @@ susy:
 
   # missing scenario
   - name: mr_strategy
-    value: [fixed@mr=0.1, fixed@mr=0.3, fixed@mr=0.5, fixed@mr=0.7]
+    value: [compl@mr=0.1, compl@mr=0.3, compl@mr=0.5, compl@mr=0.7, compl@mr=0.9]
     save_mode: dir5
     keys:
       - missing_simulate
