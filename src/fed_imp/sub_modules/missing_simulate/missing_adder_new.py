@@ -11,6 +11,10 @@ def add_missing(train_data_list, scenario, cols, seed=201030):
 		n_clients=len(train_data_list), cols=cols, mr_strategy=mr_strategy, mf_strategy=mf_strategy,
 		mm_strategy=mm_strategy, seed=seed
 	)
+
+	format_ret = [i['missing_mechanism'] + '@' + str(i['missing_ratio']) for i in ret]
+	print(format_ret)
+
 	train_ms_list = []
 	for i in range(len(train_data_list)):
 		data = train_data_list[i]

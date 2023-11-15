@@ -82,7 +82,7 @@ class FileBackend:
         # save data
         if "results" in experiment_data:
             if "data" in experiment_data["results"]:
-                data_dir = dir_path + '/' + file_name.split('.')[0]
+                data_dir = dir_path + '/' + '.'.join(file_name.split('.')[:-1])
                 Path(data_dir).mkdir(parents=True, exist_ok=True)
                 for key, value in experiment_data["results"]["data"].items():
                     if isinstance(value, np.ndarray):

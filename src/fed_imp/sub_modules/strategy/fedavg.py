@@ -2,7 +2,7 @@ import numpy as np
 from loguru import logger
 from scipy.linalg import solve, LinAlgError
 
-def testavg(weights, missing_infos, frac = 0.05):
+def testavg(weights, missing_infos, frac = 0.5):
 	clients_weights = np.array(list(weights.values()))
 	n_clients = clients_weights.shape[0]
 	cluster1_idx = list(range(0, int(n_clients*frac)))

@@ -15,8 +15,9 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn import metrics
+from imblearn.over_sampling import SMOTE, RandomOverSampler, ADASYN
 
-def run_simulation(configuration, clients, test_data, seed):
+def run_simulation(configuration, clients, test_data, seed, vis = True):
     # Create Imputation Strategy
     imp_strategy = configuration['agg_strategy_imp']['strategy']
     params = configuration['algo_params'][imp_strategy]
@@ -47,7 +48,8 @@ def run_simulation(configuration, clients, test_data, seed):
 
     # return server
     ret00 = server.run()
-    vis_imp(ret00)
+    if vis:
+        vis_imp(ret00)
     print(ret00['imp_result'])
     #sklearn_evaluation(ret00)
 
@@ -77,6 +79,32 @@ def simulate_scenario(configuration):
 
     # n rounds average
     train_data, test_data = n_rounds_data[0]
+    print(train_data.shape, test_data.shape)
+
+    imbalance_strategy = configuration.get('handle_imbalance', None)
+    if imbalance_strategy == 'oversampling':
+        columns = train_data.columns
+        X_train = train_data.iloc[:, :-1].values
+        y_train = train_data.iloc[:, -1].values
+        ros = RandomOverSampler(random_state=seed)
+        X_train, y_train = ros.fit_resample(X_train, y_train)
+        train_data = pd.DataFrame(np.concatenate([X_train, y_train.reshape(-1, 1)], axis=1), columns=columns)
+    elif imbalance_strategy == 'smote':
+        columns = train_data.columns
+        X_train = train_data.iloc[:, :-1].values
+        y_train = train_data.iloc[:, -1].values
+        smote = SMOTE(random_state=seed, n_jobs=-1)
+        X_train, y_train = smote.fit_resample(X_train, y_train)
+        train_data = pd.DataFrame(np.concatenate([X_train, y_train.reshape(-1, 1)], axis=1), columns=columns)
+    elif imbalance_strategy == 'adasyn':
+        columns = train_data.columns
+        X_train = train_data.iloc[:, :-1].values
+        y_train = train_data.iloc[:, -1].values
+        ada = ADASYN(random_state=seed, n_jobs=-1)
+        X_train, y_train = ada.fit_resample(X_train, y_train)
+        train_data = pd.DataFrame(np.concatenate([X_train, y_train.reshape(-1, 1)], axis=1), columns=columns)
+
+    print(train_data.shape)
 
     new_seed = (seed + 10087 * 0) % (2 ^ 23)
     regression = data_config['task_type'] == 'regression'
@@ -85,6 +113,9 @@ def simulate_scenario(configuration):
         **data_partition_params, data=train_data.values, n_clients=num_clients, seed=new_seed,
         regression=regression
     )
+    
+    print("sample sizes: ", [item.shape[0] for item in data_partitions])
+
     missing_params = configuration['missing_simulate']
     cols = np.arange(0, train_data.shape[1] - 1)
     scenario = missing_params
@@ -97,31 +128,34 @@ def simulate_scenario(configuration):
         num_clients, data_partitions, data_ms_clients2, test_data.values, data_config,
         configuration['imputation'], seed=new_seed
     )
-    visualize_ms(data_ms_clients2)
+    #visualize_ms(data_ms_clients2)
 
     return clients, test_data, new_seed
 
-def NN_evaluation(ret0, type='centralized', n_rounds = 500, server_config_tmpl = None):
+def NN_evaluation(ret0, type='centralized', n_rounds = 500, server_config_tmpl = None, imbalance = None):
     clients_ = {}
-    data_imp = ret0['data']['imputed_data']
-    missing_mask = ret0['data']['missing_mask']
-    data_true = ret0['data']['origin_data']
-    n_clients = ret0['data']['origin_data'].shape[0]
+    split_indices = ret0['data']['split_indices'].tolist()
+    data_imp = np.split(ret0['data']['imputed_data'], split_indices)
+    missing_mask = np.split(ret0['data']['missing_mask'], split_indices)
+    data_true = np.split(ret0['data']['origin_data'], split_indices)
+    n_clients = len(data_imp)
     test_data = ret0['data']['test_data']
+    split_indices = ret0['data']['split_indices']
     for client_id in range(n_clients):
         clients_[client_id] = SimpleClient(
             client_id=client_id,
             data_imp=data_imp[client_id],
             missing_mask=missing_mask[client_id],
             data_true=data_true[client_id],
-            data_test=test_data
+            data_test=test_data,
+            imbalance=imbalance,
         )
 
     pred_config = server_config_tmpl.copy()
     if type == 'centralized':
         server_name = 'central_mlp_pytorch_pred'
     elif type == 'fedavg':
-        server_name = 'fedavg_mlp_pytorch_pred_local'
+        server_name = 'fedavg_mlp_pytorch_pred'
     else:
         raise ValueError('type should be centralized or fedavg')
     server_pred_config = pred_config['server_pred_config']
@@ -133,7 +167,7 @@ def NN_evaluation(ret0, type='centralized', n_rounds = 500, server_config_tmpl =
         )
 
     pred_ret2 = server_.prediction()
-    print(pred_ret2["accu_mean"])
+    print(pred_ret2["accu_mean"], pred_ret2['f1_mean'], pred_ret2['roc_auc_mean'], pred_ret2['prc_auc_mean'])
     return pred_ret2
 
 def visualize_ms(clients_ms_datas:list, sort_patterns: bool = False):
@@ -153,16 +187,16 @@ def visualize_ms(clients_ms_datas:list, sort_patterns: bool = False):
         ax.set_title('Client {}'.format(i))
     plt.tight_layout()
 
-def correlation(original_data, centralized_data):
-    original_df = pd.DataFrame(original_data)
-    target_col = original_df.columns[-1]
-    correlation_ret = original_df.corrwith(original_df[target_col], method=correlation_ratio).sort_values(ascending=False)
-    print(correlation_ret)
+# def correlation(original_data, centralized_data):
+#     original_df = pd.DataFrame(original_data)
+#     target_col = original_df.columns[-1]
+#     correlation_ret = original_df.corrwith(original_df[target_col], method=correlation_ratio).sort_values(ascending=False)
+#     print(correlation_ret)
 
-    centralized_df = pd.DataFrame(centralized_data)
-    target_col = centralized_df.columns[-1]
-    correlation_ret = centralized_df.corrwith(original_df[target_col], method=correlation_ratio).sort_values(ascending=False)
-    print(correlation_ret)
+#     centralized_df = pd.DataFrame(centralized_data)
+#     target_col = centralized_df.columns[-1]
+#     correlation_ret = centralized_df.corrwith(original_df[target_col], method=correlation_ratio).sort_values(ascending=False)
+#     print(correlation_ret)
 
 def run_pred(clf_name, X_train, y_train, X_test, y_test):
     accus = []
@@ -217,4 +251,10 @@ def vis_imp(ret):
             y = [ret['client_imp_history'][i][2]['metrics'][client_id][metric] for i in x]
             ax[idx].plot(x, y, label=client_id)
             ax[idx].set_title(metric)
+    
+    if len(client_ids) < 20:
+        ax[-1].legend(loc='upper right',
+                    bbox_to_anchor=(1.1, 1.1), ncol=4, fontsize=10)
+        
+    plt.tight_layout()
     plt.show()

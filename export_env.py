@@ -12,7 +12,6 @@ import yaml
 import sys
 import os
 
-
 def export_env(history_only=False, include_builds=False):
     """ Capture `conda env export` output """
     cmd = ['conda', 'env', 'export']
@@ -43,7 +42,6 @@ def _get_pip_deps(full_deps):
         if isinstance(dep, dict) and 'pip' in dep:
             return dep
 
-
 def _combine_env_data(env_data_full, env_data_hist):
     deps_full = env_data_full['dependencies']
     deps_hist = env_data_hist['dependencies']
@@ -62,8 +60,8 @@ def _combine_env_data(env_data_full, env_data_hist):
 
 def main():
     env_data_full = export_env()
-    env_data_hist = export_env(history_only=True)
-    env_data = _combine_env_data(env_data_full, env_data_hist)
+    #env_data_hist = export_env(history_only=True)
+    #env_data = _combine_env_data(env_data_full, env_data_hist)
     # yaml.dump(env_data, sys.stdout)
     print('Warning: this output might contain packages installed from non-public sources, e.g. a Git repository. '
           'You should review and test the output to make sure it works with `conda env create -f`, '
@@ -71,8 +69,9 @@ def main():
           'For example, `conda-env-export` itself is not currently uploaded to PyPI, and it must be removed from '
           'the output file, or else `conda create -f` will fail.', file=sys.stderr)
 
+    del env_data_full['prefix']
     with open(os.getcwd() + '/environment.yml', 'w') as f:
-        yaml.dump(env_data, f)
+        yaml.dump(env_data_full, f)
 
 
 if __name__ == '__main__':

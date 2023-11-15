@@ -18,6 +18,8 @@ from loguru import logger
 import multiprocessing as mp
 import itertools
 from config import settings
+from imblearn.over_sampling import SMOTE, RandomOverSampler, ADASYN
+import pandas as pd
 
 
 def main_func(
@@ -59,16 +61,32 @@ def main_func(
 			configuration['imputation'], seed=new_seed
 		)
 
+		#####################################################################################################
+		# Create Strategy
+		#####################################################################################################
 		# Create Imputation Strategy
 		if param is None:
 			imp_strategy = configuration['agg_strategy_imp']['strategy']
-			params = configuration['algo_params'][imp_strategy]
+			strategy_name = imp_strategy.split('-')[0]
+			params = configuration['algo_params'][strategy_name]
 		else:
 			imp_strategy = configuration['agg_strategy_imp']['strategy']
 			params = param
 
 		strategy_imp = StrategyImputation(strategy=imp_strategy, params=params)
 
+		if imp_strategy == 'central':
+			data_ms_new = [np.concatenate(data_ms_clients, axis = 0)]
+			data_partitions_new = [np.concatenate(data_partitions, axis = 0)]
+			clients = client_factory.generate_clients(
+				1, data_partitions_new, data_ms_new, test_data.values, data_config,
+				configuration['imputation'], seed=new_seed
+			)
+
+			assert len(clients.keys()) == 1
+			strategy_imp = StrategyImputation(strategy='local', params={})
+		
+		#####################################################################################################
 		# Create Server
 		server_type = configuration['server_type']
 		server_config = configuration['server']
@@ -138,6 +156,33 @@ class Experiment:
 
 		# n rounds average
 		train_data, test_data = n_rounds_data[0]
+
+		imbalance_strategy = configuration.get('handle_imbalance', None)
+		if imbalance_strategy == 'oversampling':
+			columns = train_data.columns
+			X_train = train_data.iloc[:, :-1].values
+			y_train = train_data.iloc[:, -1].values
+			ros = RandomOverSampler(random_state=seed)
+			X_train, y_train = ros.fit_resample(X_train, y_train)
+			train_data = pd.DataFrame(np.concatenate([X_train, y_train.reshape(-1, 1)], axis=1), columns=columns)
+		elif imbalance_strategy == 'smote':
+			columns = train_data.columns
+			X_train = train_data.iloc[:, :-1].values
+			y_train = train_data.iloc[:, -1].values
+			smote = SMOTE(random_state=seed, n_jobs=-1)
+			X_train, y_train = smote.fit_resample(X_train, y_train)
+			train_data = pd.DataFrame(np.concatenate([X_train, y_train.reshape(-1, 1)], axis=1), columns=columns)
+		elif imbalance_strategy == 'adasyn':
+			columns = train_data.columns
+			X_train = train_data.iloc[:, :-1].values
+			y_train = train_data.iloc[:, -1].values
+			ada = ADASYN(random_state=seed, n_jobs=-1)
+			X_train, y_train = ada.fit_resample(X_train, y_train)
+			train_data = pd.DataFrame(np.concatenate([X_train, y_train.reshape(-1, 1)], axis=1), columns=columns)
+
+		print(train_data.shape)
+
+
 		stat_trackers = []
 		if tune_params:
 			param_grid = settings['algo_params_grids'][configuration['agg_strategy_imp']['strategy']]
