@@ -1066,7 +1066,6 @@ def process_mimiciii_mo2():
 	print(diagnosis.shape)
 
 	diagnosis_pca = convert_pca(diagnosis, 10, prefix = 'diag')
-	diagnosis_pca
 
 	###############################################################################################################################
 	# Procedure
