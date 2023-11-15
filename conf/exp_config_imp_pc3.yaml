@@ -1,0 +1,10 @@
+experiment_name: fed_imp_pc3
+debug: false
+experiment_marker:
+  - num_clients
+  - server@imp_round
+defaults:
+  - config_tmpl: imp_pc2
+  - config_vars/imp_test:
+      - codrna_exp1
+  - _self_
