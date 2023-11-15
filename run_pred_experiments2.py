@@ -247,11 +247,11 @@ if __name__ == '__main__':
     pred_rounds = 1
     seed = 21
     mtp = True
-    datasets = ['1113/genetic']
+    datasets = ['1114/codon']
     train_params = [
+        {"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
         #{"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
-        #{"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
-        {"num_hiddens": 128, "batch_size": 256, "lr": 0.01, "weight_decay": 0, 'imbalance': None},
+        #{"num_hiddens": 128, "batch_size": 256, "lr": 0.01, "weight_decay": 0, 'imbalance': None},
         #{"num_hiddens": 32, "batch_size": 128, "lr": 0.001, "weight_decay": 0.001, 'imbalance': 'smotetm'},
         #{"num_hiddens": 64, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
         #{"num_hiddens": 64, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None}
@@ -260,65 +260,95 @@ if __name__ == '__main__':
         dataset = 'fed_imp_pc2/{}'.format(d)
 
         # #####################################################################################
-        # # S1
-        # sample_sizes = ['sample-evenly']
-        # for sample_size in sample_sizes:
-        #     n_clients = [3, 5, 7, 9, 11]
-        #     #n_clients = [5,7,9]
-        #     scenario = "mnar_lr@sp=extreme"
-        #     r = ['l1', 'r1']
-        #     mr_strategy = "fixed@mr="
-        #     mr = ['0.5']
-        #
-        #     main_config = copy.deepcopy(main_config_tmpl)
-        #     main_config['data'] = dataset
-        #     main_config['n_clients'] = n_clients
-        #     main_config['sample_size'] = sample_size
-        #     main_config['scenario'] = scenario
-        #     main_config['scenario_list'] = r
-        #     main_config['mr'] = mr_strategy
-        #     main_config['mr_list'] = mr
-        #     main_config["n_rounds"] = 3
-        #     main_config['imbalance'] = train_param['imbalance']
-        #
-        #     server_config = copy.deepcopy(server_config_tmpl)
-        #     server_config["server_pred_config"]["model_params"]["num_hiddens"] = train_param["num_hiddens"]
-        #     server_config["server_pred_config"]["train_params"]["batch_size"] = train_param["batch_size"]
-        #     server_config["server_pred_config"]["train_params"]["learning_rate"] = train_param["lr"]
-        #     server_config["server_pred_config"]["train_params"]["weight_decay"] = train_param["weight_decay"]
-        #
-        #     server_config['server_name'] = 'fedavg_mlp_pytorch_pred'
-        #     #methods = ['fedavg-s', 'fedmechw', 'fedmechw_p', 'central', 'local']  # 'fedmechw'
-        #     methods = ["local", "central", "fedavg-s", 'fedmechw_new']  # 'fedmechw'
-        #
-        #     prediction(main_config, server_config, pred_rounds, seed, mtp=mtp, methods=methods)
+        # S1-1
+        sample_sizes = ['sample-unevenl1-600']
+        for sample_size in sample_sizes:
+            n_clients = [3, 5, 7, 9, 11]
+            scenario = "mnar_lr@sp=extreme"
+            r = ['l1']
+            mr_strategy = "fixed@mr="
+            mr = ['0.5']
+
+            main_config = copy.deepcopy(main_config_tmpl)
+            main_config['data'] = dataset
+            main_config['n_clients'] = n_clients
+            main_config['sample_size'] = sample_size
+            main_config['scenario'] = scenario
+            main_config['scenario_list'] = r
+            main_config['mr'] = mr_strategy
+            main_config['mr_list'] = mr
+            main_config["n_rounds"] = 3
+            main_config['imbalance'] = train_param['imbalance']
+
+            server_config = copy.deepcopy(server_config_tmpl)
+            server_config["server_pred_config"]["model_params"]["num_hiddens"] = train_param["num_hiddens"]
+            server_config["server_pred_config"]["train_params"]["batch_size"] = train_param["batch_size"]
+            server_config["server_pred_config"]["train_params"]["learning_rate"] = train_param["lr"]
+            server_config["server_pred_config"]["train_params"]["weight_decay"] = train_param["weight_decay"]
+
+            server_config['server_name'] = 'fedavg_mlp_pytorch_pred'
+            methods = ["local", "central", "fedavg-s", 'fedmechw_new']  # 'fedmechw'
+
+            prediction(main_config, server_config, pred_rounds, seed, mtp=mtp, methods=methods)
+
+        # #####################################################################################
+        # S1-2
+        sample_sizes = ['sample-unevenr1-600']
+        for sample_size in sample_sizes:
+            n_clients = [3, 5, 7, 9, 11]
+            scenario = "mnar_lr@sp=extreme"
+            r = ['r1']
+            mr_strategy = "fixed@mr="
+            mr = ['0.5']
+
+            main_config = copy.deepcopy(main_config_tmpl)
+            main_config['data'] = dataset
+            main_config['n_clients'] = n_clients
+            main_config['sample_size'] = sample_size
+            main_config['scenario'] = scenario
+            main_config['scenario_list'] = r
+            main_config['mr'] = mr_strategy
+            main_config['mr_list'] = mr
+            main_config["n_rounds"] = 3
+            main_config['imbalance'] = train_param['imbalance']
+
+            server_config = copy.deepcopy(server_config_tmpl)
+            server_config["server_pred_config"]["model_params"]["num_hiddens"] = train_param["num_hiddens"]
+            server_config["server_pred_config"]["train_params"]["batch_size"] = train_param["batch_size"]
+            server_config["server_pred_config"]["train_params"]["learning_rate"] = train_param["lr"]
+            server_config["server_pred_config"]["train_params"]["weight_decay"] = train_param["weight_decay"]
+
+            server_config['server_name'] = 'fedavg_mlp_pytorch_pred'
+            methods = ["local", "central", "fedavg-s", 'fedmechw_new']  # 'fedmechw'
+
+            prediction(main_config, server_config, pred_rounds, seed, mtp=mtp, methods=methods)
 
         #####################################################################################
         # S2
-        n_clients = [10]
-        scenario = "mnar_lr@sp=extreme_r="
-        r = ['0.0', '0.1', '0.3', '0.5', '0.7', '0.9', '1.0']
-        #r = ['0.0', '1.0']
-        sample_size = 'sample-evenly'
-        mr_strategy = "fixed@mr="
-        mr = ['0.5']
-        main_config = copy.deepcopy(main_config_tmpl)
-        main_config['data'] = dataset
-        main_config['n_clients'] = n_clients
-        main_config['sample_size'] = sample_size
-        main_config['scenario'] = scenario
-        main_config['scenario_list'] = r
-        main_config['mr'] = mr_strategy
-        main_config['mr_list'] = mr
-        main_config["n_rounds"] = 3
-
-        server_config = copy.deepcopy(server_config_tmpl)
-        server_config["server_pred_config"]["model_params"]["num_hiddens"] = train_param["num_hiddens"]
-        server_config["server_pred_config"]["train_params"]["batch_size"] = train_param["batch_size"]
-        server_config["server_pred_config"]["train_params"]["learning_rate"] = train_param["lr"]
-        server_config["server_pred_config"]["train_params"]["weight_decay"] = train_param["weight_decay"]
-
-        server_config['server_name'] = 'fedavg_mlp_pytorch_pred'
-        #methods = ['fedavg-s', 'fedmechw', 'fedmechw_p', 'central', 'local']  # 'fedmechw'
-        methods = ["local", "central", "fedavg-s", 'fedmechw_new']  # 'fedmechw'
-        prediction(main_config, server_config, pred_rounds, seed, mtp=mtp, methods = methods)
+        # n_clients = [10]
+        # scenario = "mnar_lr@sp=extreme_r="
+        # r = ['0.0', '0.1', '0.3', '0.5', '0.7', '0.9', '1.0']
+        # #r = ['0.0', '1.0']
+        # sample_size = 'sample-evenly'
+        # mr_strategy = "fixed@mr="
+        # mr = ['0.5']
+        # main_config = copy.deepcopy(main_config_tmpl)
+        # main_config['data'] = dataset
+        # main_config['n_clients'] = n_clients
+        # main_config['sample_size'] = sample_size
+        # main_config['scenario'] = scenario
+        # main_config['scenario_list'] = r
+        # main_config['mr'] = mr_strategy
+        # main_config['mr_list'] = mr
+        # main_config["n_rounds"] = 3
+        #
+        # server_config = copy.deepcopy(server_config_tmpl)
+        # server_config["server_pred_config"]["model_params"]["num_hiddens"] = train_param["num_hiddens"]
+        # server_config["server_pred_config"]["train_params"]["batch_size"] = train_param["batch_size"]
+        # server_config["server_pred_config"]["train_params"]["learning_rate"] = train_param["lr"]
+        # server_config["server_pred_config"]["train_params"]["weight_decay"] = train_param["weight_decay"]
+        #
+        # server_config['server_name'] = 'fedavg_mlp_pytorch_pred'
+        # #methods = ['fedavg-s', 'fedmechw', 'fedmechw_p', 'central', 'local']  # 'fedmechw'
+        # methods = ["local", "central", "fedavg-s", 'fedmechw_new']  # 'fedmechw'
+        # prediction(main_config, server_config, pred_rounds, seed, mtp=mtp, methods = methods)

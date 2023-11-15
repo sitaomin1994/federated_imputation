@@ -54,6 +54,7 @@ def data_partition(strategy, params, data, n_clients, seed=201030, regression=Fa
                         random_state=(new_seed) % (2 ** 32), stratify=data[:, -1]
                     )
                 ret.append(np.concatenate([X_test, y_test.reshape(-1, 1)], axis=1).copy())
+        print([r.shape[0] for r in ret])
         return ret
     elif strategy == 'sample-unevenr1-1000':
         N = data.shape[0]
@@ -76,6 +77,7 @@ def data_partition(strategy, params, data, n_clients, seed=201030, regression=Fa
                         random_state=(new_seed) % (2 ** 32), stratify=data[:, -1]
                     )
                 ret.append(np.concatenate([X_test, y_test.reshape(-1, 1)], axis=1).copy())
+        print([r.shape[0] for r in ret])
         return ret
     elif strategy == 'sample-unevenl1-600':
         N = data.shape[0]
@@ -98,6 +100,7 @@ def data_partition(strategy, params, data, n_clients, seed=201030, regression=Fa
                         random_state=(new_seed) % (2 ** 32), stratify=data[:, -1]
                     )
                 ret.append(np.concatenate([X_test, y_test.reshape(-1, 1)], axis=1).copy())
+        print([r.shape[0] for r in ret])
         return ret
     elif strategy == 'sample-unevenr1-600':
         N = data.shape[0]
@@ -120,6 +123,7 @@ def data_partition(strategy, params, data, n_clients, seed=201030, regression=Fa
                         random_state=(new_seed) % (2 ** 32), stratify=data[:, -1]
                     )
                 ret.append(np.concatenate([X_test, y_test.reshape(-1, 1)], axis=1).copy())
+        print([r.shape[0] for r in ret])
         return ret
     elif strategy == 'sample-unevendirl1':
         # get sample sizes
