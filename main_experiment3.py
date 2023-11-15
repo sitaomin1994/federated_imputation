@@ -1,4 +1,4 @@
-git"""
+"""
 main script for running experiments
 """
 from src.experiment_management.experiment_manager import ExperimentManager

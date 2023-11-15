@@ -1123,6 +1123,7 @@ def process_mimiciii_mo2():
 
 	print(data.shape)
 	print(data[target_col].value_counts())
+	data.to_csv('data/mimiciii/mimiciii_mo2.csv', index=False)
 	
 	return data, data_config
 
