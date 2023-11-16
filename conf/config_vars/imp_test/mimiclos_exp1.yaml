@@ -10,7 +10,7 @@ mimiclos1:
 
   # num_client
   - name: n_client
-    value: [3, 5, 7, 9, 11]
+    value: [9, 11]
     save_mode: dir2
     keys:
       - num_clients
