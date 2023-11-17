@@ -78,7 +78,7 @@ import sys
 
 import os
 
-dir_path = './results/raw_results/fed_imp_pc2_pred_fed/1104/mimiciii_los/'
+dir_path = './results/raw_results/fed_imp_pc2_pred_fed/1114/mimiciii_los/'
 print(dir_path)
 all_dirs, all_files = [], []
 for root, dirs, files in os.walk(dir_path):
@@ -175,10 +175,10 @@ df1[2] = df1[2].str.replace('mnar_lr@sp=extreme_r=', '')
 df1 = df1.sort_values([4, 2])
 
 df2 = df[(df[0] != 10) & (df[2] == 'mnar_lr@sp=extremer1')].copy()
-df2.sort_values([4, 0], inplace=True)
+df2.sort_values([0, 4], inplace=True)
 
 df3 = df[(df[0] != 10) & (df[2] == 'mnar_lr@sp=extremel1')].copy()
-df3.sort_values([4, 0], inplace=True)
+df3.sort_values([0, 4], inplace=True)
 
 # columns = ['n_clients', 'sample_size', 'mechanism', 'mr', 'method', 'mse', 'r2']
 

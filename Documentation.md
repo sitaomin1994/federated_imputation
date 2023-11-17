@@ -33,7 +33,7 @@
   - mimiciii_mo2 S1 lr
   - mimiciii_icd2 S1 lr
   - mimiciii_loos S1 lr
-  - codon S1 lr
+  - codon S1 rl
   - codrna S1 rl
-  - heart S1 rl
-  - 
+  - heart S1 lr
+  - genetic s1 rl

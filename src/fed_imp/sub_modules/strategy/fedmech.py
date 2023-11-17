@@ -235,7 +235,7 @@ def fedmechw_new(weights, missing_infos, ms_coefs, params, sigmoid = False, filt
         stats_compl.append(mech_sim_w)
         stats_idx.append(top_k_idx)
         stats_sampl.append(sample_size_w)
-        
+
         final_w = (alpha * (mech_sim_w) + (1 - alpha) * (sample_size_w))**scale_factor #(1 - alpha - beta) * (missing_pct_w))** scale_factor
         # average parameters of others
         other_avg_parameters = np.average(weights[top_k_idx], axis=0, weights=final_w)

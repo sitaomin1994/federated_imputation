@@ -221,7 +221,7 @@ if __name__ == '__main__':
         "server_name": 'central_mlp_pytorch_pred',
         "server_pred_config": {
             "model_params": {
-                "model": "twonn",
+                "model": "twonn_reg",
                 "num_hiddens": 32,
                 "model_init_config": None,
                 "model_other_params": None
@@ -235,32 +235,32 @@ if __name__ == '__main__':
                 'local_epoch': 5,
                 'sample_pct': 1
             },
-            "regression": False,
+            "regression": True,
         },
         "server_config": {
             'pred_rounds': 1,
             'seed': 21,
-            "metric": "f1"
+            "metric": "r2"
         }
     }
 
     pred_rounds = 1
     seed = 21
     mtp = True
-    datasets = ['1114/genetic']
+
+    datasets = ['1114/mimiciii_los']
     train_params = [
+        #{"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
         #{"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
         {"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
         #{"num_hiddens": 128, "batch_size": 256, "lr": 0.01, "weight_decay": 0, 'imbalance': None},
         #{"num_hiddens": 32, "batch_size": 128, "lr": 0.001, "weight_decay": 0.001, 'imbalance': 'smotetm'},
-        #{"num_hiddens": 64, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
+        {"num_hiddens": 64, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
         #{"num_hiddens": 64, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None}
     ]
     for d, train_param in zip(datasets, train_params):
         dataset = 'fed_imp_pc1/{}'.format(d)
 
-        #####################################################################################
-        #S1-1
         sample_sizes = ['sample-unevenl1-1000']
         for sample_size in sample_sizes:
             n_clients = [3, 5, 7, 9, 11]

@@ -152,7 +152,7 @@ class Experiment:
 		else:
 			n_rounds_data = split_train_test(
 				data, n_folds=n_rounds, seed=seed, test_size=test_size, regression=regression
-				)
+			)
 
 		# n rounds average
 		train_data, test_data = n_rounds_data[0]
@@ -181,8 +181,6 @@ class Experiment:
 			train_data = pd.DataFrame(np.concatenate([X_train, y_train.reshape(-1, 1)], axis=1), columns=columns)
 
 		print(train_data.shape)
-
-
 		stat_trackers = []
 		if tune_params:
 			param_grid = settings['algo_params_grids'][configuration['agg_strategy_imp']['strategy']]
