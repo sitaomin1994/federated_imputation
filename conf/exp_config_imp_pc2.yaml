@@ -5,7 +5,6 @@ experiment_marker:
   - server@imp_round
 defaults:
   - config_tmpl: imp_pc2
-  - config_vars/imp_pc2:
-      - codon_exp1
-      - codon_exp2
+  - config_vars/imp_test:
+      - codrna_exp2
   - _self_
