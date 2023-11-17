@@ -16,9 +16,10 @@ from src.fed_imp.experiment import main_func
 results = []
 # PARAMS
 ALPHAS = [0.5, 0.65, 0.8, 0.95]
-SFS = [2, 3, 4]
+SFS = [2, 4]
+GAMMAS = [0.05, 0.2, 0.35]
 Ns = [3, 5, 7, 9, 11]
-Rs = [0.0, 0.1, 0.3, 0.5, 0.7, 0.9, 1.0]
+Rs = [0.0, 0.5, 0.9, 1.0]
 import sys
 import traceback
 
@@ -125,7 +126,7 @@ if __name__ == '__main__':
     else:
         s_params = Rs
 
-    param_grid = list(product(s_params, ALPHAS, SFS))  # [(N or r, alpha, sf), ...]
+    param_grid = list(product(s_params, GAMMAS, ALPHAS, SFS))  # [(N or r, alpha, sf), ...]
     configs = []
     for param in param_grid:
         if scenario == 's1':

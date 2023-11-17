@@ -221,7 +221,7 @@ if __name__ == '__main__':
         "server_name": 'central_mlp_pytorch_pred',
         "server_pred_config": {
             "model_params": {
-                "model": "twonn_reg",
+                "model": "twonn",
                 "num_hiddens": 32,
                 "model_init_config": None,
                 "model_other_params": None
@@ -235,19 +235,19 @@ if __name__ == '__main__':
                 'local_epoch': 5,
                 'sample_pct': 1
             },
-            "regression": True,
+            "regression": False,
         },
         "server_config": {
             'pred_rounds': 1,
             'seed': 21,
-            "metric": "r2"
+            "metric": "f1"
         }
     }
 
     pred_rounds = 1
     seed = 21
     mtp = True
-    datasets = ['1114/mimiciii_los']
+    datasets = ['1117/codrna']
     train_params = [
         #{"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
         #{"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
@@ -258,7 +258,7 @@ if __name__ == '__main__':
         #{"num_hiddens": 64, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None}
     ]
     for d, train_param in zip(datasets, train_params):
-        dataset = 'fed_imp_pc3/{}'.format(d)
+        dataset = 'fed_imp_pc2/{}'.format(d)
 
         # #####################################################################################
         # S1-1
@@ -288,7 +288,8 @@ if __name__ == '__main__':
             server_config["server_pred_config"]["train_params"]["weight_decay"] = train_param["weight_decay"]
 
             server_config['server_name'] = 'fedavg_mlp_pytorch_pred'
-            methods = ["local", "central", "fedavg-s", 'fedmechw_new']  # 'fedmechw'
+            methods = ["fedmechw_new"]
+            #methods = ["local", "central", "fedavg-s", 'fedmechw_new']  # 'fedmechw'
 
             prediction(main_config, server_config, pred_rounds, seed, mtp=mtp, methods=methods)
 
@@ -320,7 +321,8 @@ if __name__ == '__main__':
             server_config["server_pred_config"]["train_params"]["weight_decay"] = train_param["weight_decay"]
 
             server_config['server_name'] = 'fedavg_mlp_pytorch_pred'
-            methods = ["local", "central", "fedavg-s", 'fedmechw_new']  # 'fedmechw'
+            methods = ["fedmechw_new"]
+            #methods = ["local", "central", "fedavg-s", 'fedmechw_new']  # 'fedmechw'
 
             prediction(main_config, server_config, pred_rounds, seed, mtp=mtp, methods=methods)
 
