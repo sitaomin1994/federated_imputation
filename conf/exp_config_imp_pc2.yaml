@@ -6,5 +6,6 @@ experiment_marker:
 defaults:
   - config_tmpl: imp_pc2
   - config_vars/imp_test:
-      - mimiclos_exp1
+      - codrna_exp1
+      - codrna_exp2
   - _self_
