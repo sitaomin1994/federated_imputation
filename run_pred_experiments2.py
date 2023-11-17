@@ -251,13 +251,14 @@ if __name__ == '__main__':
     train_params = [
         #{"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
         #{"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
+        {"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
         #{"num_hiddens": 128, "batch_size": 256, "lr": 0.01, "weight_decay": 0, 'imbalance': None},
-        #{"num_hiddens": 32, "batch_size": 128, "lr": 0.001, "weight_decay": 0.001, 'imbalance': 'smotetm'},
-        {"num_hiddens": 64, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
+        #{"num_hiddens": 32, "batch_size": 128, "lr": 0.001, "weight_decay": 0.001, 'imbalance': 'smotetm'                                                                                       '                                                                                        ''},
+        #{"num_hiddens": 64, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
         #{"num_hiddens": 64, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None}
     ]
     for d, train_param in zip(datasets, train_params):
-        dataset = 'fed_imp_pc2/{}'.format(d)
+        dataset = 'fed_imp_pc3/{}'.format(d)
 
         # #####################################################################################
         # S1-1

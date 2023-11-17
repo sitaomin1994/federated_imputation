@@ -6,5 +6,6 @@ experiment_marker:
 defaults:
   - config_tmpl: imp_pc2
   - config_vars/imp_pc2:
-      - codrna_exp1
+      - heart_exp1
+      - heart_exp2
   - _self_
