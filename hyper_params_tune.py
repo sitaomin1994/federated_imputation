@@ -24,7 +24,6 @@ import traceback
 
 
 def main(configuration):
-    print(configuration)
     # general parameters
     num_clients = configuration['num_clients']
 
@@ -168,7 +167,6 @@ if __name__ == '__main__':
         configs.append(config)
 
     print(f'Num of configs: {len(configs)}')
-    print(configs)
     ####################################################################################################################
     # run experiments parallel
     num_processes = max(1, mp.cpu_count())  # Safe fallback to prevent division by zero
