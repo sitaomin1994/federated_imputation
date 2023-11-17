@@ -6,5 +6,5 @@ experiment_marker:
 defaults:
   - config_tmpl: imp_pc2
   - config_vars/imp_unbalance:
-      - susy
+      - codrna_exp1
   - _self_
