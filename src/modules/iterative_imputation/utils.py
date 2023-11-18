@@ -83,10 +83,10 @@ def fit_one_feature(X_filled, y, missing_mask, col_idx, estimator, num_cols, com
 	if not regression:
 		oh = OneHotEncoder(drop='first')
 		y_oh = oh.fit_transform(y.reshape(-1, 1)).toarray()
-		#X_ = np.concatenate([X_filled[:, np.arange(X_filled.shape[1]) != col_idx], y_oh], axis=1)
+		#X_ = np.concatenate([X_filled[:, np.arange(X_filled.shape[1]) != col_idx]], axis=1)
 		X_ = np.concatenate([X_filled], axis=1)
 	else:
-		X_ = np.concatenate([X_filled, y.reshape(-1, 1)], axis=1)
+		X_ = np.concatenate([X_filled], axis=1)
 	y_ = row_mask
 	if row_mask.sum() == 0:
 		coef = np.zeros(X_.shape[1]) + 0.001
