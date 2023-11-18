@@ -17,7 +17,7 @@ results = []
 # PARAMS
 ALPHAS = [0.5, 0.65, 0.8, 0.95]
 SFS = [2, 4]
-GAMMAS = [0.05, 0.2, 0.35]
+GAMMAS = [0.05, 0.3]
 Ns = [3, 5, 7, 9, 11]
 Rs = [0.0, 0.5, 0.9, 1.0]
 import sys
