@@ -130,10 +130,10 @@ if __name__ == '__main__':
     configs = []
     for param in param_grid:
         if scenario == 's1':
-            N, alpha, sf = param
+            N, gamma, alpha, sf = param
             r = None
         else:
-            r, alpha, sf = param
+            r, gamma, alpha, sf = param
             N = 10
 
         config = deepcopy(experiment_config_template)
@@ -151,7 +151,6 @@ if __name__ == '__main__':
                 config['data_partition']['strategy'] = f'sample-unevenr1-{p_size}'
         else:  # 's2-0.5'
             if mm == 'even':
-                r = mm.split('-')[1]
                 config['missing_simulate']['mm_strategy'] = 'mnar_lr@sp=extreme_r={}'.format(r)
                 config['data_partition']['strategy'] = f'sample-evenly'
             else:
@@ -160,7 +159,7 @@ if __name__ == '__main__':
         config['agg_strategy_imp']['strategy'] = 'fedmechw_new'
         config["algo_params"]["fedmechw_new"] = {
             "alpha": alpha,
-            "gamma": 0.05,
+            "gamma": gamma,
             "client_thres": 1.0,
             "scale_factor": sf
         }

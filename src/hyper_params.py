@@ -3,7 +3,7 @@
 PARAMS = {
     "codrna":
         {  # s1 - lr
-            (3, "sample-unevenl1-1000", "mnar_lr@sp=extremel1"): (0.05, 0.5, 2),
+            (3, "sample-unevenl1-1000", "mnar_lr@sp=extremel1"): (0.05, 0.5, 4),
             (5, "sample-unevenl1-1000", "mnar_lr@sp=extremel1"): (0.05, 0.8, 2),
             (7, "sample-unevenl1-1000", "mnar_lr@sp=extremel1"): (0.05, 0.65, 4),
             (9, "sample-unevenl1-1000", "mnar_lr@sp=extremel1"): (0.05, 0.95, 3),
