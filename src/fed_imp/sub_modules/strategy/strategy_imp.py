@@ -100,7 +100,7 @@ class StrategyImputation:
                 params['alpha'] = param_dict['a'] if 'a' in param_dict else params['alpha']
                 params['gamma'] = param_dict['g'] if 'g' in param_dict else params['gamma']
                 params['scale_factor'] = param_dict['sf'] if 'sf' in param_dict else params['scale_factor']
-
+            #print(params)
             agg_weight, w = fedmechw_new(weights, missing_infos, ms_coefs, params, round=round)
         # ==============================================================================================================
         elif self.strategy == 'fedmechw_p':

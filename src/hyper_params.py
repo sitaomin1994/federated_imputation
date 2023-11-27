@@ -170,9 +170,13 @@ class Hyperparameters:
 
     def _fetch_params(self, method):
         if method == 'fedmechw_new':
-            gamma, alpha, beta = PARAMS[self.dataset][(self.num_clients, self.data_partition, self.mm_strategy)]
+            try:
+                gamma, alpha, beta = PARAMS[self.dataset][(self.num_clients, self.data_partition, self.mm_strategy)]
+            except:
+                gamma, alpha, beta = None, None, None
+
             if gamma is None:
-                gamma = 0.05
+                gamma = 0.02
             if alpha is None:
                 alpha = 0.95
             if beta is None:

@@ -1,7 +1,7 @@
 from copy import deepcopy
 
 import numpy as np
-
+from src.modules.evaluation.imputation_quality import sliced_ws
 from src.fed_imp.sub_modules.server.load_server import load_server
 from src.fed_imp.sub_modules.strategy.strategy_imp import StrategyImputation
 from src.fed_imp.sub_modules.client.client_factory import ClientsFactory
@@ -326,14 +326,6 @@ class Experiment:
             imp_sliced_ws.append(result['imp_result']['imp@sliced_ws'])
             best_f11.append(result['pred_result']['f1_mean'])
 
-        logger.info(
-            "imp@rmse: {:.5f} ({:.3f}) imp@ws: {:.5f} ({:.3f}) imp@sliced_ws: {:.5f} ({:.3f})".format(
-                np.array(imp_rmse).mean(), np.array(imp_rmse).std(),
-                np.array(imp_ws).mean(), np.array(imp_ws).std(),
-                np.array(imp_sliced_ws).mean(), np.array(imp_sliced_ws).std()
-            )
-        )
-
         if np.array(best_accu1).size > 0:
             logger.info(
                 "model pred_accu: {:.5f} ({:.3f}) pred_f1: {:.5f} ({:.3f})".format(
@@ -355,12 +347,22 @@ class Experiment:
                     if result['data'][key] is not None:
                         data_results[key].append(result['data'][key])
 
+        global_ws = compute_global_ws(data_results)
+
+        logger.info(
+            "imp@rmse: {:.5f} ({:.3f}) imp@sliced_ws: {:.5f} ({:.3f}) imp@global_ws: {:.5f}".format(
+                np.array(imp_rmse).mean(), np.array(imp_rmse).std(),
+                np.array(imp_sliced_ws).mean(), np.array(imp_sliced_ws).std(), global_ws
+            )
+        )
+
         return {
             'avg_rets_final': final_rets,
             'avg_imp_final': {
                 'imp@rmse': np.array(imp_rmse).mean(),
                 'imp@w2': np.array(imp_ws).mean(),
                 'imp@sliced_ws': np.array(imp_sliced_ws).mean(),
+                "imp@global_ws": global_ws,
                 'imp@rmse_std': np.array(imp_rmse).std(),
                 'imp@w2_std': np.array(imp_ws).std(),
                 'imp@sliced_ws_std': np.array(imp_sliced_ws).std()
@@ -377,3 +379,18 @@ class Experiment:
             'data': data_results,
             "plots": [encoded_image]
         }
+
+
+def compute_global_ws(data_result):
+
+    origin_datas = data_result['origin_data']
+    imputed_datas = data_result['imputed_data']
+    global_ws = []
+    for origin_data, impute_data in zip(origin_datas, imputed_datas):
+        origin_data = origin_data[:, :-1]
+        impute_data = impute_data[:, :-1]
+        ws = sliced_ws(origin_data, impute_data)
+        global_ws.append(ws)
+
+    return np.array(global_ws).mean()
+

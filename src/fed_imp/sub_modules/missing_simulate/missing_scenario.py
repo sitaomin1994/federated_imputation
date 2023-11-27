@@ -29,6 +29,14 @@ MS_MECHANISM_MAPPING = {
     23: 'mnar_sigmoid_tail',
 }
 
+COMPLEMENTARY_MECHANISMS = {
+    'basic': [(0.1, 0.9), (0.9, 0.1), (0.2, 0.8), (0.8, 0.2), (0.3, 0.7), (0.7, 0.3), (0.4, 0.6), (0.6, 0.4),
+              (0.5, 0.5)],
+    'more': [
+        (0.15, 0.85), (0.85, 0.15), (0.25, 0.75), (0.75, 0.25), (0.35, 0.65), (0.65, 0.35), (0.45, 0.55), (0.55, 0.45)
+    ]
+}
+
 
 ########################################################################################################################
 # Scenario functions
@@ -49,6 +57,110 @@ def load_scenario2(
         {"missing_ratio": mr, "missing_mechanism": mm, "missing_features": mf} for mr, mm, mf in zip(
             mr, mm, mf
         )]
+
+
+def load_scenario3(n_clients, cols, mm_strategy, seed=0):
+    # feature based strategy integrate missing mechanism and missing ratios
+    strategy, params = parse_strategy(mm_strategy)
+
+    if strategy == "random":  # random@mrr=0.1_mrl=0.9_mm=mnarlrq
+        if params['mm'] == 'mnarlrq':
+            mm_list = ['mnar_quantile_left', 'mnar_quantile_right']
+        else:
+            raise ValueError(f'mm not found, params: {params}')
+        np.random.seed(seed)
+        missing_ratio = np.random.uniform(
+            float(params['mrl']), float(params['mrr']), (n_clients, len(cols)))
+        missing_mechanism = np.random.choice(mm_list, (n_clients, len(cols)))
+
+    elif strategy == "random2":  # random@mrr=0.1_mrl=0.9_mm=mnarlrq
+        if params['mm'] == 'mnarlrq':
+            mm_list = ['mnar_quantile_left', 'mnar_quantile_right']
+        else:
+            raise ValueError(f'mm not found, params: {params}')
+        np.random.seed(seed)
+        start = float(params['mrl'])
+        stop = float(params['mrr'])
+        step = int((stop - start) / 0.1 + 1)
+        mr_list = np.linspace(start, stop, step, endpoint=True)
+        missing_ratio = np.random.choice(mr_list, (n_clients, len(cols)))
+        missing_mechanism = np.random.choice(mm_list, (n_clients, len(cols)))
+
+    elif strategy == 's3':
+        mech_list = [(0.3, 0), (0.4, 0), (0.5, 0), (0.6, 0), (0.7, 0), (0.3, 1), (0.4, 1), (0.6, 1), (0.7, 1)]
+        mechs = ['mnar_quantile_left', 'mnar_quantile_right']
+        missing_ratio = np.zeros((n_clients, len(cols)))
+        missing_mechanism = np.empty((n_clients, len(cols)), dtype='U20')
+
+        # sample
+        np.random.seed(seed)
+        cols_mechs = np.random.choice(np.arange(len(mech_list)), len(cols))
+        client_idxs = np.random.choice(np.arange(n_clients), len(cols))
+        for col in range(len(cols)):
+            # randomly select a client
+            client_idx = client_idxs[col]
+            # assign missing ratio
+            mr = mech_list[cols_mechs[col]][0]
+            missing_ratio[client_idx, col] = mr
+            missing_ratio[np.arange(missing_ratio.shape[0]) != client_idx, col] = 1 - mr
+            # assign mechanism
+            mm = int(mech_list[cols_mechs[col]][1])
+            missing_mechanism[client_idx, col] = mechs[mm]
+            missing_mechanism[np.arange(missing_mechanism.shape[0]) != client_idx, col] = mechs[1 - mm]
+
+    elif strategy == 's4':
+        assert n_clients == 10
+        client_clusters = [(1, 2), (3, 4, 5), (6, 7, 8, 9)]
+        # mech_list
+        mech_list = [(0.3, 0), (0.4, 0), (0.5, 0), (0.6, 0), (0.7, 0)]
+        mechs = ['mnar_quantile_left', 'mnar_quantile_right']
+        missing_ratio = np.zeros((n_clients, len(cols)))
+        missing_mechanism = np.empty((n_clients, len(cols)), dtype='U20')
+
+        for col in range(len(cols)):
+            np.random.seed(seed + col)
+            random.seed(seed + col)
+
+            # client 0
+            client0_mech = random.sample(mech_list, 1)[0]
+            missing_ratio[0, col] = client0_mech[0]
+            missing_mechanism[0, col] = mechs[client0_mech[1]]
+
+            # clusters specific
+            rest_mechs = [mech for mech in mech_list if mech != client0_mech]
+            cluster_mechs = random.sample(rest_mechs, len(client_clusters))
+            for idx, clients in enumerate(client_clusters):
+                mech = cluster_mechs[idx]
+                mech_compl = [1 - mech[0], 1 - mech[1]]
+                lr = random.choice([0, 1])
+                if lr == 0:
+                    for client_idx, client in enumerate(clients):
+                        if client_idx == 0:
+                            missing_ratio[client, col] = mech[0]
+                            missing_mechanism[client, col] = mechs[mech[1]]
+                        else:
+                            missing_ratio[client, col] = mech_compl[0]
+                            missing_mechanism[client, col] = mechs[mech_compl[1]]
+                else:
+                    for client_idx, client in enumerate(clients):
+                        if client_idx == 0:
+                            missing_ratio[client, col] = mech_compl[0]
+                            missing_mechanism[client, col] = mechs[mech_compl[1]]
+                        else:
+                            missing_ratio[client, col] = mech[0]
+                            missing_mechanism[client, col] = mechs[mech[1]]
+    else:
+        raise ValueError(f'strategy not found, strategy: {strategy}')
+
+    # recontruct missing ratios and missing mechanisms to be consistent with previous interface
+    ret = []
+    for i in range(n_clients):
+        mr = list(missing_ratio[i])
+        mm = list(missing_mechanism[i])
+        mf = list(cols)
+        ret.append({"missing_ratio": mr, "missing_mechanism": mm, "missing_features": mf})
+
+    return ret
 
 
 ########################################################################################################################

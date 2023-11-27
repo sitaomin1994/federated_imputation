@@ -36,7 +36,7 @@ def simulate_nan_mnar_sigmoid(data, cols, missing_ratio, missing_func, strict=Fa
 # Self Censoring Quantile
 ########################################################################################################################
 def simulate_nan_mnar_quantile(
-		data, cols, missing_ratio, missing_func='left', strict=True, seed=201030
+		data, cols, missing_ratios, missing_funcs='left', strict=True, seed=201030
 ):
 
 	# find the columns that are not to be adding missing values
@@ -44,10 +44,19 @@ def simulate_nan_mnar_quantile(
 
 	for col in cols:
 
-		if isinstance(missing_ratio, dict):
-			missing_ratio = missing_ratio[col]
+		if isinstance(missing_ratios, dict):
+			missing_ratio = missing_ratios[col]
+		elif isinstance(missing_ratios, list):
+			missing_ratio = missing_ratios[cols.index(col)]
 		else:
-			missing_ratio = missing_ratio
+			missing_ratio = missing_ratios
+
+		if isinstance(missing_funcs, dict):
+			missing_func = missing_funcs[col]
+		elif isinstance(missing_funcs, list):
+			missing_func = missing_funcs[cols.index(col)]
+		else:
+			missing_func = missing_funcs
 
 		# set the seed
 		seed = (seed + 10087651) % (2 ** 32 - 1)
