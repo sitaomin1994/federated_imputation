@@ -4,8 +4,7 @@ experiment_marker:
   - num_clients
   - server@imp_round
 defaults:
-  - config_tmpl: imp_pc2
-  - config_vars/imp_pc2:
-      - genetic_exp1
-      - genetic_exp2
+  - config_tmpl: imp_new
+  - config_vars/imp_test:
+      - new_exp3
   - _self_
