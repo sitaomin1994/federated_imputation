@@ -230,7 +230,7 @@ class Experiment:
 
         elif mtp:
             seed = configuration['experiment']['random_seed']
-            seeds = [(seed + 10087 * i) % (2 ^ 23) for i in range(n_rounds)]
+            seeds = [(seed + 10087 * i) % (2 ^ 40) for i in range(n_rounds)]
             rounds = list(range(n_rounds))
             results = []
             # multiprocessing
