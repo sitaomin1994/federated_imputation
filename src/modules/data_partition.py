@@ -234,7 +234,7 @@ def data_partition(strategy, params, data, n_clients, seed=201030, regression=Fa
     elif strategy == 'sample-uneven10dir':
         sample_seed = 211 + seed
         np.random.seed(sample_seed)
-        sizes = noniid_sample_dirichlet(data.shape[0], 10, 0.1, 300, data.shape[0]*0.5, seed = sample_seed)
+        sizes = noniid_sample_dirichlet(data.shape[0], 10, 0.2, 400, data.shape[0]*0.5, seed = sample_seed)
         sample_fracs = sizes
         sample_fracs = [sample_frac / data.shape[0] for sample_frac in sample_fracs]
         ret = []

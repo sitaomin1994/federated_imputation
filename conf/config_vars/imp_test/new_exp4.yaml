@@ -2,7 +2,7 @@
 new_exp2:
   # dataset_name
   - name: dataset_name
-    value: [genetic, heart, mimiciii_mo2]
+    value: [mimiciii_mo2, heart]
     keys:
       - data
       - dataset_name
@@ -17,7 +17,7 @@ new_exp2:
 
   # data partition
   - name: data_partition
-    value: [sample-evenly]
+    value: [sample-evenly, sample-uneven10range, sample-unevenhs, sample-uneven10dir]
     save_mode: dir3
     keys:
       - data_partition
@@ -27,9 +27,7 @@ new_exp2:
   - name: mm_strategy
     value:
       #- s33
-      - s32
-      - s33
-      #- random@mrl=0.3_mrr=0.7_mm=mnarlrq
+      - random2@mrl=0.3_mrr=0.7_mm=mnarlrq
     save_mode: dir4
     keys:
       - missing_simulate

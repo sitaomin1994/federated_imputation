@@ -37,6 +37,23 @@ def test_load_scenario3_s31():
     print(ret)
 
 
+def test_load_scenario3_s32():
+    n_clients = 10
+    cols = [0, 1, 2, 3, 4, 5, 6, 7]
+    strategy = 's32'
+
+    ret = load_scenario3(n_clients, cols, strategy, seed=33)
+    print(ret)
+
+def test_load_scenario3_s33():
+    n_clients = 10
+    cols = [0, 1, 2, 3, 4, 5, 6, 7]
+    strategy = 's33'
+
+    ret = load_scenario3(n_clients, cols, strategy, seed=33)
+    print(ret)
+
+
 def test_load_scenario3_s4():
     n_clients = 10
     cols = [0, 1, 2, 3, 4, 5, 6, 7]
