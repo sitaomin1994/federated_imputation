@@ -36,7 +36,7 @@ def main_func(
 
     rets, stat_trackers = [], []
     for repeat in range(repeats):
-        new_seed = (seed + 10087 * repeat) % (2 ^ 23)
+        new_seed = (seed + 10087 * repeat)
         #####################################################################################################
         # Create clients
         #####################################################################################################
@@ -238,7 +238,7 @@ class Experiment:
 
         elif mtp:
             seed = configuration['experiment']['random_seed']
-            seeds = [(seed + 10087 * i) % (2 ^ 40) for i in range(n_rounds)]
+            seeds = [(seed + 10087 * i) for i in range(n_rounds)]
             rounds = list(range(n_rounds))
             results = []
             # multiprocessing

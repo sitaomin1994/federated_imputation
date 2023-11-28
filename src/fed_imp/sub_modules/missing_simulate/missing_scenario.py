@@ -108,6 +108,40 @@ def load_scenario3(n_clients, cols, mm_strategy, seed=0):
             missing_mechanism[client_idx, col] = mechs[mm]
             missing_mechanism[np.arange(missing_mechanism.shape[0]) != client_idx, col] = mechs[1 - mm]
 
+    elif strategy == 's31':
+        mech_list = [(0.3, 0), (0.4, 0), (0.5, 0), (0.6, 0), (0.7, 0), (0.3, 1), (0.4, 1), (0.6, 1), (0.7, 1)]
+        mechs = ['mnar_quantile_left', 'mnar_quantile_right']
+        missing_ratio = np.zeros((n_clients, len(cols)))
+        missing_mechanism = np.empty((n_clients, len(cols)), dtype='U20')
+
+        # sample
+        np.random.seed(seed)
+        cols_mechs = np.random.choice(np.arange(len(mech_list)), len(cols))
+        client_idxs = np.random.choice(np.arange(n_clients), len(cols))
+        for col in range(len(cols)):
+            left_mech = [(0.3, 0), (0.4, 0), (0.5, 0), (0.6, 0), (0.7, 0)]
+            right_mech = [(0.3, 1), (0.4, 1), (0.5, 1), (0.6, 1), (0.7, 1)]
+            mm = int(mech_list[cols_mechs[col]][1])
+            mr = mech_list[cols_mechs[col]][0]
+            if mm == 0:
+                imperfect_mechs = [item for item in right_mech if item[0] != 1 - mr]
+            else:
+                imperfect_mechs = [item for item in left_mech if item[0] != 1 - mr]
+            random.seed(seed + col)
+            imperfect_mech = random.sample(imperfect_mechs, 1)[0]
+            mm2 = int(imperfect_mech[1])
+            mr2 = imperfect_mech[0]
+
+            # randomly select a client
+            client_idx = client_idxs[col]
+            # assign missing ratio
+            missing_ratio[client_idx, col] = mr
+            missing_ratio[np.arange(missing_ratio.shape[0]) != client_idx, col] = mr2
+
+            # assign mechanism
+            missing_mechanism[client_idx, col] = mechs[mm]
+            missing_mechanism[np.arange(missing_mechanism.shape[0]) != client_idx, col] = mechs[mm2]
+
     elif strategy == 's4':
         assert n_clients == 10
         client_clusters = [(1, 2), (3, 4, 5), (6, 7, 8, 9)]

@@ -22,3 +22,14 @@ def test_data_partition_uneven10range():
 
     for item in ret:
         print(item.shape)
+
+
+def test_data_partition_unevenhs():
+    data = np.ones((18000, 10))
+
+    ret = data_partition(
+        strategy='sample-unevenhs', params = None,  data=data, n_clients=10, seed=1203, regression=False
+    )
+
+    for item in ret:
+        print(item.shape)

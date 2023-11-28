@@ -8,7 +8,7 @@ from imblearn.over_sampling import SMOTE, RandomOverSampler
 from imblearn.combine import SMOTETomek, SMOTEENN
 from imblearn.under_sampling import RandomUnderSampler
 import random
-
+from src.utils import set_seed
 
 class SimpleClient:
     """
@@ -89,7 +89,7 @@ class SimpleClient:
         pred_model = self.pred_model
 
         # pred model1
-        torch.manual_seed(self.seed)
+        set_seed(self.seed)
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         pred_model.train()
         pred_model.to(device)
@@ -133,6 +133,7 @@ class SimpleClient:
 
     def pred_data_setup(self, batch_size):
 
+        set_seed(self.seed)
         self.local_pred_dataset = construct_tensor_dataset(self.train_data[:, :-1], self.train_data[:, -1])
         self.local_pred_dataset_val = None
 

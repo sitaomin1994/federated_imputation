@@ -17,7 +17,7 @@ new_exp2:
 
   # data partition
   - name: data_partition
-    value: [sample-uneven10dir]
+    value: [sample-evenly]
     save_mode: dir3
     keys:
       - data_partition
@@ -26,8 +26,9 @@ new_exp2:
   # missing scenario
   - name: mm_strategy
     value:
-      - random2@mrl=0.3_mrr=0.7_mm=mnarlrq
-      - random@mrl=0.3_mrr=0.7_mm=mnarlrq
+      - s31
+      #- random2@mrl=0.2_mrr=0.8_mm=mnarlrq
+      #- random@mrl=0.3_mrr=0.7_mm=mnarlrq
     save_mode: dir4
     keys:
       - missing_simulate
