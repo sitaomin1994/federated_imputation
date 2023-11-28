@@ -234,10 +234,12 @@ def data_partition(strategy, params, data, n_clients, seed=201030, regression=Fa
     elif strategy == 'sample-uneven10dir':
         sample_seed = 211 + seed
         np.random.seed(sample_seed)
-        sizes = noniid_sample_dirichlet(data.shape[0], 10, 0.2, 700, data.shape[0]*0.3)
+        sizes = noniid_sample_dirichlet(data.shape[0], 10, 0.2, 400, data.shape[0]*0.5, seed = sample_seed)
         sample_fracs = sizes
         sample_fracs = [sample_frac / data.shape[0] for sample_frac in sample_fracs]
         ret = []
+        print(sample_seed)
+        np.sum(sample_fracs)
         for idx, sample_frac in enumerate(sample_fracs):
             new_seed = seed + idx * seed + 990983
             if sample_frac == 1.0:
@@ -260,19 +262,18 @@ def data_partition(strategy, params, data, n_clients, seed=201030, regression=Fa
         sample_seed = 211 + seed
         random.seed(sample_seed)
         sample_fracs = []
-        for i in range(1):
-            sample_fracs.append(random.randint(4000, 4500))
+        for i in range(3):
+            sample_fracs.append(random.randint(3000, 4000))
         for i in range(4):
             n1 = random.randint(500, 1000)
             sample_fracs.append(n1)
         for i in range(3):
-            n1 = random.randint(1500, 3000)
+            n1 = random.randint(1500, 2000)
             sample_fracs.append(n1)
-        for i in range(1):
-            n1 = random.randint(1000, 1500)
-            sample_fracs.append(n1)
-        sample_fracs.append(data.shape[0] - sum(sample_fracs))
+
         np.random.seed(sample_seed)
+        np.random.shuffle(sample_fracs)
+        print(sample_fracs)
         sample_fracs = [sample_frac / 18000 for sample_frac in sample_fracs]
         ret = []
         for idx, sample_frac in enumerate(sample_fracs):
@@ -294,13 +295,40 @@ def data_partition(strategy, params, data, n_clients, seed=201030, regression=Fa
                 ret.append(np.concatenate([X_test, y_test.reshape(-1, 1)], axis=1).copy())
         return ret
 
+    elif strategy == 'sample-unevenhs':
+        # get sample sizes
+        np.random.seed(seed)
+        sample_fracs = [9000/18000] + [1000 /18000 for _ in range(n_clients - 1)]
+        np.random.shuffle(sample_fracs)
+        print(sample_fracs)
+        ret = []
+        for idx, sample_frac in enumerate(sample_fracs):
+            new_seed = seed + idx * seed + 990983
+            if sample_frac == 1.0:
+                ret.append(data.copy())
+            else:
+                # new_seed = seed
+                if regression:
+                    _, X_test, _, y_test = train_test_split(
+                        data[:, :-1], data[:, -1], test_size=sample_frac,
+                        random_state=(new_seed) % (2 ** 32)
+                    )
+                else:
+                    _, X_test, _, y_test = train_test_split(
+                        data[:, :-1], data[:, -1], test_size=sample_frac,
+                        random_state=(new_seed) % (2 ** 32), stratify=data[:, -1]
+                    )
+                ret.append(np.concatenate([X_test, y_test.reshape(-1, 1)], axis=1).copy())
+        print([r.shape[0] for r in ret])
+        return ret
+
     # TODO: add parameters - alpha, min_samples, max_samples, ratio to configuration files
     # TODO: unit test for each of scenarios
     else:
         raise ValueError('partition strategy not found')
 
 
-def noniid_sample_dirichlet(num_population, n_clients, alpha, min_samples, max_samples, max_repeat_times=5e6):
+def noniid_sample_dirichlet(num_population, n_clients, alpha, min_samples, max_samples, max_repeat_times=5e6, seed = None):
     """
     Perform non-iid sampling using dirichlet distribution non-iidness control by alpha,
     larger alpha, more uniform distributed, smaller alpha, more skewed distributed
@@ -320,13 +348,14 @@ def noniid_sample_dirichlet(num_population, n_clients, alpha, min_samples, max_s
 
     while min_size < min_samples or max_size > max_samples:
         repeat_times += 1
+        np.random.seed(seed + repeat_times)
         proportions = np.random.dirichlet(np.repeat(alpha, n_clients))
         sizes = num_population * proportions
         min_size = min(sizes)
         max_size = max(sizes)
         if repeat_times > max_repeat_times:
             print('max repeat times reached')
-            break
+            raise ValueError('max repeat times reached')
 
     print(repeat_times, sizes)
     return list(sizes)

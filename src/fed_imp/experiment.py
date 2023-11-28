@@ -19,6 +19,7 @@ import multiprocessing as mp
 import itertools
 from config import settings
 from imblearn.over_sampling import SMOTE, RandomOverSampler, ADASYN
+from imblearn.under_sampling import RandomUnderSampler
 import pandas as pd
 from src.hyper_params import Hyperparameters
 
@@ -35,7 +36,7 @@ def main_func(
 
     rets, stat_trackers = [], []
     for repeat in range(repeats):
-        new_seed = (seed + 10087 * repeat) % (2 ^ 23)
+        new_seed = (seed + 10087 * repeat)
         #####################################################################################################
         # Create clients
         #####################################################################################################
@@ -182,6 +183,13 @@ class Experiment:
             ros = RandomOverSampler(random_state=seed)
             X_train, y_train = ros.fit_resample(X_train, y_train)
             train_data = pd.DataFrame(np.concatenate([X_train, y_train.reshape(-1, 1)], axis=1), columns=columns)
+        elif imbalance_strategy == 'undersampling':
+            columns = train_data.columns
+            X_train = train_data.iloc[:, :-1].values
+            y_train = train_data.iloc[:, -1].values
+            ros = RandomUnderSampler(random_state=seed)
+            X_train, y_train = ros.fit_resample(X_train, y_train)
+            train_data = pd.DataFrame(np.concatenate([X_train, y_train.reshape(-1, 1)], axis=1), columns=columns)
         elif imbalance_strategy == 'smote':
             columns = train_data.columns
             X_train = train_data.iloc[:, :-1].values
@@ -230,7 +238,7 @@ class Experiment:
 
         elif mtp:
             seed = configuration['experiment']['random_seed']
-            seeds = [(seed + 10087 * i) % (2 ^ 40) for i in range(n_rounds)]
+            seeds = [(seed + 10087 * i) for i in range(n_rounds)]
             rounds = list(range(n_rounds))
             results = []
             # multiprocessing

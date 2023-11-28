@@ -6,14 +6,17 @@ import numpy as np
 
 import os
 type = ''
-datasets = ['codon', 'codrna', 'mimic_mo2', 'genetic', 'heart']
-scenarios = ["random2@mrl=0.3_mrr=0.7_mm=mnarlrq", "random@mrl=0.3_mrr=0.7_mm=mnarlrq"]
-#scenarios = ['s3', 's4']
-name = 'random'
+#datasets = ['codon', 'codrna', 'mimiciii_mo2', 'genetic', 'heart']
+datasets = ['codrna']
+#scenarios = ["random2@mrl=0.3_mrr=0.7_mm=mnarlrq", "random@mrl=0.3_mrr=0.7_mm=mnarlrq"]
+scenarios = ["random2@mrl=0.2_mrr=0.8_mm=mnarlrq"]
+#scenarios = ['s31', 's32', 's33']
+name = 'random28'
+pred = False
 
 ############################################################################################################################
 # read files
-dir_path = './results/raw_results/fed_imp_pc2/1126/'
+dir_path = './results/raw_results/fed_imp_pc2/1128/'
 print(dir_path)
 all_dirs, all_files = [], []
 for root, dirs, files in os.walk(dir_path):
@@ -42,7 +45,6 @@ for file in all_files:
 
 for file in filtered_files:
     print(file)
-
 print(len(filtered_files))
 
 # def calculate_group_avg(data):
@@ -137,7 +139,71 @@ columns = ['dataset', 'n_clients', 'sample_size', 'mechanism', 'method'] + [f'rm
 df2.columns = columns
 df2 = df2.sort_values(['dataset', 'n_clients', 'mechanism', 'method'])
 
+#####################################################################################################
+if pred:
+    pred_dir_path = './results/raw_results/fed_imp_pc2_pred_fed/1127/'
+    all_pred_dirs, all_pred_files = [], []
+    for root, dirs, files in os.walk(pred_dir_path):
+        for dir in dirs:
+            all_pred_dirs.append(os.path.join(root, dir))
+        for file in files:
+            all_pred_files.append(os.path.join(root, file))
+
+    filtered_files_pred = []
+    for file in all_pred_files:
+        if file.endswith('.json'):
+            needed1 = False
+            for keyword in datasets:
+                if keyword in file:
+                    needed1 = True
+                    break
+            needed2 = False
+            for keyword in scenarios:
+                if keyword in file:
+                    needed2 = True
+                    break
+            if needed1 and needed2:
+                filtered_files_pred.append(file.replace(pred_dir_path, ''))
+
+    datas = []
+    datas_clients = []
+    for file in filtered_files_pred:
+        with open(os.path.join(pred_dir_path+file), 'r') as fp:
+            data = json.load(fp)
+            file_record = []
+            file_record.extend(file.split('\\'))
+            file_record.extend([data['results']['accu_mean']*100, data['results']['f1_mean']*100, data['results']['roc_mean']*100, data['results']['prc_mean']*100 if 'prc_mean' in data['results'] else None])
+            
+            # calculate rmse for central and peripheries
+            # if "central" in data['params']["file_name"]:
+            #     file_record.extend([None for _ in range(6)])
+            # else:
+            #     c_ret, p_ret = calculate_group_avg(data)
+            #     file_record.extend(c_ret)
+            #     file_record.extend(p_ret)
+            
+            #file_record.append(data['results']['accu_mean'])
+            datas.append(file_record)
+    df_pred = pd.DataFrame(datas)
+    print(df_pred[4])
+    def func1(x):
+        x = x.replace("_fedavg_mlp_pytorch_pred.json", "")
+        for key in mapping2:
+            if key in x:
+                return x.replace(key, mapping2[key])
+        return x
+    df_pred[4] = df_pred[4].apply(lambda x: func1(x) if isinstance(x, str) else x)
+    df_pred[3] = df_pred[3].apply(lambda x: x.split('@')[0])
+    df_pred[4] = pd.Categorical(df_pred[4], categories=order1, ordered=True)
+    df_pred[1] = df_pred[1].astype(int)
+    columns = ['dataset', 'n_clients', 'sample_size', 'mechanism', 'method', 'accu', 'f1', 'roc', 'prc']
+    df_pred.columns = columns
+    df_pred = df_pred.sort_values(['dataset', 'n_clients', 'mechanism', 'method'])
+    print(df_pred)
+
 # df = df.sort_values([2, 3, 4])
 with pd.ExcelWriter(os.path.join(output_dir, 'results{}.xlsx'.format(name))) as writer:
     df.to_excel(writer, index=False, sheet_name = ''.join([item.split('@')[0] for item in scenarios]))
     df2.to_excel(writer, index=False, sheet_name = ''.join([item.split('@')[0] for item in scenarios]) + '_clients')
+    if pred:
+        df_pred.to_excel(writer, index=False, sheet_name = ''.join([item.split('@')[0] for item in scenarios]) + '_pred')

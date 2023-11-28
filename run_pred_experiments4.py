@@ -237,22 +237,23 @@ if __name__ == '__main__':
             "regression": False,
         },
         "server_config": {
-            'pred_rounds': 1,
+            'pred_rounds': 5,
             'seed': 21,
             "metric": "f1"
         }
     }
 
-    pred_rounds = 1
+    pred_rounds = 5
     seed = 21
     mtp = True
-    datasets = ['1127/codrna']
+
+    datasets = ['1126/genetic']
     train_params = [
         {"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
         # {"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
         # {"num_hiddens": 32, "batch_size": 128, "lr": 0.001, "weight_decay": 0.001, 'imbalance': 'smotetm'},
-        # {"num_hiddens": 64, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
-        # {"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
+        #{"num_hiddens": 64, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
+        #{"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
         # {"num_hiddens": 64, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None}
     ]
 
@@ -267,7 +268,8 @@ if __name__ == '__main__':
         for sample_size, r in zip(sample_sizes, rs):
             n_clients = [10]
             #n_clients = [5,7,9]
-            scenario = ["random2@mrl=0.3_mrr=0.7_mm=mnarlrq", "random@mrl=0.3_mrr=0.7_mm=mnarlrq"]
+
+            scenario = ['s4']#"random2@mrl=0.2_mrr=0.8_mm=mnarlrq"]
 
             main_config = copy.deepcopy(main_config_tmpl)
             main_config['data'] = dataset
@@ -284,7 +286,9 @@ if __name__ == '__main__':
             server_config["server_pred_config"]["train_params"]["weight_decay"] = train_param["weight_decay"]
 
             server_config['server_name'] = 'fedavg_mlp_pytorch_pred'
-            methods = ["fedavg-s", 'fedmechw_new']  # 'fedmechw'
+
+            #methods = ["fedavg-s", 'fedmechw_new']  # 'fedmechw'
+            methods = ['fedavg-s']
 
             prediction(main_config, server_config, pred_rounds, seed, mtp=mtp, methods=methods)
 
