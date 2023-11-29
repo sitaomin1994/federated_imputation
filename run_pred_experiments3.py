@@ -247,7 +247,7 @@ if __name__ == '__main__':
     pred_rounds = 1
     seed = 21
     mtp = True
-    datasets = ['1104/genetic']
+    datasets = ['1127/codrna']
     train_params = [
         # {"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
         # {"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
