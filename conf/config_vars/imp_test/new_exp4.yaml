@@ -2,7 +2,7 @@
 new_exp2:
   # dataset_name
   - name: dataset_name
-    value: [mimiciii_mo2, heart]
+    value: [codon, mimiciii_mo2]
     keys:
       - data
       - dataset_name
