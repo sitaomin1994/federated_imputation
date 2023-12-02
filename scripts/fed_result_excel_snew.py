@@ -8,109 +8,81 @@ import os
 type = ''
 datasets = ['codon', 'codrna', 'mimiciii', 'genetic', 'heart']
 #datasets = ['codrna']
-scenarios = ["ideal_perfect", "perfect_s3", "imperfect_s32", "one_side_comp_s33", "no_comp"]
+#scenarios = ["ideal_perfect", "perfect_s3", "imperfect_s32", "one_side_comp_s33", "no_comp"]
+scenarios = ['sample-evenly', 'sample-uneven10range', 'sample-uneven10dir', 'sample-unevenhs']
 #scenarios = ["random2@mrl=0.2_mrr=0.8_mm=mnarlrq"]
 #scenarios = ['s31', 's32', 's33']
 pred = False
+exp = 'random'
 
 ############################################################################################################################
-# read files
-dir_path = './results/raw_results/fed_imp_pc2/new/'
-print(dir_path)
-all_dirs, all_files = [], []
-for root, dirs, files in os.walk(dir_path):
-    for dir in dirs:
-        all_dirs.append(os.path.join(root, dir))
-    for file in files:
-        all_files.append(os.path.join(root, file))
+# read imp and pred files
+filtered_files = []
+dir_path1 = './results/raw_results/fed_imp_pc2/{}/'.format(exp)
+for dataset in datasets:
+    for scenario in scenarios:
+        path = dir_path1 + dataset + '/' + scenario + '/'
+        print(path)
+        all_dirs, all_files = [], []
+        for root, dirs, files in os.walk(path):
+            for dir in dirs:
+                all_dirs.append(os.path.join(root, dir))
+            for file in files:
+                all_files.append(os.path.join(root, file))
+        for file in all_files:
+            if file.endswith('.json'):
+                filtered_files.append(file)
+
+filtered_files_pred = []
+dir_path2 = './results/raw_results/fed_imp_pc2_pred_fed/{}/'.format(exp)
+for dataset in datasets:
+    for scenario in scenarios:
+        path = dir_path2 + dataset + '/' + scenario + '/'
+        print(path)
+        all_dirs, all_files = [], []
+        for root, dirs, files in os.walk(path):
+            for dir in dirs:
+                all_dirs.append(os.path.join(root, dir))
+            for file in files:
+                all_files.append(os.path.join(root, file))
+        for file in all_files:
+            if file.endswith('.json'):
+                filtered_files_pred.append(file)
 
 #####################################################################################################
-# filter files
-filtered_files = []
-for file in all_files:
-    if file.endswith('.json'):
-        needed1 = False
-        for keyword in datasets:
-            if keyword in file:
-                needed1 = True
-                break
-        needed2 = False
-        for keyword in scenarios:
-            if keyword in file:
-                needed2 = True
-                break
-        if needed1 and needed2:
-            filtered_files.append(file.replace(dir_path, ''))
-
-for file in filtered_files:
-    print(file)
-print(len(filtered_files))
-
-# def calculate_group_avg(data):
-#     rets_central, rets_peri = [], []
-#     for key, value in data["results"]["clients_imp_ret_clean"].items():
-#         ret = list(value.values())
-#         cluster1_client = float(np.array([float(np.array(item[-3:]).mean()) for item in ret[0:]]).mean())
-#         cluster2_clients = float(np.array([float(np.array(item[-3:]).mean()) for item in ret[5:]]).mean())
-#         rets_central.append(cluster1_client)
-#         rets_peri.append(cluster2_clients)
-       
-    
-#     return rets_central, rets_peri
-        
-datas = []
+datas, datas_pred = [], []
 #datas_clients = []
 for file in filtered_files:
-    with open(os.path.join(dir_path+file), 'r') as fp:
+    print(file)
+    with open(file, 'r') as fp:
         data = json.load(fp)
         file_record = []
-        file_record.extend(file.split('\\'))
+        file_record.extend(file.split('/')[-3:])
         file_record.extend(list(data['results']['avg_imp_final'].values())[0:3])
-        
-        # calculate rmse for central and peripheries
-        # if "central" in data['params']["file_name"]:
-        #     file_record.extend([None for _ in range(6)])
-        # else:
-        #     c_ret, p_ret = calculate_group_avg(data)
-        #     file_record.extend(c_ret)
-        #     file_record.extend(p_ret)
-        
-        #file_record.append(data['results']['accu_mean'])
-        print((len(file_record)))
-        if len(file_record) == 7:
-            print(file_record)
         datas.append(file_record)
-        
-        # file_record_clients = []
-        # file_record_clients.extend(file.split('\\'))
-        # clients_result_dict = data['results']["clients_imp_ret_clean"]
-        # keys = ['imp@rmse', 'imp@sliced_ws']
-        # for key in keys:
-        #     clients_result = list(clients_result_dict[key].values())[:-1]
-        #     clients_result = [np.array(item[-3:]).mean() for item in clients_result]
-        #     file_record_clients.extend(clients_result)
-        # datas_clients.append(file_record_clients)
+
+for file in filtered_files_pred:
+    with open(file, 'r') as fp:
+        data = json.load(fp)
+        file_record = []
+        file_record.extend(file.split('/')[-3:])
+        file_record.extend(
+            [data['results']['accu_mean']*100, data['results']['f1_mean']*100, data['results']['roc_mean']*100, 
+             data['results']['prc_mean']*100 if 'prc_mean' in data['results'] else None])
+        datas_pred.append(file_record)
         
 print(len(datas))
+print(len(datas_pred))
 df = pd.DataFrame(datas)
-#df2 = pd.DataFrame(datas_clients)
-print(df.head())
+df_pred = pd.DataFrame(datas_pred)
 print(df.shape)
-#print(df2.head())
-#print(df2.shape)
-
-output_dir = dir_path.replace('raw_results', 'processed_results')
-if not os.path.exists(output_dir):
-    os.makedirs(output_dir)
-
+print(df_pred.shape)
 mapping2 = {
     'central': 'central',
     'local': 'local',
     'fedavg-s': 'simpleavg',
-    'fedmechw': 'fedmechw'
+    'fedmechw_new': 'fedmechw_new'
 }
-
-#df = df.applymap(lambda x: mapping1[x] if x in mapping1 else x)
 def func(x):
     x = x.split('@')[0]
     x = x[3:]
@@ -121,15 +93,22 @@ def func(x):
     return x
 
 df[2] = df[2].apply(lambda x: func(x) if isinstance(x, str) else x)
-#df2[4] = df2[4].apply(lambda x: func(x) if isinstance(x, str) else x)
-#df2[3] = df2[3].apply(lambda x: x.split('@')[0])
-#
-order1 = ["central", 'local', 'simpleavg', 'fedmechw_new']
+df_pred[2] = df_pred[2].apply(lambda x: mapping2[x.replace('_fedavg_mlp_pytorch_pred.json', '')] if isinstance(x, str) else x)
 
-#df[3] = pd.Categorical(df[3], categories=order2, ordered=True)
+print(df.head())
+print(df_pred.head())
+
+df = pd.merge(df, df_pred, how='left', on=[0, 1, 2])
+print(df.shape)
+output_dir = dir_path1.replace('raw_results', 'processed_results')
+if not os.path.exists(output_dir):
+    os.makedirs(output_dir)
+
+#df = df.applymap(lambda x: mapping1[x] if x in mapping1 else x)
+order1 = ["central", 'local', 'simpleavg', 'fedmechw_new']
 print(df.head())
 df[2] = pd.Categorical(df[2], categories=order1, ordered=True)
-columns = ['dataset', 'scenario', 'method', 'rmse', 'ws', 'sliced-ws']
+columns = ['dataset', 'scenario', 'method', 'rmse', 'ws', 'sliced-ws', 'accu', 'f1', 'roc', 'prc']
 df.columns = columns
 df = df.sort_values(['dataset', 'scenario', 'method'])
 print(df)

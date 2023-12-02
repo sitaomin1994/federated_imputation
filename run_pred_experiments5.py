@@ -243,7 +243,7 @@ if __name__ == '__main__':
     pred_rounds = 1
     seed = 21
     mtp = True
-    datasets = ['random/codrna']
+    datasets = ['new/codrna']
     train_params = [
         #{"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
         {"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
@@ -259,7 +259,8 @@ if __name__ == '__main__':
         dataset = 'fed_imp_pc2/{}'.format(d)
 
         #####################################################################################
-        scenarios = ['sample-evenly', 'sample-uneven10dir', 'sample-uneven10range', 'sample-unevenhs']
+        #scenarios = ['sample-evenly', 'sample-uneven10dir', 'sample-uneven10range', 'sample-unevenhs']
+        scenarios = ['one_side_comp_s33']
         rs = ['0.5']
         for scenario in scenarios:
 
@@ -278,6 +279,6 @@ if __name__ == '__main__':
             server_config["server_pred_config"]["train_params"]["weight_decay"] = train_param["weight_decay"]
 
             server_config['server_name'] = 'fedavg_mlp_pytorch_pred'
-            methods = ['central', 'local']
+            methods = ['central', 'local', 'fedavg-s', 'fedmechw_new']
 
             prediction(main_config, server_config, pred_rounds, seed, mtp=mtp, methods=methods)
