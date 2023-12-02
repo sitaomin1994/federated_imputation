@@ -68,7 +68,8 @@ for file in filtered_files_pred:
         file_record.extend(file.split('/')[-3:])
         file_record.extend(
             [data['results']['accu_mean']*100, data['results']['f1_mean']*100, data['results']['roc_mean']*100, 
-             data['results']['prc_mean']*100 if 'prc_mean' in data['results'] else None])
+             data['results']['prc_mean']*100 if 'prc_mean' in data['results'] else None,
+             data['results']["f1_mean_std"]*100, data['results']["roc_mean_std"]*100])
         datas_pred.append(file_record)
         
 print(len(datas))
@@ -108,7 +109,7 @@ if not os.path.exists(output_dir):
 order1 = ["central", 'local', 'simpleavg', 'fedmechw_new']
 print(df.head())
 df[2] = pd.Categorical(df[2], categories=order1, ordered=True)
-columns = ['dataset', 'scenario', 'method', 'rmse', 'ws', 'sliced-ws', 'accu', 'f1', 'roc', 'prc']
+columns = ['dataset', 'scenario', 'method', 'rmse', 'ws', 'sliced-ws', 'accu', 'f1', 'roc', 'prc','f1_std', 'roc_std']
 df.columns = columns
 df = df.sort_values(['dataset', 'scenario', 'method'])
 print(df)

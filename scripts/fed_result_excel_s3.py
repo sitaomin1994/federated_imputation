@@ -172,7 +172,12 @@ if pred:
             data = json.load(fp)
             file_record = []
             file_record.extend(file.split('\\'))
-            file_record.extend([data['results']['accu_mean']*100, data['results']['f1_mean']*100, data['results']['roc_mean']*100, data['results']['prc_mean']*100 if 'prc_mean' in data['results'] else None])
+            file_record.extend([
+                data['results']['accu_mean']*100, 
+                data['results']['f1_mean']*100, 
+                data['results']['roc_mean']*100, 
+                data['results']['prc_mean']*100 if 'prc_mean' in data['results'] else None,
+                data["f1_mean_std"]*100, data["roc_mean_std"]*100])
             
             # calculate rmse for central and peripheries
             # if "central" in data['params']["file_name"]:
@@ -196,7 +201,7 @@ if pred:
     df_pred[3] = df_pred[3].apply(lambda x: x.split('@')[0])
     df_pred[4] = pd.Categorical(df_pred[4], categories=order1, ordered=True)
     df_pred[1] = df_pred[1].astype(int)
-    columns = ['dataset', 'n_clients', 'sample_size', 'mechanism', 'method', 'accu', 'f1', 'roc', 'prc']
+    columns = ['dataset', 'n_clients', 'sample_size', 'mechanism', 'method', 'accu', 'f1', 'roc', 'prc', 'f1_std', 'roc_std']
     df_pred.columns = columns
     df_pred = df_pred.sort_values(['dataset', 'n_clients', 'mechanism', 'method'])
     print(df_pred)
