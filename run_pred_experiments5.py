@@ -243,12 +243,12 @@ if __name__ == '__main__':
     pred_rounds = 3
     seed = 21
     mtp = True
-    datasets = ['random/heart']
+    datasets = ['new/codrna', 'new/mimiciii', 'new/genetic', 'new/heart' ]
     train_params = [
         #{"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
-        #{"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
-        #{"num_hiddens": 64, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
-        #{"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
+        {"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
+        {"num_hiddens": 64, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
+        {"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
         {"num_hiddens": 32, "batch_size": 128, "lr": 0.001, "weight_decay": 0.001, 'imbalance': 'smotetm'},
         # {"num_hiddens": 64, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None}
     ]
@@ -259,8 +259,8 @@ if __name__ == '__main__':
         dataset = 'fed_imp_pc2/{}'.format(d)
 
         #####################################################################################
-        scenarios = ['sample-evenly'] #'sample-uneven10dir', 'sample-uneven10range', 'sample-unevenhs']
-        #scenarios = ['one_side_comp_s33']
+        #scenarios = ['sample-evenly'] #'sample-uneven10dir', 'sample-uneven10range', 'sample-unevenhs']
+        scenarios = ['no_comp']
         rs = ['0.5']
         for scenario in scenarios:
 
