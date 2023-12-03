@@ -23,6 +23,8 @@ class StrategyImputation:
             self.initial_strategy = 'local'
         elif strategy == 'central':
             self.initial_strategy = 'local'
+        elif strategy == 'central2':
+            self.initial_strategy = 'local'
         elif strategy.startswith('fedavg'):
             self.initial_strategy = 'fedavg'
         elif strategy == 'testavg':
@@ -59,6 +61,9 @@ class StrategyImputation:
             agg_weight = None
         elif self.strategy == 'central':
             agg_weight = None
+        elif self.strategy == 'central2':
+            clients_weights = np.array(list(weights.values()))
+            agg_weight = clients_weights[-1, :]
         # ==============================================================================================================
         # Average Algorithm
         # ==============================================================================================================

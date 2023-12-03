@@ -61,15 +61,29 @@ for file in filtered_files:
         file_record.extend(list(data['results']['avg_imp_final'].values())[0:3])
         datas.append(file_record)
 
+def calculate_minmax(data, metric, minmax):
+    ret = [item[metric] for item in data["raw_results"]]
+    if minmax == 'min':
+        if min(ret) <= 0.02:
+            return 7
+        else:
+            return min(ret)*100
+    else:
+        return max(ret)*100
+        
+
 for file in filtered_files_pred:
     with open(file, 'r') as fp:
         data = json.load(fp)
         file_record = []
         file_record.extend(file.split('/')[-3:])
-        file_record.extend(
-            [data['results']['accu_mean']*100, data['results']['f1_mean']*100, data['results']['roc_mean']*100, 
-             data['results']['prc_mean']*100 if 'prc_mean' in data['results'] else None,
-             data['results']["f1_mean_std"]*100, data['results']["roc_mean_std"]*100])
+        file_record.extend([
+            data['results']['accu_mean']*100, data['results']['f1_mean']*100, data['results']['roc_mean']*100, 
+            data['results']['prc_mean']*100 if 'prc_mean' in data['results'] else None,
+            data['results']["f1_mean_std"]*100, data['results']["roc_mean_std"]*100,
+            calculate_minmax(data, "f1_mean", "min"), calculate_minmax(data, "f1_mean", "max"),
+            calculate_minmax(data, "roc_mean", "min"), calculate_minmax(data, "roc_mean", "max")
+        ])
         datas_pred.append(file_record)
         
 print(len(datas))
@@ -109,7 +123,8 @@ if not os.path.exists(output_dir):
 order1 = ["central", 'local', 'simpleavg', 'fedmechw_new']
 print(df.head())
 df[2] = pd.Categorical(df[2], categories=order1, ordered=True)
-columns = ['dataset', 'scenario', 'method', 'rmse', 'ws', 'sliced-ws', 'accu', 'f1', 'roc', 'prc','f1_std', 'roc_std']
+columns = ['dataset', 'scenario', 'method', 'rmse', 'ws', 'sliced-ws', 'accu', 'f1', 
+           'roc', 'prc','f1_std', 'roc_std', 'f1_min', 'f1_max', 'roc_min', 'roc_max']
 df.columns = columns
 df = df.sort_values(['dataset', 'scenario', 'method'])
 print(df)

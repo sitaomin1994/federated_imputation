@@ -127,7 +127,7 @@ def prediction(main_config, server_config_, pred_rounds, seed, mtp=False, method
                     ret = server.prediction()
                     rets.append(ret)
             else:
-                n_process = 5
+                n_process = 3
                 chunk_size = n_rounds // n_process
                 rounds = list(range(n_rounds))
 
@@ -226,7 +226,7 @@ if __name__ == '__main__':
                 "batch_size": 128,
                 "learning_rate": 0.001,
                 "weight_decay": 0.001,
-                "pred_round": 2000,
+                "pred_round": 1000,
                 "pred_local_epochs": 3,
                 'local_epoch': 5,
                 'sample_pct': 1
@@ -269,7 +269,7 @@ if __name__ == '__main__':
             main_config['n_clients'] = [10]
             main_config['sample_size'] = 'sample-evenly'
             main_config['scenario_list'] = [scenario]
-            main_config["n_rounds"] = 5
+            main_config["n_rounds"] = 3
             main_config['imbalance'] = train_param['imbalance']
 
             server_config = copy.deepcopy(server_config_tmpl)
@@ -279,6 +279,6 @@ if __name__ == '__main__':
             server_config["server_pred_config"]["train_params"]["weight_decay"] = train_param["weight_decay"]
 
             server_config['server_name'] = 'fedavg_mlp_pytorch_pred'
-            methods = ['fedavg-s', 'fedmechw_new']
+            methods = ['central', 'fedavg-s', 'fedmechw_new']
 
             prediction(main_config, server_config, pred_rounds, seed, mtp=mtp, methods=methods)
