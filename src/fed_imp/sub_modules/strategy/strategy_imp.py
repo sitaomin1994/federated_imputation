@@ -24,7 +24,7 @@ class StrategyImputation:
         elif strategy == 'central':
             self.initial_strategy = 'local'
         elif strategy == 'central2':
-            self.initial_strategy = 'local'
+            self.initial_strategy = 'central'
         elif strategy.startswith('fedavg'):
             self.initial_strategy = 'fedavg'
         elif strategy == 'testavg':
@@ -139,6 +139,10 @@ class StrategyImputation:
 
         if self.initial_strategy == 'local':
             agg_value = None
+
+        elif self.initial_strategy == 'central2':
+            values = np.array(values)
+            agg_value = values[-1, :]
 
         elif self.initial_strategy == 'fedavg':
             values = np.array(values)

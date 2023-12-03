@@ -234,7 +234,7 @@ if __name__ == '__main__':
                 "batch_size": 128,
                 "learning_rate": 0.001,
                 "weight_decay": 0.001,
-                "pred_round": 2000,
+                "pred_round": 300,
                 "pred_local_epochs": 3,
                 'local_epoch': 5,
                 'sample_pct': 1
@@ -251,7 +251,7 @@ if __name__ == '__main__':
     pred_rounds = 1
     seed = 21
     mtp = True
-    datasets = ['1202/genetic']
+    datasets = ['1203/mimiciii_mo2']
     train_params = [
         #{"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
         # {"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
@@ -279,7 +279,7 @@ if __name__ == '__main__':
             main_config['n_clients'] = n_clients
             main_config['sample_size'] = sample_size
             main_config['scenario_list'] = scenario
-            main_config["n_rounds"] = 20
+            main_config["n_rounds"] = 10
             main_config['imbalance'] = train_param['imbalance']
 
             server_config = copy.deepcopy(server_config_tmpl)
@@ -290,9 +290,9 @@ if __name__ == '__main__':
 
             server_config['server_name'] = 'fedavg_mlp_pytorch_pred'
             # methods = ["fedavg-s", 'fedmechw_new']  # 'fedmechw'
-            methods = ["fedmechw_new"]
+            methods = ["central"]
 
-            prediction(main_config, server_config, pred_rounds, seed, mtp=mtp, methods=methods, random_select=10)
+            prediction(main_config, server_config, pred_rounds, seed, mtp=mtp, methods=methods, random_select=None)
 
     # ####################################################################################
     # # Scenario new 1

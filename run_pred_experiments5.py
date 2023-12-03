@@ -226,7 +226,7 @@ if __name__ == '__main__':
                 "batch_size": 128,
                 "learning_rate": 0.001,
                 "weight_decay": 0.001,
-                "pred_round": 1000,
+                "pred_round": 400,
                 "pred_local_epochs": 3,
                 'local_epoch': 5,
                 'sample_pct': 1
@@ -243,12 +243,12 @@ if __name__ == '__main__':
     pred_rounds = 3
     seed = 21
     mtp = True
-    datasets = ['new/codrna', 'new/mimiciii', 'new/genetic', 'new/heart' ]
+    datasets = ['new/heart' ]
     train_params = [
         #{"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
-        {"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
-        {"num_hiddens": 64, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
-        {"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
+        #{"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
+        #{"num_hiddens": 64, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
+        #{"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
         {"num_hiddens": 32, "batch_size": 128, "lr": 0.001, "weight_decay": 0.001, 'imbalance': 'smotetm'},
         # {"num_hiddens": 64, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None}
     ]
@@ -279,6 +279,6 @@ if __name__ == '__main__':
             server_config["server_pred_config"]["train_params"]["weight_decay"] = train_param["weight_decay"]
 
             server_config['server_name'] = 'fedavg_mlp_pytorch_pred'
-            methods = ['central', 'fedavg-s', 'fedmechw_new']
+            methods = ['local']
 
             prediction(main_config, server_config, pred_rounds, seed, mtp=mtp, methods=methods)

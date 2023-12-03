@@ -42,7 +42,7 @@ new_exp2:
 
   # aggregation strategy
   - name: agg_strategy
-    value: [central]
+    value: [local]
     save_mode:
     keys:
       - agg_strategy_imp
