@@ -249,7 +249,7 @@ class Experiment:
                 results.extend(ret[0])
 
         elif mtp:
-            #seed = configuration['experiment']['random_seed']
+            seed = configuration['experiment']['random_seed']
             seeds = [(seed + 10087 * i) for i in range(n_rounds)]
             #seeds = [i for i in range(n_rounds)]
             rounds = list(range(n_rounds))
