@@ -45,7 +45,7 @@ def main_prediction(data_dir, server_name, server_config, server_pred_config, ro
     return ret
 
 
-def prediction(main_config, server_config_, pred_rounds, seed, mtp=False, methods=None):
+def prediction(main_config, server_config_, pred_rounds, seed, mtp=False, methods=None, random_select=None):
     dataname = main_config["data"]
     n_clients_list = main_config["n_clients"]
     sample_size = main_config["sample_size"]
@@ -133,6 +133,11 @@ def prediction(main_config, server_config_, pred_rounds, seed, mtp=False, method
                     if n_process > 10: n_process = 10
                     chunk_size = n_rounds // n_process
                     rounds = list(range(n_rounds))
+
+                    if random_select:
+                        np.random.seed(5)
+                        rounds = np.random.choice(rounds, random_select, replace=False)
+                    print(rounds)
 
                     with mp.Pool(n_process) as pool:
                         process_args = [
@@ -229,7 +234,7 @@ if __name__ == '__main__':
                 "batch_size": 128,
                 "learning_rate": 0.001,
                 "weight_decay": 0.001,
-                "pred_round": 200,
+                "pred_round": 2000,
                 "pred_local_epochs": 3,
                 'local_epoch': 5,
                 'sample_pct': 1
@@ -246,20 +251,20 @@ if __name__ == '__main__':
     pred_rounds = 1
     seed = 21
     mtp = True
-    datasets = ['1202/codrna']
+    datasets = ['1202/genetic']
     train_params = [
-        {"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
+        #{"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
         # {"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
         # {"num_hiddens": 64, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
-        # {"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
-        # {"num_hiddens": 32, "batch_size": 128, "lr": 0.001, "weight_decay": 0.001, 'imbalance': 'smotetm'},
-        # {"num_hiddens": 64, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None}
+        {"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
+       # {"num_hiddens": 32, "batch_size": 128, "lr": 0.001, "weight_decay": 0.001, 'imbalance': 'smotetm'},
+        #{"num_hiddens": 64, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None}
     ]
 
     ####################################################################################
     # Scenario new 1
     for d, train_param in zip(datasets, train_params):
-        dataset = 'fed_imp_pc1/{}'.format(d)
+        dataset = 'fed_imp_pc2/{}'.format(d)
 
         #####################################################################################
         sample_sizes = ['sample-evenly']
@@ -285,9 +290,9 @@ if __name__ == '__main__':
 
             server_config['server_name'] = 'fedavg_mlp_pytorch_pred'
             # methods = ["fedavg-s", 'fedmechw_new']  # 'fedmechw'
-            methods = ['fedavg-s']
+            methods = ["fedmechw_new"]
 
-            prediction(main_config, server_config, pred_rounds, seed, mtp=mtp, methods=methods)
+            prediction(main_config, server_config, pred_rounds, seed, mtp=mtp, methods=methods, random_select=10)
 
     # ####################################################################################
     # # Scenario new 1
