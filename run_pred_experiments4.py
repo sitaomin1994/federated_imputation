@@ -11,7 +11,6 @@ from loguru import logger
 
 
 def main_prediction(data_dir, server_name, server_config, server_pred_config, round_, imbalance):
-
     data_imp = np.load(os.path.join(data_dir, "imputed_data_{}.npy".format(round_)))
     data_true = np.load(os.path.join(data_dir, "origin_data_{}.npy".format(round_)))
     missing_mask = np.load(os.path.join(data_dir, "missing_mask_{}.npy".format(round_)))
@@ -30,7 +29,7 @@ def main_prediction(data_dir, server_name, server_config, server_pred_config, ro
             missing_mask=missing_masks[client_id],
             data_true=data_trues[client_id],
             data_test=test_data,
-            imbalance = imbalance,
+            imbalance=imbalance,
             regression=server_pred_config['regression']
         )
 
@@ -46,7 +45,7 @@ def main_prediction(data_dir, server_name, server_config, server_pred_config, ro
     return ret
 
 
-def prediction(main_config, server_config_, pred_rounds, seed, mtp=False, methods = None):
+def prediction(main_config, server_config_, pred_rounds, seed, mtp=False, methods=None):
     dataname = main_config["data"]
     n_clients_list = main_config["n_clients"]
     sample_size = main_config["sample_size"]
@@ -115,15 +114,15 @@ def prediction(main_config, server_config_, pred_rounds, seed, mtp=False, method
                                 missing_mask=missing_masks[client_id],
                                 data_true=data_trues[client_id],
                                 data_test=test_data,
-                                imbalance = imbalance,
-                                regression = server_pred_config['regression']
+                                imbalance=imbalance,
+                                regression=server_pred_config['regression']
                             )
 
                         # setup server
                         server = load_server(
                             server_name, clients=clients, server_config=server_config, pred_config=server_pred_config,
-                            test_data=test_data, base_model = server_pred_config["model_params"]['base_model'],
-                            regression = server_pred_config['regression']
+                            test_data=test_data, base_model=server_pred_config["model_params"]['base_model'],
+                            regression=server_pred_config['regression']
                         )
 
                         # prediction
@@ -131,6 +130,7 @@ def prediction(main_config, server_config_, pred_rounds, seed, mtp=False, method
                         rets.append(ret)
                 else:
                     n_process = n_rounds
+                    if n_process > 10: n_process = 10
                     chunk_size = n_rounds // n_process
                     rounds = list(range(n_rounds))
 
@@ -229,7 +229,7 @@ if __name__ == '__main__':
                 "batch_size": 128,
                 "learning_rate": 0.001,
                 "weight_decay": 0.001,
-                "pred_round": 2000,
+                "pred_round": 200,
                 "pred_local_epochs": 3,
                 'local_epoch': 5,
                 'sample_pct': 1
@@ -243,38 +243,38 @@ if __name__ == '__main__':
         }
     }
 
-    pred_rounds = 5
+    pred_rounds = 1
     seed = 21
     mtp = True
-    datasets = ['new/codon', 'new/codrna', 'new/mimiciii', 'new/genetic', 'new/heart']
+    datasets = ['1202/codrna']
     train_params = [
         {"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
-        {"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
-        {"num_hiddens": 64, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
-        {"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
-        {"num_hiddens": 32, "batch_size": 128, "lr": 0.001, "weight_decay": 0.001, 'imbalance': 'smotetm'},
+        # {"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
+        # {"num_hiddens": 64, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
+        # {"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
+        # {"num_hiddens": 32, "batch_size": 128, "lr": 0.001, "weight_decay": 0.001, 'imbalance': 'smotetm'},
         # {"num_hiddens": 64, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None}
     ]
 
     ####################################################################################
     # Scenario new 1
     for d, train_param in zip(datasets, train_params):
-        dataset = 'fed_imp_pc2/{}'.format(d)
+        dataset = 'fed_imp_pc1/{}'.format(d)
 
         #####################################################################################
         sample_sizes = ['sample-evenly']
         rs = ['0.5']
         for sample_size, r in zip(sample_sizes, rs):
             n_clients = [10]
-            #n_clients = [5,7,9]
-            scenario = ['s4']#"random2@mrl=0.2_mrr=0.8_mm=mnarlrq"]
+            # n_clients = [5,7,9]
+            scenario = ["random2@mrl=0.3_mrr=0.7_mm=mnarlrq"]  # "random2@mrl=0.2_mrr=0.8_mm=mnarlrq"]
 
             main_config = copy.deepcopy(main_config_tmpl)
             main_config['data'] = dataset
             main_config['n_clients'] = n_clients
             main_config['sample_size'] = sample_size
             main_config['scenario_list'] = scenario
-            main_config["n_rounds"] = 5
+            main_config["n_rounds"] = 20
             main_config['imbalance'] = train_param['imbalance']
 
             server_config = copy.deepcopy(server_config_tmpl)
@@ -284,7 +284,7 @@ if __name__ == '__main__':
             server_config["server_pred_config"]["train_params"]["weight_decay"] = train_param["weight_decay"]
 
             server_config['server_name'] = 'fedavg_mlp_pytorch_pred'
-            #methods = ["fedavg-s", 'fedmechw_new']  # 'fedmechw'
+            # methods = ["fedavg-s", 'fedmechw_new']  # 'fedmechw'
             methods = ['fedavg-s']
 
             prediction(main_config, server_config, pred_rounds, seed, mtp=mtp, methods=methods)
