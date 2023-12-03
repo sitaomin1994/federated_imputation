@@ -42,7 +42,7 @@ new_exp2:
 
   # aggregation strategy
   - name: agg_strategy
-    value: [fedavg-s]
+    value: [central]
     save_mode:
     keys:
       - agg_strategy_imp

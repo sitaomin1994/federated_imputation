@@ -274,7 +274,7 @@ if __name__ == '__main__':
             main_config['n_clients'] = n_clients
             main_config['sample_size'] = sample_size
             main_config['scenario_list'] = scenario
-            main_config["n_rounds"] = 20
+            main_config["n_rounds"] = 30
             main_config['imbalance'] = train_param['imbalance']
 
             server_config = copy.deepcopy(server_config_tmpl)
@@ -285,7 +285,7 @@ if __name__ == '__main__':
 
             server_config['server_name'] = 'fedavg_mlp_pytorch_pred'
             # methods = ["fedavg-s", 'fedmechw_new']  # 'fedmechw'
-            methods = ['fedavg-s']
+            methods = ['central']
 
             prediction(main_config, server_config, pred_rounds, seed, mtp=mtp, methods=methods)
 
