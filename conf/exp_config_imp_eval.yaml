@@ -1,8 +1,0 @@
-experiment_name: ms_eval_exp_new
-experiment_marker: gridsearch_mf1.0
-debug: false
-defaults:
-  - config_tmpl: imp_eval
-  - config_vars/imp_eval:
-      - var1
-  - _self_
