@@ -29,15 +29,6 @@ MS_MECHANISM_MAPPING = {
     23: 'mnar_sigmoid_tail',
 }
 
-COMPLEMENTARY_MECHANISMS = {
-    'basic': [(0.1, 0.9), (0.9, 0.1), (0.2, 0.8), (0.8, 0.2), (0.3, 0.7), (0.7, 0.3), (0.4, 0.6), (0.6, 0.4),
-              (0.5, 0.5)],
-    'more': [
-        (0.15, 0.85), (0.85, 0.15), (0.25, 0.75), (0.75, 0.25), (0.35, 0.65), (0.65, 0.35), (0.45, 0.55), (0.55, 0.45)
-    ]
-}
-
-
 ########################################################################################################################
 # Scenario functions
 ########################################################################################################################
@@ -63,30 +54,25 @@ def load_scenario3(n_clients, cols, mm_strategy, seed=0):
     # feature based strategy integrate missing mechanism and missing ratios
     strategy, params = parse_strategy(mm_strategy)
 
-    if strategy == "random":  # random@mrr=0.1_mrl=0.9_mm=mnarlrq
-        if params['mm'] == 'mnarlrq':
-            mm_list = ['mnar_quantile_left', 'mnar_quantile_right']
-        else:
-            raise ValueError(f'mm not found, params: {params}')
+    if strategy == "random":  # random scenario - each client radomly choose a mnar-left/right(q=0.3-0.7) mechanism for each feature
+        
+        mm_list = ['mnar_quantile_left', 'mnar_quantile_right']
         np.random.seed(seed)
-        missing_ratio = np.random.uniform(
-            float(params['mrl']), float(params['mrr']), (n_clients, len(cols)))
-        missing_mechanism = np.random.choice(mm_list, (n_clients, len(cols)))
-
-    elif strategy == "random2":  # random@mrr=0.1_mrl=0.9_mm=mnarlrq
-        if params['mm'] == 'mnarlrq':
-            mm_list = ['mnar_quantile_left', 'mnar_quantile_right']
-        else:
-            raise ValueError(f'mm not found, params: {params}')
-        np.random.seed(seed)
-        start = float(params['mrl'])
-        stop = float(params['mrr'])
-        step = int((stop - start) / 0.1 + 1)
-        mr_list = np.linspace(start, stop, step, endpoint=True)
+        step = int((0.7 - 0.3) / 0.1 + 1)
+        mr_list = np.linspace(0.3, 0.7, step, endpoint=True)
         missing_ratio = np.random.choice(mr_list, (n_clients, len(cols)))
         missing_mechanism = np.random.choice(mm_list, (n_clients, len(cols)))
+        
+    elif strategy == 'ideal':  # ideal scenario - 5 clients have mnar-left(0.5) and 5 clients have mnar-right(0.5) missing mechanism for each feature
+        
+        missing_ratio = np.ones((n_clients, len(cols)))*0.5
+        missing_mechanism = np.empty((n_clients, len(cols)), dtype='U20')
+      
+        missing_mechanism[0 : n_clients//2, :] = 'mnar_quantile_left'
+        missing_mechanism[n_clients//2 :, :] = 'mnar_quantile_right'
 
-    elif strategy == 's3':
+    elif strategy == 's1':   # perfect complementarity - one client vs rest with perfect complementarity with others
+        
         mech_list = [(0.3, 0), (0.4, 0), (0.5, 0), (0.6, 0), (0.7, 0), (0.3, 1), (0.4, 1), (0.6, 1), (0.7, 1)]
         mechs = ['mnar_quantile_left', 'mnar_quantile_right']
         missing_ratio = np.zeros((n_clients, len(cols)))
@@ -108,41 +94,7 @@ def load_scenario3(n_clients, cols, mm_strategy, seed=0):
             missing_mechanism[client_idx, col] = mechs[mm]
             missing_mechanism[np.arange(missing_mechanism.shape[0]) != client_idx, col] = mechs[1 - mm]
 
-    elif strategy == 's31':
-        mech_list = [(0.3, 0), (0.4, 0), (0.5, 0), (0.6, 0), (0.7, 0), (0.3, 1), (0.4, 1), (0.6, 1), (0.7, 1)]
-        mechs = ['mnar_quantile_left', 'mnar_quantile_right']
-        missing_ratio = np.zeros((n_clients, len(cols)))
-        missing_mechanism = np.empty((n_clients, len(cols)), dtype='U20')
-
-        # sample
-        np.random.seed(seed)
-        cols_mechs = np.random.choice(np.arange(len(mech_list)), len(cols))
-        client_idxs = np.random.choice(np.arange(n_clients), len(cols))
-        for col in range(len(cols)):
-            left_mech = [(0.3, 0), (0.4, 0), (0.5, 0), (0.6, 0), (0.7, 0)]
-            right_mech = [(0.3, 1), (0.4, 1), (0.5, 1), (0.6, 1), (0.7, 1)]
-            mm = int(mech_list[cols_mechs[col]][1])
-            mr = mech_list[cols_mechs[col]][0]
-            if mm == 0:
-                imperfect_mechs = [item for item in right_mech if not math.isclose(item[0], 1 - mr, rel_tol=1e-9)]
-            else:
-                imperfect_mechs = [item for item in left_mech if not math.isclose(item[0], 1 - mr, rel_tol=1e-9)]
-            random.seed(seed + col)
-            imperfect_mech = random.sample(imperfect_mechs, 1)[0]
-            mm2 = int(imperfect_mech[1])
-            mr2 = imperfect_mech[0]
-
-            # randomly select a client
-            client_idx = client_idxs[col]
-            # assign missing ratio
-            missing_ratio[client_idx, col] = mr
-            missing_ratio[np.arange(missing_ratio.shape[0]) != client_idx, col] = mr2
-
-            # assign mechanism
-            missing_mechanism[client_idx, col] = mechs[mm]
-            missing_mechanism[np.arange(missing_mechanism.shape[0]) != client_idx, col] = mechs[mm2]
-
-    elif strategy == 's32':
+    elif strategy == 's2':  # imperfect complementarity - one client vs rest with imperfect complementarity with others
         mech_list = [(0.3, 0), (0.4, 0), (0.5, 0), (0.6, 0), (0.7, 0), (0.3, 1), (0.4, 1), (0.6, 1), (0.7, 1)]
         mechs = ['mnar_quantile_left', 'mnar_quantile_right']
         missing_ratio = np.zeros((n_clients, len(cols)))
@@ -178,7 +130,8 @@ def load_scenario3(n_clients, cols, mm_strategy, seed=0):
                     missing_ratio[j, col] = mr2
                     missing_mechanism[j, col] = mechs[mm2]
 
-    elif strategy == 's33':
+    elif strategy == 's3':   # one-side complementarity - one client vs rest with one-side complementarity with others
+        
         mech_list = [(0.3, 0), (0.4, 0), (0.5, 0), (0.6, 0), (0.7, 0), (0.3, 1), (0.4, 1), (0.6, 1), (0.7, 1)]
         mechs = ['mnar_quantile_left', 'mnar_quantile_right']
         missing_ratio = np.zeros((n_clients, len(cols)))
@@ -200,47 +153,12 @@ def load_scenario3(n_clients, cols, mm_strategy, seed=0):
                 missing_ratio[j, col] = mr2
                 missing_mechanism[j, col] = mechs[mm2]
 
-    elif strategy == 's4':
-        assert n_clients == 10
-        client_clusters = [(1, 2), (3, 4, 5), (6, 7, 8, 9)]
-        # mech_list
-        mech_list = [(0.3, 0), (0.4, 0), (0.5, 0), (0.6, 0), (0.7, 0)]
-        mechs = ['mnar_quantile_left', 'mnar_quantile_right']
-        missing_ratio = np.zeros((n_clients, len(cols)))
+    elif strategy == 's4': # no complementarity
+        
+        missing_ratio = np.ones((n_clients, len(cols)))*0.5
         missing_mechanism = np.empty((n_clients, len(cols)), dtype='U20')
-
-        for col in range(len(cols)):
-            np.random.seed(seed + col)
-            random.seed(seed + col)
-
-            # client 0
-            client0_mech = random.sample(mech_list, 1)[0]
-            missing_ratio[0, col] = client0_mech[0]
-            missing_mechanism[0, col] = mechs[client0_mech[1]]
-
-            # clusters specific
-            rest_mechs = [mech for mech in mech_list if mech != client0_mech]
-            cluster_mechs = random.sample(rest_mechs, len(client_clusters))
-            for idx, clients in enumerate(client_clusters):
-                mech = cluster_mechs[idx]
-                mech_compl = [1 - mech[0], 1 - mech[1]]
-                lr = random.choice([0, 1])
-                if lr == 0:
-                    for client_idx, client in enumerate(clients):
-                        if client_idx == 0:
-                            missing_ratio[client, col] = mech[0]
-                            missing_mechanism[client, col] = mechs[mech[1]]
-                        else:
-                            missing_ratio[client, col] = mech_compl[0]
-                            missing_mechanism[client, col] = mechs[mech_compl[1]]
-                else:
-                    for client_idx, client in enumerate(clients):
-                        if client_idx == 0:
-                            missing_ratio[client, col] = mech_compl[0]
-                            missing_mechanism[client, col] = mechs[mech_compl[1]]
-                        else:
-                            missing_ratio[client, col] = mech[0]
-                            missing_mechanism[client, col] = mechs[mech[1]]
+        missing_mechanism[:, :] = 'mnar_quantile_left'
+        
     else:
         raise ValueError(f'strategy not found, strategy: {strategy}')
 

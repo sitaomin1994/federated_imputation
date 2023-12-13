@@ -1,8 +1,8 @@
 # @package config_vars
-codrna2:
+exp_demo:
   # dataset_name
   - name: dataset_name
-    value: [codrna]
+    value: [codon, codrna]
     keys:
       - data
       - dataset_name
@@ -10,14 +10,14 @@ codrna2:
 
   # num_client
   - name: n_client
-    value: [3, 5, 7, 9, 11]
+    value: [10]
     save_mode: dir2
     keys:
       - num_clients
 
   # data partition
   - name: data_partition
-    value: [sample-unevenr1-1000]
+    value: [sample-evenly]
     save_mode: dir3
     keys:
       - data_partition
@@ -26,19 +26,16 @@ codrna2:
   # missing scenario
   - name: mm_strategy
     value:
-      - mnar_lr@sp=extremer1
+      - ideal
+      - random
+      - s1
+      - s2
+      - s3
+      - s4
     save_mode: dir4
     keys:
       - missing_simulate
-      - mm_strategy
-
-  # missing scenario
-  - name: mr_strategy
-    value: [fixed@mr=0.5]
-    save_mode: dir5
-    keys:
-      - missing_simulate
-      - mr_strategy
+      - mm_strategy_new
 
   # missing scenario
   - name: server_type
@@ -77,21 +74,21 @@ codrna2:
 
   # n_rounds
   - name: n_rounds
-    value: [3]
+    value: [5]
     save_mode: none
     keys:
       - experiment
       - n_rounds
 
   - name: np
-    value: [3]
+    value: [5]
     save_mode: none
     keys:
       - experiment
       - num_process
 
   - name: test_size
-    value: [ 0.1 ]
+    value: [0.1]
     save_mode: none
     keys:
       - experiment
