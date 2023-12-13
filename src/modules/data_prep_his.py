@@ -109,11 +109,6 @@ def process_codrna(normalize=True, verbose=False, threshold=None, sample=True, g
 	if threshold is None:
 		threshold = 0.1
 
-	# data_obj = fetch_openml(data_id=351, as_frame='auto', parser='auto')
-	# X = pd.DataFrame(data_obj.data.todense(), columns=data_obj.feature_names)
-	# y = pd.DataFrame(data_obj.target, columns=data_obj.target_names)
-	# data = pd.concat([X, y], axis=1)
-	# data.to_csv('./data/codrna/codrna.csv', index=False)
 	data = pd.read_csv('./data/codrna/codrna.csv')
 
 	target_col = 'Y'
@@ -167,6 +162,9 @@ def process_codon(verbose=False, threshold=None):
 	data = pd.read_csv("./data/codon/codon_usage.csv", sep=',', low_memory=False)
 
 	data = data.dropna()
+	data = data.replace("non-B hepatitis virus", 0)
+	data = data.replace("12;I", 0)
+	data = data.replace('-', 0)
 	#data.columns = [str(i) for i in range(data.sh
 	data = data.drop(['SpeciesID', 'Ncodons', 'SpeciesName', 'DNAtype'], axis=1)
 	target_col = 'Kingdom'

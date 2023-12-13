@@ -4,8 +4,22 @@ This is the code repo for paper - Cafe: Improved Federated Data Imputation by Le
 
 ## Setup Environment and Data
 
+Setup conda environment in terminal
+```
+conda env create -f environment.yml
+```
 
-Run following command to fetch `Codon` dataset, this will download data to data folder.
+Set up project structure
+
+```
+python setup_project.py
+```
+
+Download dataset to data folder
+```
+python scripts/download_data.py
+```
+
 
 ## Federated Imputation
 

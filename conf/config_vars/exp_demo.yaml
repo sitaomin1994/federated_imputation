@@ -8,13 +8,6 @@ exp_demo:
       - dataset_name
     save_mode: dir1
 
-  # num_client
-  - name: n_client
-    value: [10]
-    save_mode: dir2
-    keys:
-      - num_clients
-
   # data partition
   - name: data_partition
     value: [sample-evenly]

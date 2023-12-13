@@ -5,7 +5,7 @@ num_clients: 10
 
 # dataset
 data:
-  dataset_name: codon
+  dataset_name: breast
   normalize: true
 
 # dataset partition
@@ -67,9 +67,9 @@ pred_model:
 # fed_imp
 experiment:
   n_rounds: 5
-  seed: 102931466
+  seed: 102931466 # 102931466
   mtp: false
-  random_seed: 50
+  random_seed: 50 # 50
   num_process: 5
   test_size: 0.1
 
@@ -81,8 +81,14 @@ save_state: true
 # params
 algo_params:
   central: {}
+  central2: {}
   local: {}
   fedavg: {}
+  fedmechw:
+    client_thres: 1.0
+    alpha: 1.0
+    beta: 0.0,
+    scale_factor: 4
   cafe:
     client_thres: 1.0
     alpha: 0.95
