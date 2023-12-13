@@ -46,7 +46,7 @@ exp_demo:
 
   # aggregation strategy
   - name: agg_strategy
-    value: [central, local, fedavg-s, fedmechw_new]
+    value: [central2, local, fedavg-s, cafe]
     save_mode:
     keys:
       - agg_strategy_imp

@@ -83,7 +83,7 @@ algo_params:
   central: {}
   local: {}
   fedavg: {}
-  fedmechw_new:
+  cafe:
     client_thres: 1.0
     alpha: 0.95
     gamma: 0.02

@@ -198,10 +198,10 @@ def get_all_dirs(root_dir, method):
     else:
         return data_dir, exp_file
 
-
+#################################################################################################################################################################
 if __name__ == '__main__':
     main_config_tmpl = {
-        "data": "fed_imp12/0717/ijcnn_balanced",
+        "data": "",
         "n_clients": [10],
         "sample_size": "sample-evenly",
         "scenario": "mary_lr",
@@ -226,7 +226,7 @@ if __name__ == '__main__':
                 "batch_size": 128,
                 "learning_rate": 0.001,
                 "weight_decay": 0.001,
-                "pred_round": 2000,
+                "pred_round": 400,
                 "pred_local_epochs": 3,
                 'local_epoch': 5,
                 'sample_pct': 1
@@ -240,27 +240,23 @@ if __name__ == '__main__':
         }
     }
 
-    pred_rounds = 1
+    pred_rounds = 5
     seed = 21
     mtp = True
-    datasets = ['1128/mimiciii_mo2']
+    datasets = ['codon', 'codrna']
     train_params = [
-        #{"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
-       # {"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
-        {"num_hiddens": 64, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
-        #{"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
-        #{"num_hiddens": 32, "batch_size": 128, "lr": 0.001, "weight_decay": 0.001, 'imbalance': 'smotetm'},
-        # {"num_hiddens": 64, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None}
+        {"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
+        {"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
     ]
 
     ####################################################################################
-    # Scenario new 1
+    # Scenarios
     for d, train_param in zip(datasets, train_params):
-        dataset = 'fed_imp_pc1/{}'.format(d)
+        dataset = 'fed_imp_pc2/{}'.format(d)
 
         #####################################################################################
-        #scenarios = ['sample-unevenhs']
-        scenarios = ['sample-evenly', 'sample-uneven10dir', 'sample-uneven10range']
+        #scenarios = ['sample-evenly'] #'sample-uneven10dir', 'sample-uneven10range', 'sample-unevenhs']
+        scenarios = ['ideal', 'random', 's1', 's2', 's3', 's4']
         for scenario in scenarios:
 
             main_config = copy.deepcopy(main_config_tmpl)
@@ -268,7 +264,7 @@ if __name__ == '__main__':
             main_config['n_clients'] = [10]
             main_config['sample_size'] = 'sample-evenly'
             main_config['scenario_list'] = [scenario]
-            main_config["n_rounds"] = 5
+            main_config["n_rounds"] = 3
             main_config['imbalance'] = train_param['imbalance']
 
             server_config = copy.deepcopy(server_config_tmpl)
@@ -278,6 +274,6 @@ if __name__ == '__main__':
             server_config["server_pred_config"]["train_params"]["weight_decay"] = train_param["weight_decay"]
 
             server_config['server_name'] = 'fedavg_mlp_pytorch_pred'
-            methods = ['central', 'local', 'fedavg-s', 'fedmechw_new']
+            methods = ['central2', 'local', 'fedavg-s', 'cafe']
 
             prediction(main_config, server_config, pred_rounds, seed, mtp=mtp, methods=methods)
