@@ -2,7 +2,7 @@
 exp_demo:
   # dataset_name
   - name: dataset_name
-    value: [codon, codrna]
+    value: [codon]
     keys:
       - data
       - dataset_name
