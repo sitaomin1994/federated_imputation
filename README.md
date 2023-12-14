@@ -47,15 +47,16 @@ We give a `./notebook/demo.ipynb` to show the analysis of imputation results in 
 Run following command to perform federated prediction of imputed datasets of each clients.
 
 ```
-pythion run_fed_prediction.py
+export CUBLAS_WORKSPACE_CONFIG=:4096:8
+pythion run_fed_prediction.py --mtp True --num_processes 5
 ```
 
 After finishing running, the results will be stored in json files under a folder of `\results\raw_results` folder. Run the following script to process resuls into a excel file stored in `\results\processed_results`. 
 
 ```
-export CUBLAS_WORKSPACE_CONFIG=:4096:8
 python scripts/results_fedpred.py
 ```
+By default, we will use multi-processing to speed up, if you have low memory, you can set it to False.
 
 We give a `./notebook/demo.ipynb` to show the analysis of prediction results in a more readable format.
 
