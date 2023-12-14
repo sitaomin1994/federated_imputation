@@ -53,6 +53,7 @@ pythion run_fed_prediction.py
 After finishing running, the results will be stored in json files under a folder of `\results\raw_results` folder. Run the following script to process resuls into a excel file stored in `\results\processed_results`. 
 
 ```
+export CUBLAS_WORKSPACE_CONFIG=:4096:8
 python scripts/results_fedpred.py
 ```
 

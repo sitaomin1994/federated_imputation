@@ -78,9 +78,7 @@ def prediction(main_config, server_config_, pred_rounds, seed, mtp=False, method
             ###################################################################################
             # Main part
             ###################################################################################
-            root_dir = "./results/raw_results/{}/{}/".format(dataname, scenario_param)
-
-
+            root_dir = "./results/raw_results/{}/{}/{}".format(dataname, sample_size, scenario_param)
             print(root_dir)
             data_dir, exp_file = get_all_dirs(root_dir, method)
 
@@ -127,7 +125,7 @@ def prediction(main_config, server_config_, pred_rounds, seed, mtp=False, method
                     ret = server.prediction()
                     rets.append(ret)
             else:
-                n_process = 3
+                n_process = 5
                 chunk_size = n_rounds // n_process
                 rounds = list(range(n_rounds))
 
@@ -240,19 +238,18 @@ if __name__ == '__main__':
         }
     }
 
-    pred_rounds = 5
+    pred_rounds = 1
     seed = 21
     mtp = True
     datasets = ['codon']
     train_params = [
-        {"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
         {"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
     ]
 
     ####################################################################################
     # Scenarios
     for d, train_param in zip(datasets, train_params):
-        dataset = 'fed_imp_pc2/{}'.format(d)
+        dataset = 'fed_imp/{}'.format(d)
 
         #####################################################################################
         #scenarios = ['sample-evenly'] #'sample-uneven10dir', 'sample-uneven10range', 'sample-unevenhs']
@@ -264,7 +261,7 @@ if __name__ == '__main__':
             main_config['n_clients'] = [10]
             main_config['sample_size'] = 'sample-evenly'
             main_config['scenario_list'] = [scenario]
-            main_config["n_rounds"] = 3
+            main_config["n_rounds"] = 5
             main_config['imbalance'] = train_param['imbalance']
 
             server_config = copy.deepcopy(server_config_tmpl)
