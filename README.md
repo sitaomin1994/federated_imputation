@@ -2,6 +2,9 @@
 
 This is the code repo for paper - Cafe: Improved Federated Data Imputation by Leveraging Missing Data Heterogeneity
 
+![cafe](./figures/cafe.png)
+
+
 ## Setup Environment and Data
 
 Setup conda environment in terminal
