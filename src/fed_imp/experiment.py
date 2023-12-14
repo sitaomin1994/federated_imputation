@@ -93,18 +93,18 @@ def main_func(
 
         strategy_imp = StrategyImputation(strategy=imp_strategy, params=params)
 
-        if imp_strategy == 'central':
-            data_ms_new = [np.concatenate(data_ms_clients, axis=0)]
-            data_partitions_new = [np.concatenate(data_partitions, axis=0)]
-            clients = client_factory.generate_clients(
-                1, data_partitions_new, data_ms_new, test_data.values, data_config,
-                configuration['imputation'], seed=new_seed
-            )
+        # if imp_strategy == 'central':
+        #     data_ms_new = [np.concatenate(data_ms_clients, axis=0)]
+        #     data_partitions_new = [np.concatenate(data_partitions, axis=0)]
+        #     clients = client_factory.generate_clients(
+        #         1, data_partitions_new, data_ms_new, test_data.values, data_config,
+        #         configuration['imputation'], seed=new_seed
+        #     )
 
-            assert len(clients.keys()) == 1
-            strategy_imp = StrategyImputation(strategy='local', params={})
+        #     assert len(clients.keys()) == 1
+        #     strategy_imp = StrategyImputation(strategy='local', params={})
 
-        elif imp_strategy == 'central2':
+        if imp_strategy == 'central2':
             data_ms_new = np.concatenate(data_ms_clients, axis=0)
             data_partitions_new = np.concatenate(data_partitions, axis=0)
             data_ms_clients.append(data_ms_new)

@@ -45,7 +45,6 @@ def load_configs_raw(config: dict):
 
 			# generate file and dir names
 			dir_name, file_name = get_exp_file_name(combination, experiment_vars)
-			dir_name = "{}/{}".format(experiment_name, datetime.now().strftime("%m%d")) + "/" + dir_name
 
 			# append to exp_configs
 			exp_config = ExperimentConfig(
