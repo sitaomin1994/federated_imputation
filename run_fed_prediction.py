@@ -46,7 +46,7 @@ def main_prediction(data_dir, server_name, server_config, server_pred_config, ro
     return ret
 
 
-def prediction(main_config, server_config_, pred_rounds, seed, mtp=False, methods = None):
+def prediction(main_config, server_config_, pred_rounds, seed, mtp=False, methods = None, num_processes=5):
     dataname = main_config["data"]
     n_clients = main_config["n_clients"]
     sample_size = main_config["sample_size"]
@@ -78,7 +78,7 @@ def prediction(main_config, server_config_, pred_rounds, seed, mtp=False, method
             ###################################################################################
             # Main part
             ###################################################################################
-            root_dir = "./results/raw_results/{}/{}/{}".format(dataname, sample_size, scenario_param)
+            root_dir = "./results/raw_results/{}/{}/{}/".format(dataname, sample_size, scenario_param)
             print(root_dir)
             data_dir, exp_file = get_all_dirs(root_dir, method)
 
@@ -91,7 +91,6 @@ def prediction(main_config, server_config_, pred_rounds, seed, mtp=False, method
             n_rounds = main_config['n_rounds']
             if mtp == False:
                 for round_ in range(0, n_rounds):
-                    print("round: {}".format(round_))
                     data_imp = np.load(os.path.join(data_dir, "imputed_data_{}.npy".format(round_)))
                     data_true = np.load(os.path.join(data_dir, "origin_data_{}.npy".format(round_)))
                     missing_mask = np.load(os.path.join(data_dir, "missing_mask_{}.npy".format(round_)))
@@ -111,21 +110,21 @@ def prediction(main_config, server_config_, pred_rounds, seed, mtp=False, method
                             data_true=data_trues[client_id],
                             data_test=test_data,
                             imbalance = imbalance,
-                            regression = server_pred_config['regression']
+                            regression=server_pred_config['regression']
                         )
 
                     # setup server
                     server = load_server(
                         server_name, clients=clients, server_config=server_config, pred_config=server_pred_config,
-                        test_data=test_data, base_model = server_pred_config["model_params"]['base_model'],
-                        regression = server_pred_config['regression']
+                        test_data=test_data, base_model=server_pred_config["model_params"]['model'],
+                        regression=server_pred_config['regression']
                     )
 
                     # prediction
                     ret = server.prediction()
                     rets.append(ret)
             else:
-                n_process = 5
+                n_process = num_processes
                 chunk_size = n_rounds // n_process
                 rounds = list(range(n_rounds))
 
@@ -198,6 +197,15 @@ def get_all_dirs(root_dir, method):
 
 #################################################################################################################################################################
 if __name__ == '__main__':
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--mtp', type=bool, default=True)
+    parser.add_argument("--num_processes", type=int, default=5)
+    
+    args = parser.parse_args()
+    mtp = args.mtp
+    num_processes = args.num_processes
+    
     main_config_tmpl = {
         "data": "",
         "n_clients": [10],
@@ -207,7 +215,7 @@ if __name__ == '__main__':
         "mr": "random_in_group2",
         'mr_list': [],
         "method": "fedavg-s",
-        "n_rounds": 3,
+        "n_rounds": 5,
         "imbalance": None
     }
 
@@ -240,7 +248,6 @@ if __name__ == '__main__':
 
     pred_rounds = 1
     seed = 21
-    mtp = True
     datasets = ['codon']
     train_params = [
         {"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
@@ -273,4 +280,4 @@ if __name__ == '__main__':
             server_config['server_name'] = 'fedavg_mlp_pytorch_pred'
             methods = ['central2', 'local', 'fedavg-s', 'cafe']
 
-            prediction(main_config, server_config, pred_rounds, seed, mtp=mtp, methods=methods)
+            prediction(main_config, server_config, pred_rounds, seed, mtp=mtp, methods=methods, num_processes=num_processes)
