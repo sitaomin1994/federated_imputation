@@ -2,7 +2,7 @@
 new_exp2:
   # dataset_name
   - name: dataset_name
-    value: [codrna]
+    value: [genetic]
     keys:
       - data
       - dataset_name
@@ -17,7 +17,7 @@ new_exp2:
 
   # data partition
   - name: data_partition
-    value: [sample-uneven10range, sample-unevenhs, sample-uneven10dir]
+    value: [sample-evenly]
     save_mode: dir3
     keys:
       - data_partition
@@ -42,7 +42,7 @@ new_exp2:
 
   # aggregation strategy
   - name: agg_strategy
-    value: [central, local]
+    value: [fedavg-s, fedmechw_new]
     save_mode:
     keys:
       - agg_strategy_imp
@@ -70,14 +70,14 @@ new_exp2:
 
   # n_rounds
   - name: n_rounds
-    value: [5]
+    value: [20]
     save_mode: none
     keys:
       - experiment
       - n_rounds
 
   - name: np
-    value: [5]
+    value: [8]
     save_mode: none
     keys:
       - experiment
