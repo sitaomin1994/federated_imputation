@@ -1,6 +1,0 @@
-experiment_name: ms_eval_partition1
-defaults:
-  - config_tmpl: imp_eval_partition
-  - config_vars/imp_eval_partition:
-      - var1
-  - _self_

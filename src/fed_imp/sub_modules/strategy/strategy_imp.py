@@ -23,6 +23,8 @@ class StrategyImputation:
             self.initial_strategy = 'local'
         elif strategy == 'central':
             self.initial_strategy = 'local'
+        elif strategy == 'central2':
+            self.initial_strategy = 'central2'
         elif strategy.startswith('fedavg'):
             self.initial_strategy = 'fedavg'
         elif strategy == 'testavg':
@@ -39,6 +41,8 @@ class StrategyImputation:
         elif strategy.startswith('fedwavgcl'):
             self.initial_strategy = 'fedavg'
         elif strategy.startswith('fedmech'):
+            self.initial_strategy = 'fedavg'
+        elif strategy.startswith('cafe'):
             self.initial_strategy = 'fedavg'
         else:
             raise ValueError(
@@ -59,6 +63,9 @@ class StrategyImputation:
             agg_weight = None
         elif self.strategy == 'central':
             agg_weight = None
+        elif self.strategy == 'central2':
+            clients_weights = np.array(list(weights.values()))
+            agg_weight = clients_weights[-1, :]
         # ==============================================================================================================
         # Average Algorithm
         # ==============================================================================================================
@@ -66,25 +73,6 @@ class StrategyImputation:
             agg_weight = fedavg(weights)
         elif self.strategy == 'fedavg-s':
             agg_weight, w = fedavgs(weights, missing_infos)
-        elif self.strategy == 'testavg':
-            agg_weight, w = testavg(weights, missing_infos, frac=0.1)
-        elif self.strategy == 'testavg2':
-            agg_weight, w = testavg(weights, missing_infos, frac=0.1)
-        elif self.strategy == 'testavg3':
-            agg_weight, w = testavg(weights, missing_infos, frac=0.05)
-        elif self.strategy == 'fedavg-h':
-            agg_weight = fedavgh(weights)
-        elif self.strategy == 'fedavg_proj':
-            agg_weight = fedavg2(weights, project_matrix)
-        elif self.strategy == 'fedavgcross':
-            agg_weight = fedavgcross(weights)
-        # ==============================================================================================================
-        # Weighted Average Algorithm
-        # ==============================================================================================================
-        elif self.strategy == 'fedwavg':
-            agg_weight = fedwavg2(weights, losses, missing_infos)
-        elif self.strategy == 'fedwavgcl':
-            agg_weight = fedwavgcl(weights, losses, missing_infos, client_groups)
         # ==============================================================================================================
         # Missing Mechanism Average Algorithm
         # ==============================================================================================================
@@ -102,27 +90,10 @@ class StrategyImputation:
                 params['scale_factor'] = param_dict['sf'] if 'sf' in param_dict else params['scale_factor']
             #print(params)
             agg_weight, w = fedmechw_new(weights, missing_infos, ms_coefs, params, round=round)
+        elif self.strategy.startswith('cafe'):
+            params = self.params
+            agg_weight, w = fedmechw_new(weights, missing_infos, ms_coefs, params, round=round)
         # ==============================================================================================================
-        elif self.strategy == 'fedmechw_p':
-            agg_weight, w = fedmechw(weights, missing_infos, ms_coefs, {
-                'alpha': 0.95, 'beta': 0.05, 'client_thres': 1.0, 'scale_factor': 4
-            }, sigmoid=False)
-        elif self.strategy == 'fedmechw_p_sigmoid':
-            agg_weight, w = fedmechw(weights, missing_infos, ms_coefs, {
-                'alpha': 0.95, 'beta': 0.05, 'client_thres': 1.0, 'scale_factor': 4
-            }, sigmoid=False)
-        elif self.strategy == 'fedmechw_sigmoid':
-            agg_weight, w = fedmechw(weights, missing_infos, ms_coefs, self.params, sigmoid=True)
-        elif self.strategy == 'fedmechw_fmm':
-            agg_weight, w = fedmechw(weights, missing_infos, ms_coefs, self.params, filter_sim_mm=True)
-        elif self.strategy == 'fedmechw_lmm':
-            agg_weight, w = fedmechw(weights, missing_infos, ms_coefs, self.params, filter_sim_mm=False,
-                                     filter_sim_lm=True)
-        elif self.strategy == 'fedmechw_fmm_lmm':
-            agg_weight, w = fedmechw(weights, missing_infos, ms_coefs, self.params, filter_sim_mm=True,
-                                     filter_sim_lm=True)
-        elif self.strategy == 'fedmechw_fmm_sigmoid':
-            agg_weight, w = fedmechw(weights, missing_infos, ms_coefs, self.params, filter_sim_mm=True, sigmoid=True)
         else:
             raise ValueError(
                 'Unknown imputation model aggregation strategy: {}'.format(self.strategy)
@@ -134,6 +105,10 @@ class StrategyImputation:
 
         if self.initial_strategy == 'local':
             agg_value = None
+
+        elif self.initial_strategy == 'central2':
+            values = np.array(values)
+            agg_value = values[-1, :]
 
         elif self.initial_strategy == 'fedavg':
             values = np.array(values)

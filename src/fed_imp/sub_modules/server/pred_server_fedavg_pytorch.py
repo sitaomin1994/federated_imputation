@@ -136,7 +136,7 @@ class PredServerFedAvgPytorch:
 
             if self.regression:
 
-                best_mse, best_r2, counter, patience = 10000, 0, 0, 400
+                best_mse, best_r2, counter, patience = 10000, 0, 0, 200
 
                 for current_round in range(1, train_epochs + 1):
 
@@ -151,7 +151,7 @@ class PredServerFedAvgPytorch:
                         }
                     )
 
-                    if current_round % 100 == 0:
+                    if current_round % 50 == 0:
                         logger.info(
                             'Round: {}, test_mse: {:.4f}, test_r2: {:.4f}'.format(
                                 current_round, test_mse, test_r2
@@ -183,7 +183,7 @@ class PredServerFedAvgPytorch:
                 )
 
             else:
-                best_accu, best_roc, best_f1, best_prc, counter, patience = 0, 0, 0, 0, 0, 200
+                best_accu, best_roc, best_f1, best_prc, counter, patience = 0, 0, 0, 0, 0, 50
 
                 for current_round in range(1, train_epochs + 1):
 

@@ -93,16 +93,28 @@ def main_func(
 
         strategy_imp = StrategyImputation(strategy=imp_strategy, params=params)
 
-        if imp_strategy == 'central':
-            data_ms_new = [np.concatenate(data_ms_clients, axis=0)]
-            data_partitions_new = [np.concatenate(data_partitions, axis=0)]
+        # if imp_strategy == 'central':
+        #     data_ms_new = [np.concatenate(data_ms_clients, axis=0)]
+        #     data_partitions_new = [np.concatenate(data_partitions, axis=0)]
+        #     clients = client_factory.generate_clients(
+        #         1, data_partitions_new, data_ms_new, test_data.values, data_config,
+        #         configuration['imputation'], seed=new_seed
+        #     )
+
+        #     assert len(clients.keys()) == 1
+        #     strategy_imp = StrategyImputation(strategy='local', params={})
+
+        if imp_strategy == 'central2':
+            data_ms_new = np.concatenate(data_ms_clients, axis=0)
+            data_partitions_new = np.concatenate(data_partitions, axis=0)
+            data_ms_clients.append(data_ms_new)
+            data_partitions.append(data_partitions_new)
             clients = client_factory.generate_clients(
-                1, data_partitions_new, data_ms_new, test_data.values, data_config,
+                num_clients + 1, data_partitions, data_ms_clients, test_data.values, data_config,
                 configuration['imputation'], seed=new_seed
             )
 
-            assert len(clients.keys()) == 1
-            strategy_imp = StrategyImputation(strategy='local', params={})
+            assert len(clients.keys()) == num_clients + 1
 
         #####################################################################################################
         # Create Server
@@ -239,6 +251,7 @@ class Experiment:
         elif mtp:
             seed = configuration['experiment']['random_seed']
             seeds = [(seed + 10087 * i) for i in range(n_rounds)]
+            #seeds = [i for i in range(n_rounds)]
             rounds = list(range(n_rounds))
             results = []
             # multiprocessing
