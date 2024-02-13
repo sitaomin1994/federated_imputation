@@ -165,7 +165,6 @@ class Hyperparameters:
         self.data_partition = data_partition
         self.mm_strategy = mm_strategy
         self.method = method
-
         self.params = self._fetch_params(self.method)
 
     def _fetch_params(self, method):

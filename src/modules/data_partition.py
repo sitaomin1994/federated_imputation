@@ -294,7 +294,6 @@ def data_partition(strategy, params, data, n_clients, seed=201030, regression=Fa
                     )
                 ret.append(np.concatenate([X_test, y_test.reshape(-1, 1)], axis=1).copy())
         return ret
-
     elif strategy == 'sample-unevenhs':
         # get sample sizes
         np.random.seed(seed)

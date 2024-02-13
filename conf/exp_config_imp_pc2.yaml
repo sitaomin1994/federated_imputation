@@ -1,10 +1,10 @@
-experiment_name: fed_imp_pc2
+experiment_name: fed_imp_ext_pc2
 debug: false
 experiment_marker:
   - num_clients
   - server@imp_round
 defaults:
   - config_tmpl: imp_new
-  - config_vars/imp_test:
-      - new_exp4
+  - config_vars/imp_extention:
+      - ext_exp1
   - _self_

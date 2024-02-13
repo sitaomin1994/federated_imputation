@@ -290,7 +290,7 @@ if __name__ == '__main__':
 
             server_config['server_name'] = 'fedavg_mlp_pytorch_pred'
             # methods = ["fedavg-s", 'fedmechw_new']  # 'fedmechw'
-            methods = ["central"]
+            methods = ["local"]
 
             prediction(main_config, server_config, pred_rounds, seed, mtp=mtp, methods=methods, random_select=None)
 

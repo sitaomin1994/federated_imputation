@@ -76,6 +76,8 @@ def load_scenario3(n_clients, cols, mm_strategy, seed=0):
     elif strategy == "random2":  # random@mrr=0.1_mrl=0.9_mm=mnarlrq
         if params['mm'] == 'mnarlrq':
             mm_list = ['mnar_quantile_left', 'mnar_quantile_right']
+        elif params['mm'] == 'mnarlrsig':
+            mm_list = ['mnar_sigmoid_left', 'mnar_sigmoid_right']
         else:
             raise ValueError(f'mm not found, params: {params}')
         np.random.seed(seed)

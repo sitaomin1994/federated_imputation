@@ -19,6 +19,8 @@ handle_imbalance: null
 missing_simulate:
   mf_strategy: all
   mm_strategy: s3
+  mm_strategy_params:
+    corr_type: others
 
 # imputation method
 imputation:
@@ -81,6 +83,7 @@ save_state: true
 # params
 algo_params:
   central: {}
+  central2: {}
   local: {}
   fedavg: {}
   fedwavg:

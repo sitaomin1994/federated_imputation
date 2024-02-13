@@ -8,12 +8,12 @@ import os
 type = ''
 datasets = ['codon', 'codrna', 'mimiciii', 'genetic', 'heart']
 #datasets = ['codrna']
-#scenarios = ["ideal_perfect", "perfect_s3", "imperfect_s32", "one_side_comp_s33", "no_comp"]
-scenarios = ['sample-evenly', 'sample-uneven10range', 'sample-uneven10dir', 'sample-unevenhs']
+scenarios = ["ideal_perfect", "perfect_s3", "imperfect_s32", "one_side_comp_s33", "no_comp"]
+#scenarios = ['sample-evenly', 'sample-uneven10range', 'sample-uneven10dir', 'sample-unevenhs']
 #scenarios = ["random2@mrl=0.2_mrr=0.8_mm=mnarlrq"]
 #scenarios = ['s31', 's32', 's33']
 pred = False
-exp = 'random'
+exp = 'new'
 
 ############################################################################################################################
 # read imp and pred files
