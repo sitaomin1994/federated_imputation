@@ -2,7 +2,7 @@
 new_exp1:
   # dataset_name
   - name: dataset_name
-    value: [codon, codrna]
+    value: [mimiciii_mo2]
     keys:
       - data
       - dataset_name
@@ -50,7 +50,7 @@ new_exp1:
 
   # aggregation strategy
   - name: agg_strategy
-    value: [central2, local, fedavg-s, fedmechw_new]
+    value: [fedavg-s, fedmechw_new, local, central2]
     save_mode:
     keys:
       - agg_strategy_imp
@@ -85,7 +85,7 @@ new_exp1:
       - n_rounds
 
   - name: np
-    value: [10]
+    value: [50]
     save_mode: none
     keys:
       - experiment

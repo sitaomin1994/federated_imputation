@@ -358,7 +358,14 @@ def mask_mar_sigmoid(mask, col, data_corr, missing_ratio, missing_func, strict, 
             raise NotImplementedError
 
         ps = ps.flatten()
-        mask[:, col] = ps >= missing_ratio
+        missing_N_upper = int((missing_ratio + 0.02) * data_copy.shape[0])
+        missing_N_lower = int((missing_ratio - 0.02) * data_copy.shape[0])
+        if (ps >= missing_ratio).sum() > missing_N_upper or (ps >= missing_ratio).sum() < missing_N_lower:
+            idx = np.argsort(ps)[::-1]
+            mask[idx[:int(data_copy.shape[0]*missing_ratio)], col] = True
+        else:
+            mask[:, col] = ps >= missing_ratio
+
 
     #print(f"Column {col} missing ratio: {mask[:, col].sum() / mask.shape[0]} Expected: {missing_ratio}")
 

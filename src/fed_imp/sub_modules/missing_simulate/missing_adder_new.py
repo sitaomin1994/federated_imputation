@@ -25,6 +25,7 @@ def add_missing(train_data_list, scenario, cols, seed=201030):
 
     train_ms_list = []
     for i in range(len(train_data_list)):
+        print("Adding missing to client {} ...".format(i))
         data = train_data_list[i]
         X_train, y_train = data[:, :-1], data[:, -1]
         missing_ratios = ret[i]['missing_ratio']
