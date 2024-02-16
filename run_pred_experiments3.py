@@ -11,7 +11,6 @@ from loguru import logger
 
 
 def main_prediction(data_dir, server_name, server_config, server_pred_config, round_, imbalance):
-
     data_imp = np.load(os.path.join(data_dir, "imputed_data_{}.npy".format(round_)))
     data_true = np.load(os.path.join(data_dir, "origin_data_{}.npy".format(round_)))
     missing_mask = np.load(os.path.join(data_dir, "missing_mask_{}.npy".format(round_)))
@@ -30,7 +29,7 @@ def main_prediction(data_dir, server_name, server_config, server_pred_config, ro
             missing_mask=missing_masks[client_id],
             data_true=data_trues[client_id],
             data_test=test_data,
-            imbalance = imbalance,
+            imbalance=imbalance,
             regression=server_pred_config['regression']
         )
 
@@ -46,7 +45,7 @@ def main_prediction(data_dir, server_name, server_config, server_pred_config, ro
     return ret
 
 
-def prediction(main_config, server_config_, pred_rounds, seed, mtp=False, methods = None):
+def prediction(main_config, server_config_, pred_rounds, seed, mtp=False, methods=None):
     dataname = main_config["data"]
     n_clients_list = main_config["n_clients"]
     sample_size = main_config["sample_size"]
@@ -116,15 +115,16 @@ def prediction(main_config, server_config_, pred_rounds, seed, mtp=False, method
                                     missing_mask=missing_masks[client_id],
                                     data_true=data_trues[client_id],
                                     data_test=test_data,
-                                    imbalance = imbalance,
-                                    regression = server_pred_config['regression']
+                                    imbalance=imbalance,
+                                    regression=server_pred_config['regression']
                                 )
 
                             # setup server
                             server = load_server(
-                                server_name, clients=clients, server_config=server_config, pred_config=server_pred_config,
-                                test_data=test_data, base_model = server_pred_config["model_params"]['base_model'],
-                                regression = server_pred_config['regression']
+                                server_name, clients=clients, server_config=server_config,
+                                pred_config=server_pred_config,
+                                test_data=test_data, base_model=server_pred_config["model_params"]['base_model'],
+                                regression=server_pred_config['regression']
                             )
 
                             # prediction
@@ -303,7 +303,7 @@ if __name__ == '__main__':
         rs = ['0.5']
         for sample_size, r in zip(sample_sizes, rs):
             n_clients = [10]
-            #n_clients = [5,7,9]
+            # n_clients = [5,7,9]
             scenario = "mnar_lr@sp=extreme_r="
             mr_strategy = "fixed@mr="
             mr = ['0.5']
