@@ -2,7 +2,7 @@
 new_exp1:
   # dataset_name
   - name: dataset_name
-    value: [genetic, heart]
+    value: [codrna, codon]
     keys:
       - data
       - dataset_name
@@ -34,7 +34,7 @@ new_exp1:
 
   # missing scenario
   - name: mm_corr_type
-    value: [allk0.25_b1]
+    value: [allk0.25_sphere]
     save_mode: dir4
     keys:
       - missing_simulate
@@ -85,7 +85,7 @@ new_exp1:
       - n_rounds
 
   - name: np
-    value: [50]
+    value: [10]
     save_mode: none
     keys:
       - experiment

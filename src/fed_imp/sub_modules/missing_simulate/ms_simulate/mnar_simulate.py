@@ -173,8 +173,7 @@ def simulate_nan_mnar_sigmoid(
         elif corr_type.startswith('allk'):
             np.random.seed(seed)
             k = max(int(float(corr_type.split('allk')[-1]) * data.shape[1]), 1)
-            X_col = data[:, col]
-            mi = mutual_info_regression(data, X_col, random_state=seed)
+            mi = np.corrcoef(data, rowvar=False)[col]
             mi_idx = np.argsort(mi)[::-1][:k + 1]
             data_corr = data[:, mi_idx]
             if k == 1:
@@ -183,7 +182,7 @@ def simulate_nan_mnar_sigmoid(
             raise NotImplementedError
 
         #################################################################################
-        # pick coefficients and mask missing values
+        # pick coefficients and mask missing valuesn
         #################################################################################
         mask = mask_mar_sigmoid(mask, col, data_corr, missing_ratio, missing_func, strict, seed, beta_corr)
 
