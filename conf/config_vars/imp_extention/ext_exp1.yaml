@@ -26,7 +26,7 @@ new_exp1:
   # missing scenario
   - name: mm_strategy
     value:
-      - random2@mrl=0.3_mrr=0.7_mm=mnarlrsig
+      - random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst
     save_mode: dir4
     keys:
       - missing_simulate
@@ -34,7 +34,7 @@ new_exp1:
 
   # missing scenario
   - name: mm_corr_type
-    value: [others, self, all]
+    value: [allk0.25_b1]
     save_mode: dir4
     keys:
       - missing_simulate
@@ -50,7 +50,7 @@ new_exp1:
 
   # aggregation strategy
   - name: agg_strategy
-    value: [central, local, fedavg-s, fedmechw_new]
+    value: [central2, local, fedavg-s, fedmechw_new]
     save_mode:
     keys:
       - agg_strategy_imp
@@ -78,14 +78,14 @@ new_exp1:
 
   # n_rounds
   - name: n_rounds
-    value: [5]
+    value: [50]
     save_mode: none
     keys:
       - experiment
       - n_rounds
 
   - name: np
-    value: [5]
+    value: [10]
     save_mode: none
     keys:
       - experiment

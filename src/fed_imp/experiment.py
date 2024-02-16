@@ -372,8 +372,8 @@ class Experiment:
 
         logger.info(
             "imp@rmse: {:.5f} ({:.3f}) imp@sliced_ws: {:.5f} ({:.3f}) imp@global_ws: {:.5f}".format(
-                np.array(imp_rmse).mean(), np.array(imp_rmse).std(),
-                np.array(imp_sliced_ws).mean(), np.array(imp_sliced_ws).std(), global_ws
+                np.array(imp_rmse).mean(), np.array(imp_rmse).max() - np.array(imp_rmse).min(),
+                np.array(imp_sliced_ws).mean(), np.array(imp_sliced_ws).max() - np.array(imp_sliced_ws).min(), global_ws
             )
         )
 
@@ -384,9 +384,9 @@ class Experiment:
                 'imp@w2': np.array(imp_ws).mean(),
                 'imp@sliced_ws': np.array(imp_sliced_ws).mean(),
                 "imp@global_ws": global_ws,
-                'imp@rmse_std': np.array(imp_rmse).std(),
+                'imp@rmse_std': np.array(imp_rmse).max() - np.array(imp_rmse).min(),
                 'imp@w2_std': np.array(imp_ws).std(),
-                'imp@sliced_ws_std': np.array(imp_sliced_ws).std()
+                'imp@sliced_ws_std': np.array(imp_sliced_ws).max() - np.array(imp_sliced_ws).min()
             },
             'avg_pred_final_model': {
                 'accu': np.array(best_accu1).mean(),

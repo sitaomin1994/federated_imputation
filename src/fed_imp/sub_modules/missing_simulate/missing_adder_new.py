@@ -30,7 +30,7 @@ def add_missing(train_data_list, scenario, cols, seed=201030):
         missing_ratios = ret[i]['missing_ratio']
         missing_mechanisms = ret[i]['missing_mechanism']
         missing_features = ret[i]['missing_features']
-        missing_mechanisms_params = mm_strategy_params
+        missing_mechanisms_params = mm_strategy_params.copy()
         seed = (seed + i * 10089) % (2 ^ 32 - 1)
         X_train_ms = simulate_nan_new(
             X_train, y_train, missing_features, missing_ratios, missing_mechanisms, missing_mechanisms_params, seed
@@ -47,26 +47,45 @@ def simulate_nan_new(
         X_train, y_train, cols, missing_ratio, mechanism, missing_mnechanisms_params, seed=201030
 ):
     if isinstance(mechanism, list):
+
         if mechanism[0].startswith('mnar_quantile'):
             mechanism_truncated = [item.split('_')[-1] for item in mechanism]
             data_ms = mnar_simulate.simulate_nan_mnar_quantile(
                 X_train, cols, missing_ratios=missing_ratio, missing_funcs=mechanism_truncated, seed=seed)
             X_train_ms = data_ms
+
         elif mechanism[0].startswith('mnar_sigmoid'):
 
+            beta_option = None
             if 'corr_type' not in missing_mnechanisms_params:
                 raise ValueError('The parameter "corr_type" is required for the MNAR mechanism "mnar_sigmoid_left"')
+            if not missing_mnechanisms_params['corr_type'].startswith('all'):
+                if missing_mnechanisms_params['corr_type'] not in ['self', 'others']:
+                    raise ValueError('The parameter "corr_type" should be "self" or "others" or "startwith all"')
+            else:
+                if '_' in missing_mnechanisms_params['corr_type']:
+                    beta_option = missing_mnechanisms_params['corr_type'].split('_')[-1]
+                    if beta_option not in ['b1', 'b2', 'sphere', 'sphere2']:
+                        raise ValueError('beta option should be "b1" or "b2" or "sphere", "sphere2"')
+                missing_mnechanisms_params['corr_type'] = missing_mnechanisms_params['corr_type'].split('_')[0]
 
-            if missing_mnechanisms_params['corr_type'] not in ['self', 'others', 'all']:
-                raise ValueError('The parameter "corr_type" should be "self" or "others" or "all"')
-
+            strict = True if 'strict' in mechanism[0] else False
             corr_type = missing_mnechanisms_params['corr_type']
             mechanism_truncated = [item.split('_')[-1] for item in mechanism]
             data_ms = mnar_simulate.simulate_nan_mnar_sigmoid(
-                X_train, cols, missing_ratios=missing_ratio, missing_funcs=mechanism_truncated, corr_type=corr_type,
-                seed=seed
+                X_train, cols, missing_ratios=missing_ratio, missing_funcs=mechanism_truncated, strict = strict,
+                corr_type=corr_type, seed=seed, beta_corr=beta_option
             )
             X_train_ms = data_ms
+
+        elif mechanism[0].startswith('m1logit'):
+            strict = True if 'strict' in mechanism[0] else False
+            mechanism_truncated = [item.split('_')[-1] for item in mechanism]
+            data_ms = mnar_simulate.MNAR_mask_logistic(
+                X_train, mrs=missing_ratio, missing_funcs=mechanism_truncated, strict=strict, seed=seed
+            )
+            X_train_ms = data_ms
+
         else:
             raise NotImplementedError
     else:

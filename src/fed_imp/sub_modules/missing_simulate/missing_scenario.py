@@ -78,6 +78,12 @@ def load_scenario3(n_clients, cols, mm_strategy, seed=0):
             mm_list = ['mnar_quantile_left', 'mnar_quantile_right']
         elif params['mm'] == 'mnarlrsig':
             mm_list = ['mnar_sigmoid_left', 'mnar_sigmoid_right']
+        elif params['mm'] == 'mnarlrsigst':
+            mm_list = ['mnar_sigmoid_strict_left', 'mnar_sigmoid_strict_right']
+        elif params['mm'] == 'm1logit':
+            mm_list = ['m1logit_left', 'm1logit_right']
+        elif params['mm'] == 'm1logitst':
+            mm_list = ['m1logit_strict_left', 'm1logit_strict_right']
         else:
             raise ValueError(f'mm not found, params: {params}')
         np.random.seed(seed)
