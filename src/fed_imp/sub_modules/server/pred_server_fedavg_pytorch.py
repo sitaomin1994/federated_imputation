@@ -136,7 +136,7 @@ class PredServerFedAvgPytorch:
 
             if self.regression:
 
-                best_mse, best_r2, counter, patience = 10000, 0, 0, 200
+                best_mse, best_r2, counter, patience = 10000, 0, 0, 100
 
                 for current_round in range(1, train_epochs + 1):
 
@@ -168,6 +168,7 @@ class PredServerFedAvgPytorch:
                         if counter >= patience:
                             logger.info("Early stop at round {}".format(current_round))
                             break
+
                 # Test the model
                 mse_rounds_average = [item['test_mse'] for item in clients_prediction_history]
                 r2_rounds_average = [item['test_r2'] for item in clients_prediction_history]
@@ -183,7 +184,7 @@ class PredServerFedAvgPytorch:
                 )
 
             else:
-                best_accu, best_roc, best_f1, best_prc, counter, patience = 0, 0, 0, 0, 0, 50
+                best_accu, best_roc, best_f1, best_prc, counter, patience = 0, 0, 0, 0, 0, 300
 
                 for current_round in range(1, train_epochs + 1):
 
