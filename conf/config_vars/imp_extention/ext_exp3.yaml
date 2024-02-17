@@ -43,7 +43,7 @@ new_exp1:
 
   # aggregation strategy
   - name: agg_strategy
-    value: [fedavg_vae]
+    value: [local]
     save_mode:
     keys:
       - agg_strategy_imp

@@ -88,7 +88,7 @@ class ClientGAIN:
 
         fit_res = (
             self.imputation_model.fit(
-                self.X_train_ms, params={
+                self.X_train_filled, self.missing_mask, params={
                     'local_epochs': local_epoches
                 }
             ))
@@ -102,7 +102,7 @@ class ClientGAIN:
     def transform(self, transform_task: str, transform_instruction: dict, global_weights):
         if transform_task == 'impute_data':
             self.X_train_filled = self.imputation_model.impute(
-                self.X_train_ms, features_min=self.features_min, features_max=self.features_max
+                self.X_train_filled, self.missing_mask, features_min=self.features_min, features_max=self.features_max
             )
         elif transform_task == 'update_imp_model':
             update_weights = transform_instruction['update_weights']
@@ -243,7 +243,7 @@ class GainImputer:
         params.update(updated_model)
         self.model.load_state_dict(params)
 
-    def fit(self, Xmiss: np.array, params: dict):
+    def fit(self, Xmiss: np.array, mask, params: dict):
         """Train the GAIN model.
 
         Args:
@@ -257,21 +257,23 @@ class GainImputer:
         no = len(X)
         dim = len(X[0, :])
         local_epochs = params.get("local_epochs", 10)
+        X = torch.from_numpy(X).float().to(DEVICE)
+        mask = torch.from_numpy(~mask.copy()).float().to(DEVICE)
 
         # MinMaxScaler normalization
-        min_val = self.norm_parameters["min"]
-        max_val = self.norm_parameters["max"]
-
-        for i in range(dim):
-            X[:, i] = X[:, i] - min_val[i]
-            X[:, i] = X[:, i] / (max_val[i] + EPS)
-
-        # Set missing
-        mask = 1 - (1 * (np.isnan(X)))
-        mask = torch.from_numpy(mask).float().to(DEVICE)
-
-        X = torch.from_numpy(X).to(DEVICE)
-        X = torch.nan_to_num(X)
+        # min_val = self.norm_parameters["min"]
+        # max_val = self.norm_parameters["max"]
+        #
+        # for i in range(dim):
+        #     X[:, i] = X[:, i] - min_val[i]
+        #     X[:, i] = X[:, i] / (max_val[i] + EPS)
+        #
+        # # Set missing
+        # mask = 1 - (1 * (np.isnan(X)))
+        # mask = torch.from_numpy(mask).float().to(DEVICE)
+        #
+        # X = torch.from_numpy(X).to(DEVICE)
+        # X = torch.nan_to_num(X)
 
         # Train model
         D_solver = torch.optim.Adam(
@@ -323,7 +325,7 @@ class GainImputer:
             'd_loss': avg_D_loss
         }
 
-    def impute(self, Xmiss: np.array, features_min, features_max) -> np.array:
+    def impute(self, Xmiss: np.array, mask, features_min, features_max) -> np.array:
         """Return imputed data by trained GAIN model.
 
         Args:
@@ -341,22 +343,23 @@ class GainImputer:
             raise RuntimeError("Fit the model first")
 
         X = torch.from_numpy(Xmiss.copy()).float().to(DEVICE)
-
-        min_val = self.norm_parameters["min"]
-        max_val = self.norm_parameters["max"]
+        mask = torch.from_numpy(~mask.copy()).float().to(DEVICE)
         no, dim = X.shape
-        X = X.cpu()
+
         # MinMaxScaler normalization
-        for i in range(dim):
-            X[:, i] = X[:, i] - min_val[i]
-            X[:, i] = X[:, i] / (max_val[i] + EPS)
-
-        mask = 1 - (1 * (np.isnan(X)))
-        mask = mask.to(DEVICE)
-
-        # Set missing
-        x = np.nan_to_num(X)
-        x = torch.from_numpy(x).to(DEVICE)
+        # X = X.cpu()
+        # min_val = self.norm_parameters["min"]
+        # max_val = self.norm_parameters["max"]
+        # for i in range(dim):
+        #     X[:, i] = X[:, i] - min_val[i]
+        #     X[:, i] = X[:, i] / (max_val[i] + EPS)
+        #
+        # mask = 1 - (1 * (np.isnan(X)))
+        # mask = mask.to(DEVICE)
+        #
+        # # Set missing
+        # x = np.nan_to_num(X)
+        x = X.clone()
 
         # Imputed data
         z = sample_Z(no, dim)
@@ -365,9 +368,9 @@ class GainImputer:
         imputed_data = self.model.generator(x, mask)
 
         # Renormalize
-        for i in range(dim):
-            imputed_data[:, i] = imputed_data[:, i] * (max_val[i] + EPS)
-            imputed_data[:, i] = imputed_data[:, i] + min_val[i]
+        # for i in range(dim):
+        #     imputed_data[:, i] = imputed_data[:, i] * (max_val[i] + EPS)
+        #     imputed_data[:, i] = imputed_data[:, i] + min_val[i]
 
         if np.any(np.isnan(imputed_data.detach().cpu().numpy())):
             err = "The imputed result contains nan. This is a bug. Please report it on the issue tracker."
