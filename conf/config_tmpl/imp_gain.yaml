@@ -17,20 +17,24 @@ handle_imbalance: null
 
 # missing data simulation
 missing_simulate:
-  mr_strategy: random
   mf_strategy: all
-  mm_strategy: single@cat=1
+  mm_strategy: s3
+  mm_strategy_params:
+    corr_type: others
 
 # imputation method
 imputation:
-  initial_strategy_num: mean
-  initial_strategy_cat: mode
-  estimator_num: ridge_cv
-  estimator_cat: logistic_cv
-  imp_evaluation_model: logistic
-  imp_evaluation_params:
-    tune_params: gridsearch
+  initial_strategy: mean
   clip: true
+  imp_model_params:
+    loss_alpha: 10
+  imp_params:
+    lr: 1e-3
+    batch_size: 256
+    weight_decay: 0.0001
+    hint_rate: 0.9
+    loss_alpha: 10
+    optimizer: adam
 
 # aggregation strategy
 agg_strategy_imp:
@@ -40,16 +44,14 @@ agg_strategy_imp:
     beta: 0.7
 
 # server
-client_type: ice
-server_type: fedavg_pytorch
+client_type: gain
+server_type: gain
 server:
-  impute_mode: instant
-  imp_round: 20
-  imp_local_epochs: 0
+  imp_round: 50            # global epoch
+  imp_local_epochs: 10       # local epoch
   pred_round: 0
   pred_local_epochs: 0
-  model_fit_mode: one_shot
-  froze_ms_coefs_round: 100
+  verbose: 2
 
 # prediction model
 pred_model:
@@ -83,8 +85,11 @@ save_state: true
 # params
 algo_params:
   central: {}
+  central2: {}
+  central_vae: {}   # todo: rename this to central_nn
   local: {}
   fedavg: {}
+  fedavg_vae: {}    # todo: rename this to fedavg_nn
   fedwavg:
     alpha: 0.9
   fedmechw:
@@ -100,7 +105,7 @@ algo_params:
   fedmechw_new:
     client_thres: 1.0
     alpha: 0.95
-    gamma: 0.05
+    gamma: 0.02
     scale_factor: 4
   fedmechw_p_sigmoid:
     client_thres: 1.0

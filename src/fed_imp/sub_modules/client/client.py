@@ -39,8 +39,8 @@ class Client:
 		self.client_data_config = client_data_config
 		self.seed = seed
 		self.convergency = False
-		self.features_min: np.ndarray = self.X_train.min(axis=0)
-		self.features_max: np.ndarray = self.X_train.max(axis=0)
+		self.features_min = self.X_train.min(axis=0)
+		self.features_max = self.X_train.max(axis=0)
 
 		# get original missing mask 0-1 matrix
 		self.missing_mask = np.isnan(self.X_train_ms).astype(bool)
