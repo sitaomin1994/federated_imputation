@@ -23,7 +23,7 @@ new_exp1:
       - data_partition
       - strategy
 
-  # missing scenario
+   missing scenario
   - name: mm_strategy
     value:
       - random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst
@@ -43,7 +43,7 @@ new_exp1:
 
   # aggregation strategy
   - name: agg_strategy
-    value: [central_vae]
+    value: [fedavg_vae]
     save_mode:
     keys:
       - agg_strategy_imp

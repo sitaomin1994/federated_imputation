@@ -2,7 +2,7 @@
 new_exp1:
   # dataset_name
   - name: dataset_name
-    value: [codon]
+    value: [codrna]
     keys:
       - data
       - dataset_name
@@ -26,7 +26,7 @@ new_exp1:
   # missing scenario
   - name: mm_strategy
     value:
-      - random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst
+      - random3@mrl=0.3_mrr=0.7_mm=mnarlrq
     save_mode: dir4
     keys:
       - missing_simulate
@@ -34,16 +34,23 @@ new_exp1:
 
   # missing scenario
   - name: mm_corr_type
-    value: [allk0.25_sphere]
+    value: [allk0.25_b2]
     save_mode: dir4
     keys:
       - missing_simulate
       - mm_strategy_params
       - corr_type
 
+  # missing scenario
+  - name: server_type
+    value: [fedavg_pytorch]
+    save_mode: none
+    keys:
+      - server_type
+
   # aggregation strategy
   - name: agg_strategy
-    value: [fedavg_gain]
+    value: [fedavg-s, fedmechw_new, local, central2]
     save_mode:
     keys:
       - agg_strategy_imp
