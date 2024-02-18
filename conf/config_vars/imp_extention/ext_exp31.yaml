@@ -71,14 +71,14 @@ ext_exp31:
 
   # n_rounds
   - name: n_rounds
-    value: [1]
+    value: [10]
     save_mode: none
     keys:
       - experiment
       - n_rounds
 
   - name: np
-    value: [1]
+    value: [10]
     save_mode: none
     keys:
       - experiment

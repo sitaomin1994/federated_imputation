@@ -14,7 +14,7 @@ import warnings
 warnings.filterwarnings("ignore", category=UserWarning)
 
 
-@hydra.main(version_base=None, config_path="conf", config_name="exp_config_imp_gain")
+@hydra.main(version_base=None, config_path="conf", config_name="exp_config_imp_vae")
 def main(cfg: DictConfig) -> None:
 	print(OmegaConf.to_yaml(cfg))
 	debug = cfg.debug

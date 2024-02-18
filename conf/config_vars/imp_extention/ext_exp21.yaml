@@ -71,7 +71,7 @@ ext_exp21:
 
   # n_rounds
   - name: n_rounds
-    value: [20]
+    value: [10]
     save_mode: none
     keys:
       - experiment

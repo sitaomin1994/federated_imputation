@@ -234,7 +234,7 @@ if __name__ == '__main__':
                 "batch_size": 128,
                 "learning_rate": 0.001,
                 "weight_decay": 0.001,
-                "pred_round": 300,
+                "pred_round": 800,
                 "pred_local_epochs": 3,
                 'local_epoch': 5,
                 'sample_pct': 1
@@ -279,7 +279,7 @@ if __name__ == '__main__':
             ]  # "random2@mrl=0.2_mrr=0.8_mm=mnarlrq"]
 
             main_config = copy.deepcopy(main_config_tmpl)
-            main_config["n_rounds"] = 800
+            main_config["n_rounds"] = 20
             main_config['data'] = dataset
             main_config['n_clients'] = n_clients
             main_config['sample_size'] = sample_size
