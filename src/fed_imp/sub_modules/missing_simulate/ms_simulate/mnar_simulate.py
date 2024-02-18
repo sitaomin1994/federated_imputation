@@ -173,8 +173,7 @@ def simulate_nan_mnar_sigmoid(
         elif corr_type.startswith('allk'):
             np.random.seed(seed)
             k = max(int(float(corr_type.split('allk')[-1]) * data.shape[1]), 1)
-            X_col = data[:, col]
-            mi = mutual_info_regression(data, X_col, random_state=seed)
+            mi = np.corrcoef(data, rowvar=False)[col]
             mi_idx = np.argsort(mi)[::-1][:k + 1]
             data_corr = data[:, mi_idx]
             if k == 1:
@@ -281,10 +280,9 @@ def mask_mar_sigmoid(mask, col, data_corr, missing_ratio, missing_func, strict, 
     elif beta_corr == 'b2':
         coeffs = np.random.rand(data_copy.shape[1], 1)
         ri = np.corrcoef(data_copy, rowvar=False)[0].reshape(-1, 1)
-        coeffs[0] = 5
+        coeffs[0] = 1
         coeffs = coeffs / coeffs.max()
         coeffs = coeffs * np.sign(ri)
-        print(coeffs)
     elif beta_corr == 'sphere':
         if missing_func == 'left':
             coeffs = generate_param_vector(data_copy.shape[1], main_strength=30, direction='up')

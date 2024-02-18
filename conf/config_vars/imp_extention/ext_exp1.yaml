@@ -34,7 +34,7 @@ new_exp1:
 
   # missing scenario
   - name: mm_corr_type
-    value: [allk0.25_b1]
+    value: [allk0.25_b2]
     save_mode: dir4
     keys:
       - missing_simulate
@@ -78,14 +78,14 @@ new_exp1:
 
   # n_rounds
   - name: n_rounds
-    value: [50]
+    value: [30]
     save_mode: none
     keys:
       - experiment
       - n_rounds
 
   - name: np
-    value: [50]
+    value: [10]
     save_mode: none
     keys:
       - experiment
