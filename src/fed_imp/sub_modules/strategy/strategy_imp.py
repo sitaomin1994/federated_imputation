@@ -65,11 +65,11 @@ class StrategyImputation:
 
         w = None
         if self.strategy == 'local':
-            agg_weight = None
+            agg_weight = list(weights.values())
         elif self.strategy == 'local_vae':
-            agg_weight = None
+            agg_weight = list(weights.values())
         elif self.strategy == 'local_gain':
-            agg_weight = None
+            agg_weight = list(weights.values())
         elif self.strategy == 'central':
             agg_weight = None
         elif self.strategy == 'central2':

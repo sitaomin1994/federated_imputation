@@ -1,8 +1,8 @@
 # @package config_vars
-ext_exp2:
+new_exp1:
   # dataset_name
   - name: dataset_name
-    value: [codon, codrna, mimiciii_mo2, genetic, heart]
+    value: [codrna]
     keys:
       - data
       - dataset_name
@@ -23,10 +23,10 @@ ext_exp2:
       - data_partition
       - strategy
 
-   missing scenario
+  # missing scenario
   - name: mm_strategy
     value:
-      - random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst
+      - random3@mrl=0.3_mrr=0.7_mm=mnarlrq
     save_mode: dir4
     keys:
       - missing_simulate
@@ -34,16 +34,23 @@ ext_exp2:
 
   # missing scenario
   - name: mm_corr_type
-    value: [allk0.25_sphere, allk0.25_b1, allk0.25_b2]
+    value: [allk0.25_b2]
     save_mode: dir4
     keys:
       - missing_simulate
       - mm_strategy_params
       - corr_type
 
+  # missing scenario
+  - name: server_type
+    value: [fedavg_pytorch]
+    save_mode: none
+    keys:
+      - server_type
+
   # aggregation strategy
   - name: agg_strategy
-    value: [central_vae, local_vae, fedavg_vae]
+    value: [fedavg-s, fedmechw_new, local, central2]
     save_mode:
     keys:
       - agg_strategy_imp
@@ -71,14 +78,14 @@ ext_exp2:
 
   # n_rounds
   - name: n_rounds
-    value: [10]
+    value: [1]
     save_mode: none
     keys:
       - experiment
       - n_rounds
 
   - name: np
-    value: [10]
+    value: [1]
     save_mode: none
     keys:
       - experiment

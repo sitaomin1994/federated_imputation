@@ -72,9 +72,9 @@ class MIWAE(nn.Module):
         # encoder
         self.encoder = nn.Sequential(
             torch.nn.Linear(num_features, self.n_hidden),
-            torch.nn.Tanh(),
+            torch.nn.ReLU(),
             torch.nn.Linear(self.n_hidden, self.n_hidden),
-            torch.nn.Tanh(),
+            torch.nn.ReLU(),
             torch.nn.Linear(
                 self.n_hidden, 2 * self.latent_size
             ),  # the encoder will output both the mean and the diagonal covariance
@@ -83,9 +83,9 @@ class MIWAE(nn.Module):
         # decoder
         self.decoder = nn.Sequential(
             torch.nn.Linear(self.latent_size, self.n_hidden),
-            torch.nn.Tanh(),
+            torch.nn.ReLU(),
             torch.nn.Linear(self.n_hidden, self.n_hidden),
-            torch.nn.Tanh(),
+            torch.nn.ReLU(),
             torch.nn.Linear(
                 self.n_hidden, 3 * num_features
             ),
