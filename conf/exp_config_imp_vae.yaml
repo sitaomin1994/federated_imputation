@@ -1,0 +1,11 @@
+experiment_name: fed_imp_pc3
+debug: false
+experiment_marker:
+  - num_clients
+  - server@imp_round
+defaults:
+  - config_tmpl: imp_vae
+  - config_vars/imp_extention:
+      - ext_exp2
+      - ext_exp21
+  - _self_

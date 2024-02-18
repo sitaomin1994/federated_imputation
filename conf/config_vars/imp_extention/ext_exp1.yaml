@@ -2,7 +2,7 @@
 new_exp1:
   # dataset_name
   - name: dataset_name
-    value: [codrna, codon]
+    value: [genetic, heart]
     keys:
       - data
       - dataset_name

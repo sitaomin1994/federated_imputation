@@ -1,8 +1,8 @@
 # @package config_vars
-new_exp1:
+ext_exp3:
   # dataset_name
   - name: dataset_name
-    value: [codon]
+    value: [codon, codrna, mimiciii_mo2, genetic, heart]
     keys:
       - data
       - dataset_name
@@ -34,7 +34,7 @@ new_exp1:
 
   # missing scenario
   - name: mm_corr_type
-    value: [allk0.25_sphere]
+    value: [allk0.25_sphere, allk0.25_b1, allk0.25_b2]
     save_mode: dir4
     keys:
       - missing_simulate
@@ -43,7 +43,7 @@ new_exp1:
 
   # aggregation strategy
   - name: agg_strategy
-    value: [fedavg_gain]
+    value: [local_gain, central_gain, fedavg_gain]
     save_mode:
     keys:
       - agg_strategy_imp
@@ -71,14 +71,14 @@ new_exp1:
 
   # n_rounds
   - name: n_rounds
-    value: [1]
+    value: [10]
     save_mode: none
     keys:
       - experiment
       - n_rounds
 
   - name: np
-    value: [1]
+    value: [10]
     save_mode: none
     keys:
       - experiment
