@@ -2,7 +2,7 @@
 new_exp1:
   # dataset_name
   - name: dataset_name
-    value: [mimiciii_mo2]
+    value: [genetic, heart]
     keys:
       - data
       - dataset_name
@@ -85,7 +85,7 @@ new_exp1:
       - n_rounds
 
   - name: np
-    value: [10]
+    value: [30]
     save_mode: none
     keys:
       - experiment

@@ -234,7 +234,7 @@ if __name__ == '__main__':
                 "batch_size": 128,
                 "learning_rate": 0.001,
                 "weight_decay": 0.001,
-                "pred_round": 300,
+                "pred_round": 800,
                 "pred_local_epochs": 3,
                 'local_epoch': 5,
                 'sample_pct': 1
@@ -251,13 +251,13 @@ if __name__ == '__main__':
     pred_rounds = 1
     seed = 21
     mtp = True
-    datasets = ['fed_imp_ext_pc2/0215/codon', 'fed_imp_ext_pc2/0215/codrna']
+    datasets = ['fed_imp_ext_pc2/0216/heart']
     train_params = [
-        {"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
-        {"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
+        # {"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
+        # {"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
         # {"num_hiddens": 64, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
         # {"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
-        # {"num_hiddens": 32, "batch_size": 128, "lr": 0.001, "weight_decay": 0.001, 'imbalance': 'smotetm'},
+        {"num_hiddens": 32, "batch_size": 128, "lr": 0.001, "weight_decay": 0.001, 'imbalance': 'smotetm'},
         # {"num_hiddens": 64, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None}
     ]
 
@@ -272,10 +272,14 @@ if __name__ == '__main__':
         sample_sizes = ['sample-evenly']
         for sample_size in sample_sizes:
             n_clients = [10]
-            scenario = ["random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst/allk0.25_b1"]  # "random2@mrl=0.2_mrr=0.8_mm=mnarlrq"]
+            scenario = [
+                "random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst/allk0.25_b1",
+                "random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst/allk0.25_sphere",
+                "random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst/allk0.25_b2"
+            ]  # "random2@mrl=0.2_mrr=0.8_mm=mnarlrq"]
 
             main_config = copy.deepcopy(main_config_tmpl)
-            main_config["n_rounds"] = 50
+            main_config["n_rounds"] = 20
             main_config['data'] = dataset
             main_config['n_clients'] = n_clients
             main_config['sample_size'] = sample_size
@@ -287,7 +291,6 @@ if __name__ == '__main__':
             server_config["server_pred_config"]["train_params"]["batch_size"] = train_param["batch_size"]
             server_config["server_pred_config"]["train_params"]["learning_rate"] = train_param["lr"]
             server_config["server_pred_config"]["train_params"]["weight_decay"] = train_param["weight_decay"]
-
             server_config['server_name'] = 'fedavg_mlp_pytorch_pred'
 
             prediction(main_config, server_config, pred_rounds, seed, mtp=mtp, methods=methods, random_select=None)

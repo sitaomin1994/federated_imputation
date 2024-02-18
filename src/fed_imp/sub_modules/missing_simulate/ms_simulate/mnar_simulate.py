@@ -182,7 +182,7 @@ def simulate_nan_mnar_sigmoid(
             raise NotImplementedError
 
         #################################################################################
-        # pick coefficients and mask missing values
+        # pick coefficients and mask missing valuesn
         #################################################################################
         mask = mask_mar_sigmoid(mask, col, data_corr, missing_ratio, missing_func, strict, seed, beta_corr)
 

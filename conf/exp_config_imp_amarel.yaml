@@ -4,7 +4,7 @@ experiment_marker:
   - num_clients
   - server@imp_round
 defaults:
-  - config_tmpl: imp_pc2
-  - config_vars/imp_unbalance:
-      - codrna_exp1
+  - config_tmpl: imp_new
+  - config_vars/imp_extention:
+      - ext_exp1
   - _self_

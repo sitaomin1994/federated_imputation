@@ -58,9 +58,10 @@ def main_func(
         )
 
         client_factory = ClientsFactory(debug=False)
+        client_type = configuration['client_type']
         clients = client_factory.generate_clients(
             num_clients, data_partitions, data_ms_clients, test_data.values, data_config,
-            configuration['imputation'], seed=new_seed
+            configuration['imputation'], client_type=client_type, seed=new_seed
         )
 
         #####################################################################################################
