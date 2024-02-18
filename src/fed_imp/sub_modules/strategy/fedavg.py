@@ -1,3 +1,6 @@
+from collections import OrderedDict
+from copy import deepcopy
+
 import numpy as np
 from loguru import logger
 from scipy.linalg import solve, LinAlgError
@@ -36,6 +39,25 @@ def fedavgs(weights, missing_infos):
 		final_parameters.append(ret)
 
 	return final_parameters, sample_size/np.sum(sample_size)
+
+
+def fedavg_vae(weights, missing_infos):
+
+	# federated averaging implementation
+	averaged_model_state_dict = OrderedDict()  # global parameters
+	sample_sizes = np.array([v['sample_size'] + 1e-4 for v in missing_infos.values()])
+	normalized_coefficient = [size / sum(sample_sizes) for size in sample_sizes]
+
+	for it, local_model_state_dict in enumerate(weights.values()):
+		for key in local_model_state_dict.keys():
+			if it == 0:
+				averaged_model_state_dict[key] = normalized_coefficient[it] * local_model_state_dict[key]
+			else:
+				averaged_model_state_dict[key] += normalized_coefficient[it] * local_model_state_dict[key]
+
+	# copy parameters for each client
+	agg_model_parameters = [deepcopy(averaged_model_state_dict) for _ in range(len(weights.values()))]
+	return agg_model_parameters, sample_sizes/np.sum(sample_sizes)
 
 
 def fedavg(weights):

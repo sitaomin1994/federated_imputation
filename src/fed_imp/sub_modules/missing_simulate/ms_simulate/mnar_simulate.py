@@ -283,7 +283,6 @@ def mask_mar_sigmoid(mask, col, data_corr, missing_ratio, missing_func, strict, 
         coeffs[0] = 1
         coeffs = coeffs / coeffs.max()
         coeffs = coeffs * np.sign(ri)
-        print(coeffs)
     elif beta_corr == 'sphere':
         if missing_func == 'left':
             coeffs = generate_param_vector(data_copy.shape[1], main_strength=30, direction='up')

@@ -27,14 +27,13 @@ imputation:
   initial_strategy: mean
   clip: true
   imp_model_params:
-    latent_size: 16
-    n_hidden: 128
-    K: 20
-    L: 1000
+    loss_alpha: 10
   imp_params:
     lr: 1e-3
     batch_size: 256
-    weight_decay: 0.001
+    weight_decay: 0.0001
+    hint_rate: 0.9
+    loss_alpha: 10
     optimizer: adam
 
 # aggregation strategy
@@ -45,8 +44,8 @@ agg_strategy_imp:
     beta: 0.7
 
 # server
-client_type: vae
-server_type: vae
+client_type: gain
+server_type: gain
 server:
   imp_round: 50            # global epoch
   imp_local_epochs: 10       # local epoch
@@ -87,14 +86,14 @@ save_state: true
 algo_params:
   central: {}
   central2: {}
-  central_vae: { }   # todo: rename this to central_nn
-  central_gain: { }   # todo: rename this to central_nn
-  local: { }
-  local_vae: { }
-  local_gain: { }
-  fedavg: { }
-  fedavg_vae: { }    # todo: rename this to fedavg_nn
-  fedavg_gain: { }    # todo: rename this to fedavg_nn
+  central_vae: {}   # todo: rename this to central_nn
+  central_gain: {}   # todo: rename this to central_nn
+  local: {}
+  local_vae: {}
+  local_gain: {}
+  fedavg: {}
+  fedavg_vae: {}    # todo: rename this to fedavg_nn
+  fedavg_gain: {}    # todo: rename this to fedavg_nn
   fedwavg:
     alpha: 0.9
   fedmechw:

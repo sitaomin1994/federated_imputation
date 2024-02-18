@@ -1,6 +1,8 @@
+from copy import deepcopy
+
 import numpy as np
 
-from .fedavg import fedavg, fedavgs, fedavgh, fedavg2, fedavgcross, testavg
+from .fedavg import fedavg, fedavgs, fedavgh, fedavg2, fedavgcross, testavg, fedavg_vae
 from .fedmech import fedmechclw, fedmechclwcl, fedmechcl2, fedmechw, fedmechcl4, fedmechw_new, fedmechw_new2
 from .fedwavg import fedwavg, fedwavg2, fedwavg3
 from .fedwavgcl import fedwavgcl
@@ -21,20 +23,25 @@ class StrategyImputation:
         self.strategy = strategy
         if strategy == 'local':
             self.initial_strategy = 'local'
+        elif strategy == 'local_vae':
+            self.initial_strategy = 'local'
+        elif strategy == 'local_gain':
+            self.initial_strategy = 'local'
         elif strategy == 'central':
             self.initial_strategy = 'local'
         elif strategy == 'central2':
             self.initial_strategy = 'central2'
+        elif strategy == 'central_vae':
+            self.initial_strategy = 'central2'
+        elif strategy == 'central_gain':
+            self.initial_strategy = 'central2'
         elif strategy.startswith('fedavg'):
             self.initial_strategy = 'fedavg'
         elif strategy == 'testavg':
-            print('testavg')
             self.initial_strategy = 'testavg'
         elif strategy == 'testavg2':
-            print('testavg2')
             self.initial_strategy = 'fedavg'
         elif strategy == 'testavg3':
-            print('testavg3')
             self.initial_strategy = 'fedavg'
         elif strategy.startswith('fedwavg') and not strategy.startswith('fedwavgcl'):
             self.initial_strategy = 'fedavg'
@@ -59,11 +66,28 @@ class StrategyImputation:
         w = None
         if self.strategy == 'local':
             agg_weight = None
+        elif self.strategy == 'local_vae':
+            agg_weight = None
+        elif self.strategy == 'local_gain':
+            agg_weight = None
         elif self.strategy == 'central':
             agg_weight = None
         elif self.strategy == 'central2':
             clients_weights = np.array(list(weights.values()))
             agg_weight = clients_weights[-1, :]
+        # ==============================================================================================================
+        # VAE GAN Algorithm
+        # ==============================================================================================================
+        elif self.strategy == 'fedavg_vae':
+            agg_weight, w = fedavg_vae(weights, missing_infos)
+        elif self.strategy == 'central_vae':
+            client_weights = list(weights.values())
+            agg_weight = deepcopy(client_weights[-1])
+        elif self.strategy == 'fedavg_gain':
+            agg_weight, w = fedavg_vae(weights, missing_infos)
+        elif self.strategy == 'central_gain':
+            client_weights = list(weights.values())
+            agg_weight = deepcopy(client_weights[-1])
         # ==============================================================================================================
         # Average Algorithm
         # ==============================================================================================================
