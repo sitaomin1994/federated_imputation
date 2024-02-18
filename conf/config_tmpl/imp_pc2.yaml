@@ -83,8 +83,14 @@ save_state: true
 # params
 algo_params:
   central: {}
-  local: {}
-  fedavg: {}
+  central_vae: { }   # todo: rename this to central_nn
+  central_gain: { }   # todo: rename this to central_nn
+  local: { }
+  local_vae: { }
+  local_gain: { }
+  fedavg: { }
+  fedavg_vae: { }    # todo: rename this to fedavg_nn
+  fedavg_gain: { }    # todo: rename this to fedavg_nn
   fedwavg:
     alpha: 0.9
   fedmechw:

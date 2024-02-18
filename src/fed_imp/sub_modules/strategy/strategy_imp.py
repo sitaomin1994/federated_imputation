@@ -23,11 +23,17 @@ class StrategyImputation:
         self.strategy = strategy
         if strategy == 'local':
             self.initial_strategy = 'local'
+        elif strategy == 'local_vae':
+            self.initial_strategy = 'local'
+        elif strategy == 'local_gain':
+            self.initial_strategy = 'local'
         elif strategy == 'central':
             self.initial_strategy = 'local'
         elif strategy == 'central2':
             self.initial_strategy = 'central2'
         elif strategy == 'central_vae':
+            self.initial_strategy = 'central2'
+        elif strategy == 'central_gain':
             self.initial_strategy = 'central2'
         elif strategy.startswith('fedavg'):
             self.initial_strategy = 'fedavg'
@@ -60,6 +66,10 @@ class StrategyImputation:
         w = None
         if self.strategy == 'local':
             agg_weight = None
+        elif self.strategy == 'local_vae':
+            agg_weight = None
+        elif self.strategy == 'local_gain':
+            agg_weight = None
         elif self.strategy == 'central':
             agg_weight = None
         elif self.strategy == 'central2':
@@ -71,6 +81,11 @@ class StrategyImputation:
         elif self.strategy == 'fedavg_vae':
             agg_weight, w = fedavg_vae(weights, missing_infos)
         elif self.strategy == 'central_vae':
+            client_weights = list(weights.values())
+            agg_weight = deepcopy(client_weights[-1])
+        elif self.strategy == 'fedavg_gain':
+            agg_weight, w = fedavg_vae(weights, missing_infos)
+        elif self.strategy == 'central_gain':
             client_weights = list(weights.values())
             agg_weight = deepcopy(client_weights[-1])
         # ==============================================================================================================
