@@ -280,7 +280,7 @@ def mask_mar_sigmoid(mask, col, data_corr, missing_ratio, missing_func, strict, 
     elif beta_corr == 'b2':
         coeffs = np.random.rand(data_copy.shape[1], 1)
         ri = np.corrcoef(data_copy, rowvar=False)[0].reshape(-1, 1)
-        coeffs[0] = 5
+        coeffs[0] = 1
         coeffs = coeffs / coeffs.max()
         coeffs = coeffs * np.sign(ri)
         print(coeffs)
