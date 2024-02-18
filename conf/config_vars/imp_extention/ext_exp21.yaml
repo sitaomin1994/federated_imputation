@@ -1,5 +1,5 @@
 # @package config_vars
-ext_exp3:
+ext_exp21:
   # dataset_name
   - name: dataset_name
     value: [codon, codrna, mimiciii_mo2, genetic, heart]
@@ -26,7 +26,7 @@ ext_exp3:
   # missing scenario
   - name: mm_strategy
     value:
-      - random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst
+      - random2@mrl=0.3_mrr=0.7_mm=mnarlrq
     save_mode: dir4
     keys:
       - missing_simulate
@@ -34,7 +34,7 @@ ext_exp3:
 
   # missing scenario
   - name: mm_corr_type
-    value: [allk0.25_sphere, allk0.25_b1, allk0.25_b2]
+    value: [allk0.25_sphere]
     save_mode: dir4
     keys:
       - missing_simulate
@@ -43,7 +43,7 @@ ext_exp3:
 
   # aggregation strategy
   - name: agg_strategy
-    value: [local_gain, central_gain, fedavg_gain]
+    value: [central_vae, local_vae, fedavg_vae]
     save_mode:
     keys:
       - agg_strategy_imp

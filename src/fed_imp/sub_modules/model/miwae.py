@@ -64,8 +64,8 @@ class MIWAE(nn.Module):
         set_seed(seed)
 
         self.num_features = num_features
-        self.n_hidden = n_hidden  # number of hidden units in (same for all MLPs)
-        self.latent_size = latent_size  # dimension of the latent space
+        self.n_hidden = num_features  # number of hidden units in (same for all MLPs)
+        self.latent_size = num_features//2  # dimension of the latent space
         self.K = K  # number of IS during training
         self.L = L  # number of samples for imputation
 
