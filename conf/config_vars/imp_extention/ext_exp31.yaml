@@ -2,7 +2,7 @@
 ext_exp31:
   # dataset_name
   - name: dataset_name
-    value: [codon, codrna, mimiciii_mo2, genetic, heart]
+    value: [mimiciii_mo2, heart, genetic]
     keys:
       - data
       - dataset_name
@@ -43,7 +43,7 @@ ext_exp31:
 
   # aggregation strategy
   - name: agg_strategy
-    value: [local_gain, central_gain, fedavg_gain]
+    value: [central_gain, fedavg_gain, local_gain]
     save_mode:
     keys:
       - agg_strategy_imp
@@ -71,14 +71,14 @@ ext_exp31:
 
   # n_rounds
   - name: n_rounds
-    value: [10]
+    value: [5]
     save_mode: none
     keys:
       - experiment
       - n_rounds
 
   - name: np
-    value: [10]
+    value: [3]
     save_mode: none
     keys:
       - experiment

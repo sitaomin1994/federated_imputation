@@ -52,7 +52,7 @@ server:
   imp_local_epochs: 5       # local epoch
   pred_round: 0
   pred_local_epochs: 0
-  verbose: 50
+  verbose: 5
 
 # prediction model
 pred_model:

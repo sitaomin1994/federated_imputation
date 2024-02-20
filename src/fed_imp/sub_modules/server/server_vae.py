@@ -252,21 +252,22 @@ class ServerVAE:
         ################################################################################################################
         # imputation
         ################################################################################################################
-        for client_id, client in self.clients.items():
-            client.transform(
-                transform_task='impute_data', transform_instruction={}, global_weights=aggregated_weight
-            )
+        if server_round <= 5 or server_round % self.verbose == 0 or server_round >= self.global_rounds_imp - 4:
+            for client_id, client in self.clients.items():
+                client.transform(
+                    transform_task='impute_data', transform_instruction={}, global_weights=aggregated_weight
+                )
 
         # evaluation
         rets = self._imp_evaluation(self.clients)
         client_imp_history.append(('server', server_round, rets))
 
-        if server_round % self.verbose == 0:
-            avg_rmse = np.array([item['imp@rmse'] for item in rets['metrics'].values()]).mean()
-            avg_loss = np.array([item['loss'] for item in losses.values()]).mean()
-            logger.info(
-                "Server Round: {} avg_rmse: {} avg_loss: {}".format(server_round, avg_rmse, avg_loss)
-            )
+        # if server_round % self.verbose == 0:
+        #     avg_rmse = np.array([item['imp@rmse'] for item in rets['metrics'].values()]).mean()
+        #     avg_loss = np.array([item['loss'] for item in losses.values()]).mean()
+        #     logger.info(
+        #         "Server Round: {} avg_rmse: {} avg_loss: {}".format(server_round, avg_rmse, avg_loss)
+        #     )
 
     @staticmethod
     def _imp_evaluation(clients):
