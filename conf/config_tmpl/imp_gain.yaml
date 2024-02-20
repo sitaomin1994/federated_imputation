@@ -32,7 +32,7 @@ imputation:
     lr: 1e-3
     batch_size: 256
     weight_decay: 0.0001
-    hint_rate: 0.9
+    hint_rate: 0.3
     loss_alpha: 10
     optimizer: adam
 
@@ -47,11 +47,11 @@ agg_strategy_imp:
 client_type: gain
 server_type: gain
 server:
-  imp_round: 100            # global epoch
+  imp_round: 600            # global epoch
   imp_local_epochs: 5       # local epoch
   pred_round: 0
   pred_local_epochs: 0
-  verbose: 50
+  verbose: 60
 
 # prediction model
 pred_model:

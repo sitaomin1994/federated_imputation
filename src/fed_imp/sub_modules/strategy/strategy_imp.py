@@ -67,9 +67,9 @@ class StrategyImputation:
         if self.strategy == 'local':
             agg_weight = None
         elif self.strategy == 'local_vae':
-            agg_weight = None
+            agg_weight = [deepcopy(weights[client_id]) for client_id in range(len(weights.values()))]
         elif self.strategy == 'local_gain':
-            agg_weight = None
+            agg_weight = [deepcopy(weights[client_id]) for client_id in range(len(weights.values()))]
         elif self.strategy == 'central':
             agg_weight = None
         elif self.strategy == 'central2':
