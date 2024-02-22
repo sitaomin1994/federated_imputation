@@ -234,7 +234,7 @@ if __name__ == '__main__':
                 "batch_size": 128,
                 "learning_rate": 0.001,
                 "weight_decay": 0.001,
-                "pred_round": 2000,
+                "pred_round": 700,
                 "pred_local_epochs": 3,
                 'local_epoch': 5,
                 'sample_pct': 1
@@ -242,7 +242,7 @@ if __name__ == '__main__':
             "regression": False,
         },
         "server_config": {
-            'pred_rounds': 5,
+            'pred_rounds': 20,
             'seed': 21,
             "metric": "f1"
         }
@@ -251,19 +251,19 @@ if __name__ == '__main__':
     pred_rounds = 1
     seed = 21
     mtp = True
-    datasets = ['fed_imp_ext_pc2/logitst/genetic']
+    datasets = ['fed_imp_pc1/logitst/heart']
     train_params = [
         # {"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
         # {"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
         # {"num_hiddens": 64, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
-        {"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
-        # {"num_hiddens": 32, "batch_size": 128, "lr": 0.001, "weight_decay": 0.001, 'imbalance': 'smotetm'},
+        # {"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
+        {"num_hiddens": 32, "batch_size": 128, "lr": 0.001, "weight_decay": 0.001, 'imbalance': 'smotetm'},
         # {"num_hiddens": 64, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None}
     ]
 
     ####################################################################################
     # Scenario new 1
-    methods = ["fedavg-s", "fedmechw_new", "local", "central2"]
+    methods = ["fedavg-s", "fedmechw_new", "local"]
     for d, train_param in zip(datasets, train_params):
 
         dataset = d
@@ -274,7 +274,7 @@ if __name__ == '__main__':
             n_clients = [10]
             scenario = [
                 #"random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst/allk0.25_b1",
-                "random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst/allk0.25_sphere",
+             #"random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst/allk0.25_sphere",
                 "random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst/allk0.25_b2"
             ]  # "random2@mrl=0.2_mrr=0.8_mm=mnarlrq"]
 
