@@ -252,15 +252,21 @@ class ServerVAE:
         ################################################################################################################
         # imputation
         ################################################################################################################
-        if server_round <= 5 or server_round % self.verbose == 0 or server_round >= self.global_rounds_imp - 4:
+        if server_round <= 3 or server_round % self.verbose == 0 or server_round >= self.global_rounds_imp - 3:
             for client_id, client in self.clients.items():
                 client.transform(
                     transform_task='impute_data', transform_instruction={}, global_weights=aggregated_weight
                 )
 
-        # evaluation
-        rets = self._imp_evaluation(self.clients)
-        client_imp_history.append(('server', server_round, rets))
+            # evaluation
+            rets = self._imp_evaluation(self.clients)
+            client_imp_history.append(('server', server_round, rets))
+
+            avg_rmse = np.array([item['imp@rmse'] for item in rets['metrics'].values()]).mean()
+            logger.info(
+                "Server Round: {} avg_rmse: {}".format(
+                    server_round, avg_rmse,
+            ))
 
         # if server_round % self.verbose == 0:
         #     avg_rmse = np.array([item['imp@rmse'] for item in rets['metrics'].values()]).mean()

@@ -10,7 +10,8 @@ import copy
 from loguru import logger
 
 
-def main_prediction(data_dir, server_name, server_config, server_pred_config, round_, imbalance):
+def main_prediction(data_dir, server_name, server_config, server_pred_config, round_, imbalance, num_clients):
+
     data_imp = np.load(os.path.join(data_dir, "imputed_data_{}.npy".format(round_)))
     data_true = np.load(os.path.join(data_dir, "origin_data_{}.npy".format(round_)))
     missing_mask = np.load(os.path.join(data_dir, "missing_mask_{}.npy".format(round_)))
@@ -22,7 +23,7 @@ def main_prediction(data_dir, server_name, server_config, server_pred_config, ro
 
     # setup client
     clients = {}
-    for client_id in range(len(data_imps)):
+    for client_id in range(num_clients):
         clients[client_id] = SimpleClient(
             client_id=client_id,
             data_imp=data_imps[client_id],
@@ -32,7 +33,7 @@ def main_prediction(data_dir, server_name, server_config, server_pred_config, ro
             imbalance=imbalance,
             regression=server_pred_config['regression']
         )
-
+    print(len(clients))
     # setup server
     server = load_server(
         server_name, clients=clients, server_config=server_config, pred_config=server_pred_config,
@@ -102,12 +103,13 @@ def prediction(main_config, server_config_, pred_rounds, seed, mtp=False, method
                         test_data = np.load(os.path.join(data_dir, "test_data_{}.npy".format(round_)))
                         sp = np.load(os.path.join(data_dir, "split_indices_{}.npy".format(round_)))
                         data_imps = np.split(data_imp, sp, axis=0)
+                        print(len(data_imps))
                         data_trues = np.split(data_true, sp, axis=0)
                         missing_masks = np.split(missing_mask, sp, axis=0)
 
                         # setup client
                         clients = {}
-                        for client_id in range(len(data_imps)):
+                        for client_id in range(len(n_clients)):
                             clients[client_id] = SimpleClient(
                                 client_id=client_id,
                                 data_imp=data_imps[client_id],
@@ -121,7 +123,7 @@ def prediction(main_config, server_config_, pred_rounds, seed, mtp=False, method
                         # setup server
                         server = load_server(
                             server_name, clients=clients, server_config=server_config, pred_config=server_pred_config,
-                            test_data=test_data, base_model=server_pred_config["model_params"]['base_model'],
+                            test_data=test_data, base_model=server_pred_config["model_params"]['model'],
                             regression=server_pred_config['regression']
                         )
 
@@ -141,7 +143,7 @@ def prediction(main_config, server_config_, pred_rounds, seed, mtp=False, method
 
                     with mp.Pool(n_process) as pool:
                         process_args = [
-                            (data_dir, server_name, server_config, server_pred_config, round_, imbalance)
+                            (data_dir, server_name, server_config, server_pred_config, round_, imbalance, n_clients)
                             for round_ in rounds]
                         process_results = pool.starmap(main_prediction, process_args, chunksize=chunk_size)
 
@@ -263,7 +265,7 @@ if __name__ == '__main__':
 
     ####################################################################################
     # Scenario new 1
-    methods = ["fedavg-s", "fedmechw_new", "local", "central2"]
+    methods = ["central2"]
     for d, train_param in zip(datasets, train_params):
 
         dataset = d

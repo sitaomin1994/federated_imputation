@@ -2,7 +2,7 @@
 ext_exp21:
   # dataset_name
   - name: dataset_name
-    value: [mimiciii_mo2, genetic, heart]
+    value: [codrna, codon]
     keys:
       - data
       - dataset_name
@@ -26,7 +26,7 @@ ext_exp21:
   # missing scenario
   - name: mm_strategy
     value:
-      - random2@mrl=0.3_mrr=0.7_mm=mnarlrq
+      - random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst
     save_mode: dir4
     keys:
       - missing_simulate
@@ -43,7 +43,7 @@ ext_exp21:
 
   # aggregation strategy
   - name: agg_strategy
-    value: [local_vae, central_vae]
+    value: [local_vae, central_vae, fedavg_vae]
     save_mode:
     keys:
       - agg_strategy_imp
@@ -55,7 +55,6 @@ ext_exp21:
     keys:
       - experiment
       - seed
-
   - name: seed2
     value: [ 50 ]
     save_mode:
@@ -71,14 +70,14 @@ ext_exp21:
 
   # n_rounds
   - name: n_rounds
-    value: [3]
+    value: [15]
     save_mode: none
     keys:
       - experiment
       - n_rounds
 
   - name: np
-    value: [5]
+    value: [3]
     save_mode: none
     keys:
       - experiment
