@@ -265,11 +265,11 @@ if __name__ == '__main__':
     ]
 
     n_rounds = [300, 300, 500, 700, 2000]
-    n_datas = [10, 10, 9, 9, 9]
+    n_datas = [15, 15, 15, 15, 15]
 
     ####################################################################################
     # Scenario new 1
-    methods = ["central_vae", "fedavg_vae", "local_vae"]
+    methods = ["fedavg_vae", "local_vae"]
     for d, train_param, n_round, n_data in zip(datasets, train_params, n_rounds, n_datas):
 
         dataset = d
@@ -281,6 +281,7 @@ if __name__ == '__main__':
             scenario = [
                 #"random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst/allk0.25_b1",
                 "random2@mrl=0.3_mrr=0.7_mm=mnarlrq/allk0.25_sphere",
+                "random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst/allk0.25_sphere"
                 # "random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst/allk0.25_b2"
             ]   # "random2@mrl=0.2_mrr=0.8_mm=mnarlrq"]
 

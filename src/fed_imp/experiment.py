@@ -105,7 +105,7 @@ def main_func(
             assert len(clients.keys()) == 1
             strategy_imp = StrategyImputation(strategy='local', params={})
 
-        elif imp_strategy == 'central2':
+        elif imp_strategy == 'central2' or imp_strategy == 'central_vae' or imp_strategy == 'central_gain':
             data_ms_new = np.concatenate(data_ms_clients, axis=0)
             data_partitions_new = np.concatenate(data_partitions, axis=0)
             data_ms_clients.append(data_ms_new)
