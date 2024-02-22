@@ -132,7 +132,7 @@ def prediction(main_config, server_config_, pred_rounds, seed, mtp=False, method
                         rets.append(ret)
                 else:
                     n_process = n_rounds
-                    if n_process > 10: n_process = 10
+                    if n_process > 10: n_process = 5
                     chunk_size = n_rounds // n_process
                     rounds = list(range(n_rounds))
 
@@ -281,7 +281,7 @@ if __name__ == '__main__':
             ]  # "random2@mrl=0.2_mrr=0.8_mm=mnarlrq"]
 
             main_config = copy.deepcopy(main_config_tmpl)
-            main_config["n_rounds"] = 30
+            main_config["n_rounds"] = 20
             main_config['data'] = dataset
             main_config['n_clients'] = n_clients
             main_config['sample_size'] = sample_size
