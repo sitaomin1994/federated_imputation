@@ -2,7 +2,7 @@
 ext_exp31:
   # dataset_name
   - name: dataset_name
-    value: [mimiciii_mo2, heart, genetic]
+    value: [codrna, codon, mimiciii_mo2, heart, genetic]
     keys:
       - data
       - dataset_name
@@ -26,7 +26,7 @@ ext_exp31:
   # missing scenario
   - name: mm_strategy
     value:
-      - random2@mrl=0.3_mrr=0.7_mm=mnarlrq
+      - random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst
     save_mode: dir4
     keys:
       - missing_simulate
@@ -71,7 +71,7 @@ ext_exp31:
 
   # n_rounds
   - name: n_rounds
-    value: [5]
+    value: [18]
     save_mode: none
     keys:
       - experiment

@@ -10,7 +10,7 @@ import copy
 from loguru import logger
 
 
-def main_prediction(data_dir, server_name, server_config, server_pred_config, round_, imbalance):
+def main_prediction(data_dir, server_name, server_config, server_pred_config, round_, imbalance, num_clients=10):
     data_imp = np.load(os.path.join(data_dir, "imputed_data_{}.npy".format(round_)))
     data_true = np.load(os.path.join(data_dir, "origin_data_{}.npy".format(round_)))
     missing_mask = np.load(os.path.join(data_dir, "missing_mask_{}.npy".format(round_)))
@@ -22,7 +22,7 @@ def main_prediction(data_dir, server_name, server_config, server_pred_config, ro
 
     # setup client
     clients = {}
-    for client_id in range(len(data_imps)):
+    for client_id in range(num_clients):
         clients[client_id] = SimpleClient(
             client_id=client_id,
             data_imp=data_imps[client_id],
@@ -107,7 +107,7 @@ def prediction(main_config, server_config_, pred_rounds, seed, mtp=False, method
 
                         # setup client
                         clients = {}
-                        for client_id in range(len(data_imps)):
+                        for client_id in range(n_clients):
                             clients[client_id] = SimpleClient(
                                 client_id=client_id,
                                 data_imp=data_imps[client_id],
@@ -121,7 +121,7 @@ def prediction(main_config, server_config_, pred_rounds, seed, mtp=False, method
                         # setup server
                         server = load_server(
                             server_name, clients=clients, server_config=server_config, pred_config=server_pred_config,
-                            test_data=test_data, base_model=server_pred_config["model_params"]['base_model'],
+                            test_data=test_data, base_model=server_pred_config["model_params"]['model'],
                             regression=server_pred_config['regression']
                         )
 
@@ -141,7 +141,7 @@ def prediction(main_config, server_config_, pred_rounds, seed, mtp=False, method
 
                     with mp.Pool(n_process) as pool:
                         process_args = [
-                            (data_dir, server_name, server_config, server_pred_config, round_, imbalance)
+                            (data_dir, server_name, server_config, server_pred_config, round_, imbalance, n_clients)
                             for round_ in rounds]
                         process_results = pool.starmap(main_prediction, process_args, chunksize=chunk_size)
 
@@ -252,8 +252,8 @@ if __name__ == '__main__':
     seed = 21
     mtp = True
     datasets = [
-        'fed_imp_pc4/gain/codon', 'fed_imp_pc4/gain/codrna', 'fed_imp_pc4/gain/mimiciii_mo2',
-        'fed_imp_pc4/gain/genetic', 'fed_imp_pc4/gain/heart'
+        'fed_imp_pc4/vae/codrna', 'fed_imp_pc4/vae/codrna', 'fed_imp_pc4/vae/mimiciii_mo2',
+        'fed_imp_pc4/vae/heart', 'fed_imp_pc4/vae/genetic'
     ]
     train_params = [
          {"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
@@ -264,12 +264,13 @@ if __name__ == '__main__':
         # {"num_hiddens": 64, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None}
     ]
 
-    n_rounds = [300, 300, 500, 800, 2000]
+    n_rounds = [300, 300, 500, 700, 2000]
+    n_datas = [15, 15, 15, 15, 15]
 
     ####################################################################################
     # Scenario new 1
-    methods = ["central_gain", "fedavg_gain", "local_gain"]
-    for d, train_param, n_round in zip(datasets, train_params, n_rounds):
+    methods = ["fedavg_vae", "local_vae"]
+    for d, train_param, n_round, n_data in zip(datasets, train_params, n_rounds, n_datas):
 
         dataset = d
 
@@ -279,12 +280,13 @@ if __name__ == '__main__':
             n_clients = [10]
             scenario = [
                 #"random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst/allk0.25_b1",
-                "random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst/allk0.25_sphere",
+                "random2@mrl=0.3_mrr=0.7_mm=mnarlrq/allk0.25_sphere",
+                "random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst/allk0.25_sphere"
                 # "random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst/allk0.25_b2"
             ]   # "random2@mrl=0.2_mrr=0.8_mm=mnarlrq"]
 
             main_config = copy.deepcopy(main_config_tmpl)
-            main_config["n_rounds"] = 10
+            main_config["n_rounds"] = n_data
             main_config['data'] = dataset
             main_config['n_clients'] = n_clients
             main_config['sample_size'] = sample_size
