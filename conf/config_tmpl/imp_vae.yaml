@@ -30,7 +30,7 @@ imputation:
     latent_size: 32
     n_hidden: 64
     K: 10
-    L: 1000
+    L: 100
   imp_params:
     lr: 1e-3
     batch_size: 256

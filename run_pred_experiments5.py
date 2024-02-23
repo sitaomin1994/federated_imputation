@@ -252,24 +252,25 @@ if __name__ == '__main__':
     seed = 21
     mtp = True
     datasets = [
-        'fed_imp_pc4/vae/codrna', 'fed_imp_pc4/vae/codrna', 'fed_imp_pc4/vae/mimiciii_mo2',
-        'fed_imp_pc4/vae/heart', 'fed_imp_pc4/vae/genetic'
+        'fed_imp_pc4/gain/codon', 'fed_imp_pc4/gain/codrna', 'fed_imp_pc4/gain/mimiciii_mo2',
+        'fed_imp_pc4/gain/heart', 'fed_imp_pc4/gain/genetic'
     ]
     train_params = [
          {"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
          {"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
          {"num_hiddens": 64, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
-         {"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
          {"num_hiddens": 32, "batch_size": 128, "lr": 0.001, "weight_decay": 0.001, 'imbalance': 'smotetm'},
+         {"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
         # {"num_hiddens": 64, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None}
     ]
 
     n_rounds = [300, 300, 500, 700, 2000]
+    #n_rounds = [300, 700, 2000]
     n_datas = [15, 15, 15, 15, 15]
 
     ####################################################################################
     # Scenario new 1
-    methods = ["fedavg_vae", "local_vae"]
+    methods = ["fedavg_gain", "local_gain"]
     for d, train_param, n_round, n_data in zip(datasets, train_params, n_rounds, n_datas):
 
         dataset = d
@@ -280,7 +281,7 @@ if __name__ == '__main__':
             n_clients = [10]
             scenario = [
                 #"random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst/allk0.25_b1",
-                "random2@mrl=0.3_mrr=0.7_mm=mnarlrq/allk0.25_sphere",
+                #"random2@mrl=0.3_mrr=0.7_mm=mnarlrq/allk0.25_sphere",
                 "random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst/allk0.25_sphere"
                 # "random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst/allk0.25_b2"
             ]   # "random2@mrl=0.2_mrr=0.8_mm=mnarlrq"]

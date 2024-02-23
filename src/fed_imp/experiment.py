@@ -105,7 +105,7 @@ def main_func(
             assert len(clients.keys()) == 1
             strategy_imp = StrategyImputation(strategy='local', params={})
 
-        elif imp_strategy == 'central2' or imp_strategy == 'central_vae' or imp_strategy == 'central_gain':
+        elif imp_strategy == 'central2':
             data_ms_new = np.concatenate(data_ms_clients, axis=0)
             data_partitions_new = np.concatenate(data_partitions, axis=0)
             data_ms_clients.append(data_ms_new)
@@ -116,6 +116,29 @@ def main_func(
             )
 
             assert len(clients.keys()) == num_clients + 1
+        elif imp_strategy == 'central_vae':
+            data_ms_new = np.concatenate(data_ms_clients, axis=0)
+            data_partitions_new = np.concatenate(data_partitions, axis=0)
+            data_ms_clients.append(data_ms_new)
+            data_partitions.append(data_partitions_new)
+            clients = client_factory.generate_clients(
+                num_clients + 1, data_partitions, data_ms_clients, test_data.values, data_config,
+                configuration['imputation'], seed=new_seed, client_type = 'vae'
+            )
+
+            assert len(clients.keys()) == num_clients + 1
+        elif imp_strategy == 'central_gain':
+            data_ms_new = np.concatenate(data_ms_clients, axis=0)
+            data_partitions_new = np.concatenate(data_partitions, axis=0)
+            data_ms_clients.append(data_ms_new)
+            data_partitions.append(data_partitions_new)
+            clients = client_factory.generate_clients(
+                num_clients + 1, data_partitions, data_ms_clients, test_data.values, data_config,
+                configuration['imputation'], seed=new_seed, client_type='gain'
+            )
+
+            assert len(clients.keys()) == num_clients + 1
+
 
         #####################################################################################################
         # Create Server
