@@ -18,7 +18,7 @@ handle_imbalance: null
 # missing data simulation
 missing_simulate:
   mf_strategy: all
-  mm_strategy: s3
+  mm_strategy: none
   mm_strategy_params:
     corr_type: others
 

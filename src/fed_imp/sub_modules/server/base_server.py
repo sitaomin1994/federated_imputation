@@ -9,6 +9,8 @@ from src.fed_imp.sub_modules.client.client import Client
 from src.fed_imp.sub_modules.dataloader import construct_tensor_dataset
 from typing import Dict, List
 from loguru import logger
+
+from src.modules.evaluation.imputation_quality import sliced_ws
 from src.tracker.EPMTracker import EMPTracker, ClientInfo, EMPRecord
 from copy import deepcopy
 
@@ -207,6 +209,16 @@ class ServerBase:
         ###############################################################################################
         imp_results = [item[2]['metrics'] for item in clients_imp_history[-5:]]
 
+        global_ws = []
+        for origin_data, impute_data in zip(origin_datas, imputed_datas):
+            origin_data = origin_data[:, :-1]
+            impute_data = impute_data[:, :-1]
+            ws = sliced_ws(origin_data, impute_data)
+            global_ws.append(ws)
+
+        global_ws = np.array(global_ws).mean()
+
+
         return {
             'client_imp_history': clients_imp_history,
             'imp_result': {
@@ -215,6 +227,7 @@ class ServerBase:
                 'imp@sliced_ws': np.array(
                     [[value['imp@sliced_ws'] for value in item.values()] for item in imp_results]
                 ).mean(),
+                'imp@global_ws': global_ws,
             },
             'pred_result': {
                 'accu_mean': np.array(best_accus).mean() if len(best_accus) > 0 else 0.0,

@@ -253,29 +253,31 @@ if __name__ == '__main__':
     seed = 21
     mtp = True
     models = [
-        'vae', 'gain'
+        'vae'
     ]
     for model in models:
         datasets = [
-            f'fed_imp_pc4/{model}/codon', f'fed_imp_pc4/{model}/codrna', f'fed_imp_pc4/{model}/mimiciii_mo2',
+            #f'fed_imp_pc4/{model}/codon', f'fed_imp_pc4/{model}/codrna', f'fed_imp_pc4/{model}/mimiciii_mo2',
+            f'fed_imp_pc4/{model}/codon',
             f'fed_imp_pc4/{model}/heart', f'fed_imp_pc4/{model}/genetic'
         ]
         train_params = [
              {"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
-             {"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
-             {"num_hiddens": 64, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
+             #{"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
+             #{"num_hiddens": 64, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
              {"num_hiddens": 32, "batch_size": 128, "lr": 0.001, "weight_decay": 0.001, 'imbalance': 'smotetm'},
              {"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
             # {"num_hiddens": 64, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None}
         ]
 
-        n_rounds = [300, 300, 500, 700, 2000]
-        #n_rounds = [300, 700, 2000]
-        n_datas = [4, 4, 4, 4, 4]
+        #n_rounds = [300, 300, 500, 700, 2000]
+        #n_datas = [4, 4, 4, 4, 4]
+        n_rounds = [300, 700, 2000]
+        n_datas = [4, 4, 4]
 
         ####################################################################################
         # Scenario new 1
-        methods = [f"central_{model}"]
+        methods = [f"central_{model}", f"local_{model}", f"fedavg_{model}"]
         for d, train_param, n_round, n_data in zip(datasets, train_params, n_rounds, n_datas):
 
             dataset = d

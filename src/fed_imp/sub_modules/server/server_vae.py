@@ -6,6 +6,8 @@ from src.fed_imp.sub_modules.strategy.strategy_imp import StrategyImputation
 from src.fed_imp.sub_modules.client.client_vae import ClientVAE
 from typing import Dict, List
 from loguru import logger
+
+from src.modules.evaluation.imputation_quality import sliced_ws
 from src.tracker.EPMTracker import EMPTracker, ClientInfo, EMPRecord
 
 
@@ -163,6 +165,15 @@ class ServerVAE:
         ###############################################################################################
         imp_results = [item[2]['metrics'] for item in clients_imp_history[-5:]]
 
+        global_ws = []
+        for origin_data, impute_data in zip(origin_datas, imputed_datas):
+            origin_data = origin_data[:, :-1]
+            impute_data = impute_data[:, :-1]
+            ws = sliced_ws(origin_data, impute_data)
+            global_ws.append(ws)
+
+        global_ws = np.array(global_ws).mean()
+
         return {
             'client_imp_history': clients_imp_history,
             'imp_result': {
@@ -171,6 +182,7 @@ class ServerVAE:
                 'imp@sliced_ws': np.array(
                     [[value['imp@sliced_ws'] for value in item.values()] for item in imp_results]
                 ).mean(),
+                'imp@global_ws': global_ws,
             },
             'pred_result': {
                 'accu_mean': 0.0,
