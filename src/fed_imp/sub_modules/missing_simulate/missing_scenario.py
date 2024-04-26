@@ -65,7 +65,7 @@ def load_scenario3(n_clients, cols, mm_strategy, seed=0):
     
     elif strategy == "complex2":  # complex scenario2 - each client radomly choose a mnar-logit-multivariate left/rigit mechanism for each feature
        
-        mm_list = ['m1logit_strict_left', 'm1logit_strict_right']
+        mm_list = ['mnar_sigmoid_left', 'mnar_sigmoid_right']
        
         np.random.seed(seed)
         start = 0.3

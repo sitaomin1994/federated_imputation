@@ -47,6 +47,19 @@ def simulate_nan_new(
 			data_ms = mnar_simulate.simulate_nan_mnar_quantile(
 				X_train, cols, missing_ratios = missing_ratio, missing_funcs=mechanism_truncated, seed=seed)
 			X_train_ms = data_ms
+   
+		elif mechanism[0].startswith('mnar_sigmoid'):
+
+			beta_option = 'sphere'   # can also set to 'b1', 'b2', 'sphere2'
+			strict = True
+			corr_type = 'allk0.25'   # most 25% correlated features
+			mechanism_truncated = [item.split('_')[-1] for item in mechanism]
+			data_ms = mnar_simulate.simulate_nan_mnar_sigmoid(
+				X_train, cols, missing_ratios=missing_ratio, missing_funcs=mechanism_truncated, strict = strict,
+				corr_type=corr_type, seed=seed, beta_corr=beta_option
+			)
+			X_train_ms = data_ms
+		
 		else:
 			raise NotImplementedError
 	else:
