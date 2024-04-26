@@ -45,12 +45,12 @@ def data_partition(strategy, params, data, n_clients, seed=201030, regression=Fa
                 # new_seed = seed
                 if regression:
                     _, X_test, _, y_test = train_test_split(
-                        data[:, :-1], data[:, -1], test_size=sample_frac,
+                        data[:, :-1], data[:, -1], test_size=sample_frac, shuffle = True,
                         random_state=(new_seed) % (2 ** 32)
                     )
                 else:
                     _, X_test, _, y_test = train_test_split(
-                        data[:, :-1], data[:, -1], test_size=sample_frac,
+                        data[:, :-1], data[:, -1], test_size=sample_frac, shuffle = True,
                         random_state=(new_seed) % (2 ** 32), stratify=data[:, -1]
                     )
                 ret.append(np.concatenate([X_test, y_test.reshape(-1, 1)], axis=1).copy())
@@ -68,12 +68,12 @@ def data_partition(strategy, params, data, n_clients, seed=201030, regression=Fa
                 # new_seed = seed
                 if regression:
                     _, X_test, _, y_test = train_test_split(
-                        data[:, :-1], data[:, -1], test_size=sample_frac,
+                        data[:, :-1], data[:, -1], test_size=sample_frac, shuffle = True,
                         random_state=(new_seed) % (2 ** 32)
                     )
                 else:
                     _, X_test, _, y_test = train_test_split(
-                        data[:, :-1], data[:, -1], test_size=sample_frac,
+                        data[:, :-1], data[:, -1], test_size=sample_frac, shuffle = True,
                         random_state=(new_seed) % (2 ** 32), stratify=data[:, -1]
                     )
                 ret.append(np.concatenate([X_test, y_test.reshape(-1, 1)], axis=1).copy())
@@ -234,11 +234,11 @@ def data_partition(strategy, params, data, n_clients, seed=201030, regression=Fa
     elif strategy == 'sample-uneven10dir':
         sample_seed = 211 + seed
         np.random.seed(sample_seed)
-        sizes = noniid_sample_dirichlet(data.shape[0], 10, 0.2, 400, data.shape[0]*0.5, seed = sample_seed)
+        sizes = noniid_sample_dirichlet(data.shape[0], 10, 0.4, 100, data.shape[0]*0.5, seed = sample_seed)
         sample_fracs = sizes
+        print(sample_fracs)
         sample_fracs = [sample_frac / data.shape[0] for sample_frac in sample_fracs]
         ret = []
-        print(sample_seed)
         np.sum(sample_fracs)
         for idx, sample_frac in enumerate(sample_fracs):
             new_seed = seed + idx * seed + 990983
@@ -248,12 +248,12 @@ def data_partition(strategy, params, data, n_clients, seed=201030, regression=Fa
                 # new_seed = seed
                 if regression:
                     _, X_test, _, y_test = train_test_split(
-                        data[:, :-1], data[:, -1], test_size=sample_frac,
+                        data[:, :-1], data[:, -1], test_size=sample_frac, shuffle = True,
                         random_state=(new_seed) % (2 ** 32)
                     )
                 else:
                     _, X_test, _, y_test = train_test_split(
-                        data[:, :-1], data[:, -1], test_size=sample_frac,
+                        data[:, :-1], data[:, -1], test_size=sample_frac, shuffle = True,
                         random_state=(new_seed) % (2 ** 32), stratify=data[:, -1]
                     )
                 ret.append(np.concatenate([X_test, y_test.reshape(-1, 1)], axis=1).copy())
@@ -265,7 +265,7 @@ def data_partition(strategy, params, data, n_clients, seed=201030, regression=Fa
         for i in range(3):
             sample_fracs.append(random.randint(3000, 4000))
         for i in range(4):
-            n1 = random.randint(500, 1000)
+            n1 = random.randint(100, 200)
             sample_fracs.append(n1)
         for i in range(3):
             n1 = random.randint(1500, 2000)
@@ -309,12 +309,12 @@ def data_partition(strategy, params, data, n_clients, seed=201030, regression=Fa
                 # new_seed = seed
                 if regression:
                     _, X_test, _, y_test = train_test_split(
-                        data[:, :-1], data[:, -1], test_size=sample_frac,
+                        data[:, :-1], data[:, -1], test_size=sample_frac, shuffle = True,
                         random_state=(new_seed) % (2 ** 32)
                     )
                 else:
                     _, X_test, _, y_test = train_test_split(
-                        data[:, :-1], data[:, -1], test_size=sample_frac,
+                        data[:, :-1], data[:, -1], test_size=sample_frac, shuffle = True,
                         random_state=(new_seed) % (2 ** 32), stratify=data[:, -1]
                     )
                 ret.append(np.concatenate([X_test, y_test.reshape(-1, 1)], axis=1).copy())

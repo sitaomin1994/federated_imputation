@@ -1,5 +1,7 @@
 import warnings
 
+import numpy as np
+
 warnings.filterwarnings("ignore", category=UserWarning, module='joblib')
 import argparse
 from itertools import product
@@ -77,8 +79,11 @@ def main(configuration):
             for ret in rets:
                 results.append(ret)
 
-    return results[0]['imp_result']['imp@rmse'], results[0]['imp_result']['imp@sliced_ws'], results[0]['imp_result'][
-        'imp@global_ws']
+    return (
+        np.array([item['imp_result']['imp@rmse'] for item in results]).mean(),
+        np.array([item['imp_result']['imp@sliced_ws'] for item in results]).mean(),
+        np.array([item['imp_result']['imp@global_ws'] for item in results]).mean()
+    )
 
 
 if __name__ == '__main__':
@@ -93,7 +98,7 @@ if __name__ == '__main__':
     # parser.add_argument('--np', type=int, default=16, help='number of processes')
     # args = parser.parse_args()
 
-    dataset = 'codon'
+    dataset = 'heart'
     mm = 'random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst'
     corr_type = 'allk0.25_sphere'
 
@@ -107,9 +112,9 @@ if __name__ == '__main__':
     # loads all experiments
     results = []
     # PARAMS
-    ALPHAS = [0.5, 0.55, 0.65, 0.75, 0.85, 0.95, 1.0]
+    ALPHAS = [0.5, 0.6, 0.7, 0.8, 0.9, 0.95, 1.0]
     SFS = [4]
-    GAMMAS = [0.05, 0.15, 0.3, 0.45]
+    GAMMAS = [0.02, 0.05, 0.08, 0.12, 0.15]
     param_grid = list(product(GAMMAS, ALPHAS, SFS))  # [(N or r, alpha, sf), ...]
     configs = []
     for param in param_grid:
@@ -135,7 +140,7 @@ if __name__ == '__main__':
     print(f'Num of configs: {len(configs)}')
     ####################################################################################################################
     # run experiments parallel
-    num_processes = max(1, mp.cpu_count())  # Safe fallback to prevent division by zero
+    num_processes = 7  # Safe fallback to prevent division by zero
 
     # multiprocessing
     start = time.time()

@@ -257,6 +257,71 @@ def fedmechw_new(weights, missing_infos, ms_coefs, params, sigmoid = False, filt
     return final_parameters, w
 
 
+def fedmechw_dedup(weights, missing_infos, ms_coefs, losses, params):
+    '''Three factors Weighted Average'''
+
+    # scale_factor = settings['algo_params']['scale_factor']
+    scale_factor = params['scale_factor']
+    alpha = params['alpha']
+    gamma = params['gamma']
+
+    # parameters of every model
+    weights = np.array(list(weights.values()))
+
+    # number of client considered
+    client_thres = int(len(weights) * params['client_thres'])
+
+    # samples sizes
+    sample_sizes = np.array([v['sample_size'] + 1e-4 for v in missing_infos.values()])
+    # missing_pct = np.array([(1 - v['missing_cell_pct']) + 0.0001 for v in missing_infos.values()])
+    dup_rates = np.array([v['dup_rates'] + 1e-4 for v in losses.values()])
+    print(dup_rates)
+    sample_sizes = sample_sizes * (1 - dup_rates)
+
+    ms_coefs = np.array(list(ms_coefs.values()))
+    mech_sim_dist = mech_cos_sim_matrix(ms_coefs)
+    model_sim_dist = mech_cos_sim_matrix(weights)
+
+    final_parameters, w = [], []
+    stats_compl, stats_idx, stats_sampl = [], [], []
+    for client_idx in range(len(weights)):
+        other_clients_idx = [i for i in range(len(weights)) if i != client_idx]
+        client_thres = int(len(other_clients_idx) * params['client_thres'])
+
+        # select top-k client whose mech_sim_dist is larger
+        sorted_idx = np.argsort(mech_sim_dist[client_idx])
+        sorted_idx = np.array([i for i in sorted_idx if i != client_idx])
+        top_k_idx = sorted_idx[-client_thres:]
+
+        # adjust weights
+        mech_sim_w = (mech_sim_dist[client_idx][top_k_idx] + 0.00001)
+        # mech_sim_w = mech_sim_w / np.sum(mech_sim_w)
+
+        # normalized sample sizes weights - same as simple average
+        sample_size_w = (sample_sizes[top_k_idx])
+        sample_size_w = sample_size_w / np.max(sample_sizes)
+
+        # missing pct weights
+        # missing_pct_w = (missing_pct[top_k_idx]) ** scale_factor
+        # missing_pct_w = missing_pct_w / np.sum(missing_pct_w)
+        stats_compl.append(mech_sim_w)
+        stats_idx.append(top_k_idx)
+        stats_sampl.append(sample_size_w)
+
+        final_w = (alpha * (mech_sim_w) + (1 - alpha) * (
+            sample_size_w)) ** scale_factor  # (1 - alpha - beta) * (missing_pct_w))** scale_factor
+        # average parameters of others
+        other_avg_parameters = np.average(weights[top_k_idx], axis=0, weights=final_w)
+
+        # weighted average between self and others
+        avg_parameters = gamma * weights[client_idx] + (1 - gamma) * other_avg_parameters
+
+        final_parameters.append(avg_parameters)
+        w.append(final_w / np.sum(final_w))
+
+    return final_parameters, w
+
+
 def fedmechw_new2(weights, missing_infos, ms_coefs, params, sigmoid = False, filter_sim_mm = False, filter_sim_lm = False, round = None):
     '''Three factors Weighted Average'''
 

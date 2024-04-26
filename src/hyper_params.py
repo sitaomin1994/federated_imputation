@@ -21,7 +21,8 @@ PARAMS = {
             (10, "sample-evenly", "mnar_lr@sp=extreme_r=0.5"): (None, None, None),
             (10, "sample-evenly", "mnar_lr@sp=extreme_r=0.7"): (None, None, None),
             (10, "sample-evenly", "mnar_lr@sp=extreme_r=0.9"): (None, None, None),
-            (10, "sample-evenly", "mnar_lr@sp=extreme_r=1.0"): (None, None, None)
+            (10, "sample-evenly", "mnar_lr@sp=extreme_r=1.0"): (None, None, None),
+            (10, "sample-evenly", 'random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst'): (0.05, 0.65, 4)
         },
     "codon":
         {  # s1 - lr
@@ -43,7 +44,13 @@ PARAMS = {
             (10, "sample-evenly", "mnar_lr@sp=extreme_r=0.5"): (None, None, None),
             (10, "sample-evenly", "mnar_lr@sp=extreme_r=0.7"): (None, None, None),
             (10, "sample-evenly", "mnar_lr@sp=extreme_r=0.9"): (None, None, None),
-            (10, "sample-evenly", "mnar_lr@sp=extreme_r=1.0"): (None, None, None)
+            (10, "sample-evenly", "mnar_lr@sp=extreme_r=1.0"): (None, None, None),
+            (10, "sample-evenly", 'random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst'): (0.02, 0.95, 4),
+            (10, "sample-unevenhs", 'random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst'): (0.02, 0.7, 4),
+            (10, "sample-uneven10dir", 'random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst'): (0.02, 0.9, 4),
+            (10, "sample-uneven10dir", 's3'): (0.02, 0.5, 4),
+            (10, "sample-uneven10dir", "mnar_lr@sp=extreme_r=0.5"): (0.02, 0.8, 4),
+            (10, 'sample-uneven10range', "mnar_lr@sp=extreme_r=0.5"): (0.02, 1.0, 4)
         },
     "heart":
         {  # s1 - lr

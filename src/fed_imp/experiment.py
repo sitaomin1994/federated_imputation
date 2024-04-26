@@ -77,7 +77,7 @@ def main_func(
             hyper_params = Hyperparameters(
                 dataset=configuration['data']['dataset_name'],
                 data_partition=configuration['data_partition']['strategy'],
-                mm_strategy=configuration['missing_simulate']['mm_strategy'],
+                mm_strategy=configuration['missing_simulate']['mm_strategy_new'],
                 num_clients=configuration['num_clients'],
                 method=strategy_name
             )

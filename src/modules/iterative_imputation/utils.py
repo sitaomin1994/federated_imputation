@@ -58,6 +58,11 @@ def fit_one_feature(X_filled, y, missing_mask, col_idx, estimator, num_cols, com
     X_train = X_filled[~row_mask][:, np.arange(X_filled.shape[1]) != col_idx]
     y_train = X_filled[~row_mask][:, col_idx]
 
+    # uniqueness
+    unq = np.unique(X_train.round(decimals=2), axis=0, return_counts=False)
+    dup_rates = (len(X_train) - len(unq)) / len(X_train)
+    adjusted_sample_size = len(X_train) * (1 - dup_rates)
+
     # one hot encoding for categorical columns
     # X_train_cat = X_train[:, num_cols:]
     # if X_train_cat.shape[1] > 0:
@@ -99,12 +104,13 @@ def fit_one_feature(X_filled, y, missing_mask, col_idx, estimator, num_cols, com
         #     penalty='none', max_iter=1000, n_jobs=-1, class_weight='balanced', random_state=0
         # )
         lr = LogisticRegressionCV(
-        	Cs=[1e-1], cv=StratifiedKFold(3), random_state=0, max_iter=1000, n_jobs=-1, class_weight='balanced'
+            Cs=[1e-1], cv=StratifiedKFold(3), random_state=0, max_iter=1000, n_jobs=-1, class_weight='balanced'
         )
         lr.fit(X_, y_)
         coef = np.concatenate([lr.coef_[0], lr.intercept_])
 
-    return estimator, {"r2": r2, "rmse": rmse}, projection_matrix, coef, lr
+    return estimator, {"r2": r2, "rmse": rmse, "dup_rates": dup_rates,
+                       'adjusted_sample_size': adjusted_sample_size}, projection_matrix, coef, lr
 
 
 def impute_one_feature(X_filled, missing_mask, col_idx, estimator, num_cols, min_value=None, max_value=None):

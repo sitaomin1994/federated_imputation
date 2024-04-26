@@ -254,35 +254,41 @@ if __name__ == '__main__':
     pred_rounds = 1
     seed = 21
     mtp = True
-    datasets = ['fed_imp_ext_pc2/logitst/codon', 'fed_imp_ext_pc2/logitst/mimiciii_mo2'
-                'fed_imp_ext_pc2/logitst/heart', 'fed_imp_ext_pc2/logitst/genetic']
+    datasets = [
+        'fed_imp_ext_pc2/0225/codon'
+        #'fed_imp_ext_pc2/logitst/mimiciii_mo2', 'fed_imp_ext_pc2/logitst/heart', 'fed_imp_ext_pc2/logitst/genetic'
+    ]
     train_params = [
-         #{"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
-        {"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
-        {"num_hiddens": 64, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
-        {"num_hiddens": 32, "batch_size": 128, "lr": 0.001, "weight_decay": 0.001, 'imbalance': 'smotetm'},
-        {"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
+         {"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
+        # {"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
+        # {"num_hiddens": 64, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
+        # {"num_hiddens": 32, "batch_size": 128, "lr": 0.001, "weight_decay": 0.001, 'imbalance': 'smotetm'},
+        # {"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
         # {"num_hiddens": 64, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None}
     ]
 
     ####################################################################################
     # Scenario new 1
-    n_rounds = [300, 500, 700, 2000]
-    # n_rounds = [300, 700, 2000]
-    n_datas = [10, 10, 10, 10]
-    methods = ["fedavg-s", 'fedmechw_new', 'local', 'central2']
+    # n_rounds = [500, 700, 2000]
+    # n_datas = [10, 10, 10]
+    # methods = ["fedavg-s", 'fedmechw_new', 'local', 'central2']
+
+    n_rounds = [300]
+    n_datas = [10]
+    methods = ["fedmechw_new"]
     for d, train_param, n_round, n_data in zip(datasets, train_params, n_rounds, n_datas):
 
         dataset = d
 
         #####################################################################################
-        sample_sizes = ['sample-unevenhs']
+        sample_sizes = ['sample-uneven10dir']
         for sample_size in sample_sizes:
             n_clients = [10]
             scenario = [
                 #"random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst/allk0.25_b1",
-             "random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst/allk0.25_sphere",
+             #"random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst/allk0.25_sphere",
                 #"random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst/allk0.25_b2"
+                "mnar_lr@sp=extreme_r=0.5"
             ]  # "random2@mrl=0.2_mrr=0.8_mm=mnarlrq"]
 
             main_config = copy.deepcopy(main_config_tmpl)
