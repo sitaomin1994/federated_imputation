@@ -22,10 +22,6 @@ exp_demo_miwae:
       - complex1
       - complex2
       - ideal
-      - s1
-      - s2
-      - s3
-      - s4
     save_mode: dir4
     keys:
       - missing_simulate
@@ -74,14 +70,14 @@ exp_demo_miwae:
 
   # n_rounds
   - name: n_rounds
-    value: [20]
+    value: [5]
     save_mode: none
     keys:
       - experiment
       - n_rounds
 
   - name: np
-    value: [8]
+    value: [5]
     save_mode: none
     keys:
       - experiment
