@@ -39,6 +39,7 @@ agg_strategy_imp:
     beta: 0.7
 
 # server
+client_type: ice
 server_type: fedavg_pytorch
 server:
   impute_mode: instant
@@ -82,8 +83,14 @@ save_state: true
 algo_params:
   central: {}
   central2: {}
+  central_vae: {}
+  central_gain: {}
   local: {}
+  local_vae: {}
+  local_gain: {}
   fedavg: {}
+  fedavg_vae: {} 
+  fedavg_gain: {}
   fedmechw:
     client_thres: 1.0
     alpha: 1.0

@@ -7,4 +7,6 @@ defaults:
   - config_tmpl: imp_config_tmplate
   - config_vars:
       - exp_demo
+      - exp_demo_gain
+      - exp_demo_miwae
   - _self_

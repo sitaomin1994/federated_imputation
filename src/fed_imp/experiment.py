@@ -58,9 +58,10 @@ def main_func(
         )
 
         client_factory = ClientsFactory(debug=False)
+        client_type = configuration['client_type']
         clients = client_factory.generate_clients(
             num_clients, data_partitions, data_ms_clients, test_data.values, data_config,
-            configuration['imputation'], seed=new_seed
+            configuration['imputation'], client_type=client_type, seed=new_seed
         )
 
         #####################################################################################################
@@ -111,10 +112,29 @@ def main_func(
             data_partitions.append(data_partitions_new)
             clients = client_factory.generate_clients(
                 num_clients + 1, data_partitions, data_ms_clients, test_data.values, data_config,
-                configuration['imputation'], seed=new_seed
+                configuration['imputation'], seed=new_seed, client_type='ice'
             )
 
             assert len(clients.keys()) == num_clients + 1
+        elif imp_strategy == 'central_vae':
+            data_ms_new = np.concatenate(data_ms_clients, axis=0)
+            data_partitions_new = np.concatenate(data_partitions, axis=0)
+            data_ms_clients.append(data_ms_new)
+            data_partitions.append(data_partitions_new)
+            clients = client_factory.generate_clients(
+                num_clients + 1, data_partitions, data_ms_clients, test_data.values, data_config,
+                configuration['imputation'], seed=new_seed, client_type = 'vae'
+            )
+
+            assert len(clients.keys()) == num_clients + 1
+        elif imp_strategy == 'central_gain':
+            data_ms_new = np.concatenate(data_ms_clients, axis=0)
+            data_partitions_new = np.concatenate(data_partitions, axis=0)
+            data_ms_clients.append(data_ms_new)
+            data_partitions.append(data_partitions_new)
+            clients = client_factory.generate_clients(
+                num_clients + 1, data_partitions, data_ms_clients, test_data.values, data_config,
+                configuration['imputation'], seed=new_seed, client_type='gain')
 
         #####################################################################################################
         # Create Server

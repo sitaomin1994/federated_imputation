@@ -33,14 +33,20 @@ exp_demo:
 
   # missing scenario
   - name: server_type
-    value: [fedavg_pytorch]
+    value: [miwae]
+    save_mode: none
+    keys:
+      - server_type
+  
+  - name: client_type
+    value: [miwae]
     save_mode: none
     keys:
       - server_type
 
   # aggregation strategy
   - name: agg_strategy
-    value: [fedavg-s, cafe, local, central2]
+    value: [local_miwae, central_miwae, fedavg_miwae]
     save_mode:
     keys:
       - agg_strategy_imp

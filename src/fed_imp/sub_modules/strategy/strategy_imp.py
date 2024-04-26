@@ -1,6 +1,7 @@
 import numpy as np
+from copy import deepcopy
 
-from .fedavg import fedavg, fedavgs, fedavgh, fedavg2, fedavgcross, testavg
+from .fedavg import fedavg, fedavgs, fedavgh, fedavg2, fedavgcross, testavg, fedavg_vae
 from .fedmech import fedmechclw, fedmechclwcl, fedmechcl2, fedmechw, fedmechcl4, fedmechw_new, fedmechw_new2
 from .fedwavg import fedwavg, fedwavg2, fedwavg3
 from .fedwavgcl import fedwavgcl
@@ -21,9 +22,17 @@ class StrategyImputation:
         self.strategy = strategy
         if strategy == 'local':
             self.initial_strategy = 'local'
+        elif strategy == 'local_vae':
+            self.initial_strategy = 'local'
+        elif strategy == 'local_gain':
+            self.initial_strategy = 'local'
         elif strategy == 'central':
             self.initial_strategy = 'local'
         elif strategy == 'central2':
+            self.initial_strategy = 'central2'
+        elif strategy == 'central_vae':
+            self.initial_strategy = 'central2'
+        elif strategy == 'central_gain':
             self.initial_strategy = 'central2'
         elif strategy.startswith('fedavg'):
             self.initial_strategy = 'fedavg'
@@ -66,6 +75,19 @@ class StrategyImputation:
         elif self.strategy == 'central2':
             clients_weights = np.array(list(weights.values()))
             agg_weight = clients_weights[-1, :]
+        # ==============================================================================================================
+        # VAE GAN Algorithm
+        # ==============================================================================================================
+        elif self.strategy == 'fedavg_vae':
+            agg_weight, w = fedavg_vae(weights, missing_infos)
+        elif self.strategy == 'central_vae':
+            client_weights = list(weights.values())
+            agg_weight = deepcopy(client_weights[-1])
+        elif self.strategy == 'fedavg_gain':
+            agg_weight, w = fedavg_vae(weights, missing_infos)
+        elif self.strategy == 'central_gain':
+            client_weights = list(weights.values())
+            agg_weight = deepcopy(client_weights[-1])
         # ==============================================================================================================
         # Average Algorithm
         # ==============================================================================================================

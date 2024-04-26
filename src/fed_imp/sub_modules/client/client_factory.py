@@ -1,4 +1,6 @@
 from .client import Client
+from .client_vae import ClientVAE
+from .client_gain import ClientGAIN
 
 
 class ClientsFactory:
@@ -6,7 +8,8 @@ class ClientsFactory:
     def __init__(self, debug=False):
         self.debug = debug
 
-    def generate_clients(self, num_clients, data_partitions, data_ms_clients, test_data, data_config, imputation_config, seed=201030):
+    def generate_clients(self, num_clients, data_partitions, data_ms_clients, test_data, data_config, imputation_config, seed=201030,
+                         client_type='ice'):
 
         clients = {}
         for i in range(num_clients):
@@ -23,6 +26,14 @@ class ClientsFactory:
                 'seed': seed + i * 10089
             }
             client_id = client_dict['client_id']
+            if client_type == 'ice':
+                clients[client_id] = Client(**client_dict)
+            elif client_type == 'vae':
+                clients[client_id] = ClientVAE(**client_dict)
+            elif client_type == 'gain':
+                clients[client_id] = ClientGAIN(**client_dict)
+            else:
+                raise ValueError(f'Invalid client type: {client_type}')
             clients[client_id] = Client(**client_dict)
 
         return clients

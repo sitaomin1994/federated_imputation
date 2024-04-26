@@ -32,15 +32,21 @@ exp_demo:
       - mm_strategy_new
 
   # missing scenario
+  - name: client_type
+    value: [gain]
+    save_mode: none
+    keys:
+      - server_type
+  
   - name: server_type
-    value: [fedavg_pytorch]
+    value: [gain]
     save_mode: none
     keys:
       - server_type
 
   # aggregation strategy
   - name: agg_strategy
-    value: [fedavg-s, cafe, local, central2]
+    value: [local_gain, central_gain, fedavg_gain]
     save_mode:
     keys:
       - agg_strategy_imp
