@@ -5,6 +5,7 @@ from .missing_scenario import load_scenario1, load_scenario2, load_scenario3
 
 def add_missing(train_data_list, scenario, cols, seed=201030):
     mf_strategy = scenario['mf_strategy']
+    
     if "mr_strategy" not in scenario:
         mm_strategy = scenario['mm_strategy_new']
         mm_strategy_params = scenario['mm_strategy_params'] if 'mm_strategy_params' in scenario else {}
