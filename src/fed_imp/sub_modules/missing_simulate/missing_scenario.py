@@ -54,12 +54,24 @@ def load_scenario3(n_clients, cols, mm_strategy, seed=0):
     # feature based strategy integrate missing mechanism and missing ratios
     strategy, params = parse_strategy(mm_strategy)
 
-    if strategy == "complex1":  # random scenario - each client radomly choose a mnar-left/right(q=0.3-0.7) mechanism for each feature
+    if strategy == "complex1":  # complex scenario1 - each client radomly choose a mnar-left/right(q=0.3-0.7) mechanism for each feature
         
         mm_list = ['mnar_quantile_left', 'mnar_quantile_right']
         np.random.seed(seed)
         step = int((0.7 - 0.3) / 0.1 + 1)
         mr_list = np.linspace(0.3, 0.7, step, endpoint=True)
+        missing_ratio = np.random.choice(mr_list, (n_clients, len(cols)))
+        missing_mechanism = np.random.choice(mm_list, (n_clients, len(cols)))
+    
+    elif strategy == "complex2":  # complex scenario2 - each client radomly choose a mnar-logit-multivariate left/rigit mechanism for each feature
+       
+        mm_list = ['m1logit_strict_left', 'm1logit_strict_right']
+       
+        np.random.seed(seed)
+        start = 0.3
+        stop = 0.7
+        step = int((stop - start) / 0.1 + 1)
+        mr_list = np.linspace(start, stop, step, endpoint=True)
         missing_ratio = np.random.choice(mr_list, (n_clients, len(cols)))
         missing_mechanism = np.random.choice(mm_list, (n_clients, len(cols)))
         
