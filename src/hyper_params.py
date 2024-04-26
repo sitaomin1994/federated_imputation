@@ -181,7 +181,10 @@ class Hyperparameters:
                 alpha = 0.95
             if beta is None:
                 beta = 4
-            return {"gamma": gamma, "alpha": alpha, "scale_factor": beta, 'client_thres': 1.0}
+            if gamma is not None and alpha is not None and beta is not None:
+                return {"gamma": gamma, "alpha": alpha, "scale_factor": beta, 'client_thres': 1.0}
+            else:
+                return None
         else:
             return None
 

@@ -1,8 +1,8 @@
 # @package config_vars
-exp_demo:
+exp_demo_gain:
   # dataset_name
   - name: dataset_name
-    value: [genetic]
+    value: [codon]
     keys:
       - data
       - dataset_name

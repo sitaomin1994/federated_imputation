@@ -10,7 +10,7 @@ This is the code repo for paper - Cafe: Improved Federated Data Imputation by Le
 Setup conda environment in terminal
 ```
 conda env create -f environment.yml
-conda activate fed_imp
+conda activate fed_imp_new
 ```
 
 Set up project structure
@@ -33,9 +33,9 @@ Run following command to simulate heterogenenous missing data FL scenarios and p
 python run_fed_imputation.py
 ```
 
-This script will run following the configuration in `conf/exp_config_imp.yaml` file, it loads the `conf/cnofig_vars/exp_demo.yaml` which includes configuration of data partition strategy, missing data simulation strategy and imputation methods, etc.  
+This script will run following the configuration in `conf/exp_config_imp.yaml` file, it loads the `conf/cnofig_vars/exp_demo.yaml` which includes configuration of data partition strategy, missing data simulation strategy and imputation methods, etc. and also for gain and miwae experiments `conf/cnofig_vars/exp_demo_gain.yaml` and `conf/cnofig_vars/exp_demo_miwae.yaml` as well 
 
-By default, it uses multiprocessing to speed up, you can set `mtp` to `false` in config files to disable it. By default, it will run all scenarios `ideal`, `s1-s4`, `complex1`, `complex2` for 3 baselines (local ice, centralized ice, fed-ice) and cafe ice, you can change it in config to run specific scenarios and baselines. 
+By default, it uses multiprocessing to speed up, you can set `mtp` to `false` in config files to disable it. By default, it will run all scenarios `ideal`, `s1-s4`, `complex1`, `complex2` for 3 ice baselines (local ice, centralized ice, fed-ice), 3 gain baselines (local gain, centralized gain, fed-gain), 3 miwae baselines (local miwae, centralized miwae, fed-miwae) and cafe ice, you can change it in config to run specific scenarios and baselines. 
 
 After finishing running, the results will be stored in json files under a folder of `\results\raw_results` folder. Run the following script to process resuls into a excel file stored in `\results\processed_results`. 
 

@@ -283,11 +283,18 @@ class Experiment:
 
             # fed_imp start
             with mp.Pool(num_processes) as pool:
-                process_args = [
-                    (train_data, test_data, configuration, num_clients, data_config, round, seed)
-                    for round, seed in zip(rounds, seeds)]
-                process_results = pool.starmap(main_func, process_args, chunksize=chunk_size)
-
+                try:
+                    process_args = [
+                        (train_data, test_data, configuration, num_clients, data_config, round, seed)
+                        for round, seed in zip(rounds, seeds)]
+                    process_results = pool.starmap(main_func, process_args, chunksize=chunk_size)
+                except KeyboardInterrupt:
+                    print("Caught KeyboardInterrupt, terminating workers")
+                    pool.terminate()
+                else:
+                    print("Normal termination")
+                    pool.close()
+                
             for ret in process_results:
                 results.extend(ret[0])
         else:
