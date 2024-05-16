@@ -1,7 +1,7 @@
 import pandas as pd
 import json
 
-scenarios = ['ideal', 'random', 's1', 's2', 's3', 's4']
+scenarios = ['ideal', 's1', 's2', 's3', 's4', 'complex1', 'complex2']
 methods = ['central2', 'local', 'fedavg-s', 'cafe']
 root = 'results/raw_results/fed_imp/codon/sample-evenly/'
 ret = []
