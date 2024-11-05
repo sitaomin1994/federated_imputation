@@ -3,40 +3,71 @@ import random
 from sklearn.feature_selection import mutual_info_regression
 from scipy.special import expit
 from scipy import optimize
+import n_sphere
 
 
 ########################################################################################################################
 # Self Censoring Sigmoid
 ########################################################################################################################
-def simulate_nan_mnar_sigmoid(data, cols, missing_ratio, missing_func, strict=False, seed=1002031):
+def simulate_nan_mnar_sigmoid(
+        data, cols, missing_ratios, missing_funcs, strict=False, corr_type='all', seed=1002031, beta_corr=None
+):
+    mask = np.zeros(data.shape, dtype=bool)
 
-	mask = np.zeros(data.shape, dtype=bool)
+    # add missing for each column
+    for col in cols:
 
-	# add missing for each columns
-	for col in cols:
+        if isinstance(missing_ratios, dict):
+            missing_ratio = missing_ratios[col]
+        elif isinstance(missing_ratios, list):
+            missing_ratio = missing_ratios[cols.index(col)]
+        else:
+            missing_ratio = missing_ratios
 
-		# set the seed
-		seed = (seed + 1203941) % (2 ^ 32 - 1)
-		# missing is associated with column itself
-		data_corr = data[:, col]
+        if isinstance(missing_funcs, dict):
+            missing_func = missing_funcs[col]
+        elif isinstance(missing_funcs, list):
+            missing_func = missing_funcs[cols.index(col)]
+        else:
+            missing_func = missing_funcs
 
-		#################################################################################
-		# pick coefficients and mask missing values
-		#################################################################################
-		mask = mask_mar_sigmoid(mask, col, data_corr, missing_ratio, missing_func, strict, seed)
+        # set the seed
+        seed = (seed + 1203941) % (2 ^ 32 - 1)
 
-	# assign the missing values
-	data_ms = data.copy()
-	data_ms[mask] = np.nan
+        # missing is associated with column itself
+        if corr_type == 'self':
+            data_corr = data[:, col]
+        elif corr_type == 'others':
+            data_corr = data[:, [i for i in cols if i != col]]
+        elif corr_type == 'all':
+            data_corr = data
+        elif corr_type.startswith('allk'):
+            np.random.seed(seed)
+            k = max(int(float(corr_type.split('allk')[-1]) * data.shape[1]), 1)
+            mi = np.corrcoef(data, rowvar=False)[col]
+            mi_idx = np.argsort(mi)[::-1][:k + 1]
+            data_corr = data[:, mi_idx]
+            if k == 1:
+                data_corr = data_corr.reshape(-1, 1)
+        else:
+            raise NotImplementedError
 
-	return data_ms
+        #################################################################################
+        # pick coefficients and mask missing valuesn
+        #################################################################################
+        mask = mask_mar_sigmoid(mask, col, data_corr, missing_ratio, missing_func, strict, seed, beta_corr)
 
+    # assign the missing values
+    data_ms = data.copy()
+    data_ms[mask] = np.nan
+
+    return data_ms
 
 ########################################################################################################################
 # Self Censoring Quantile
 ########################################################################################################################
 def simulate_nan_mnar_quantile(
-		data, cols, missing_ratio, missing_func='left', strict=True, seed=201030
+		data, cols, missing_ratios, missing_funcs='left', strict=True, seed=201030
 ):
 
 	# find the columns that are not to be adding missing values
@@ -44,10 +75,19 @@ def simulate_nan_mnar_quantile(
 
 	for col in cols:
 
-		if isinstance(missing_ratio, dict):
-			missing_ratio = missing_ratio[col]
+		if isinstance(missing_ratios, dict):
+			missing_ratio = missing_ratios[col]
+		elif isinstance(missing_ratios, list):
+			missing_ratio = missing_ratios[cols.index(col)]
 		else:
-			missing_ratio = missing_ratio
+			missing_ratio = missing_ratios
+
+		if isinstance(missing_funcs, dict):
+			missing_func = missing_funcs[col]
+		elif isinstance(missing_funcs, list):
+			missing_func = missing_funcs[cols.index(col)]
+		else:
+			missing_func = missing_funcs
 
 		# set the seed
 		seed = (seed + 10087651) % (2 ** 32 - 1)
@@ -73,88 +113,150 @@ def simulate_nan_mnar_quantile(
 ########################################################################################################################
 # Helper Functions
 ########################################################################################################################
-def mask_mar_sigmoid(mask, col, data_corr, missing_ratio, missing_func, strict, seed):
+def generate_param_vector(d, main_strength=30, direction='up'):
+    # sampling a vector from unit sphere
+    if direction == 'up':
+        theta_1 = np.random.uniform(0, main_strength)
+    else:
+        theta_1 = np.random.uniform(180 - main_strength, 180)
+    if d < 3:
+        return n_sphere.convert_rectangular([1, np.radians(theta_1)])
+    else:
+        theta_others = []
+        for i in range(d - 3):
+            theta_others.append(np.random.uniform(0, 90))
+        theta_last = np.random.uniform(0, 360)
+        thetas = [theta_1] + theta_others + [theta_last]
+        thetas = [np.radians(theta) for theta in thetas]
+        sphere_coords = [1] + thetas
+        return n_sphere.convert_rectangular(sphere_coords)
 
-	np.random.seed(seed)
-	random.seed(seed)
+def mask_mar_sigmoid(mask, col, data_corr, missing_ratio, missing_func, strict, seed, beta_corr):
 
-	#################################################################################
-	# pick coefficients
-	#################################################################################
-	# Pick coefficients so that W^Tx has unit variance (avoids shrinking)
-	if isinstance(missing_ratio, dict):
-		missing_ratio = missing_ratio[col]
-	else:
-		missing_ratio = missing_ratio
+    np.random.seed(seed)
+    random.seed(seed)
 
-	# copy data and do min-max normalization
-	data_copy = data_corr.copy()
+    #################################################################################
+    # pick coefficients
+    #################################################################################
+    # Pick coefficients so that W^Tx has unit variance (avoids shrinking)
+    if isinstance(missing_ratio, dict):
+        missing_ratio = missing_ratio[col]
+    else:
+        missing_ratio = missing_ratio
 
-	if data_copy.ndim == 1:
-		data_copy = data_copy.reshape(-1, 1)
+    # copy data and do min-max normalization
+    data_copy = data_corr.copy()
 
-	data_copy = (data_copy - data_copy.min(0, keepdims=True)) / (
-			data_copy.max(0, keepdims=True) - data_copy.min(0, keepdims=True) + 1e-5)
-	data_copy = (data_copy - data_copy.mean(0, keepdims=True)) / \
-	            (data_copy.std(0, keepdims=True) + 1e-5)
+    if data_copy.ndim == 1:
+        data_copy = data_copy.reshape(-1, 1)
 
-	coeffs = np.random.rand(data_copy.shape[1], 1)
-	Wx = data_copy @ coeffs
-	wss = (Wx) / (np.std(Wx, 0, keepdims=True) + 1e-3)
+    data_copy = (data_copy - data_copy.min(0, keepdims=True)) / (
+            data_copy.max(0, keepdims=True) - data_copy.min(0, keepdims=True) + 1e-5)
+    data_copy = (data_copy - data_copy.mean(0, keepdims=True)) / \
+                (data_copy.std(0, keepdims=True) + 1e-5)
 
-	def f(x: np.ndarray) -> np.ndarray:
-		if missing_func == 'left':
-			return expit(-wss + x).mean().item() - missing_ratio
-		elif missing_func == 'right':
-			return expit(wss + x).mean().item() - missing_ratio
-		elif missing_func == 'mid':
-			return expit(np.absolute(wss) - 0.75 + x).mean().item() - missing_ratio
-		elif missing_func == 'tail':
-			return expit(-np.absolute(wss) + 0.75 + x).mean().item() - missing_ratio
-		else:
-			raise NotImplementedError
+    # if beta_corr is True, then the coefficients are calculated based on the correlation
+    if beta_corr is None:
+        coeffs = np.random.rand(data_copy.shape[1], 1)
+    elif beta_corr == 'b1':
+        coeffs = np.random.rand(data_copy.shape[1], 1)
+        corr_ri = np.corrcoef(data_copy, rowvar=False)[0].reshape(-1, 1)
+        low_bound = 0.1
+        np.where(corr_ri < low_bound, low_bound, corr_ri)
+        coeffs = coeffs * corr_ri
+        coeffs[0] = 1.0
+    elif beta_corr == 'b2':
+        coeffs = np.random.rand(data_copy.shape[1], 1)
+        ri = np.corrcoef(data_copy, rowvar=False)[0].reshape(-1, 1)
+        coeffs[0] = 1
+        coeffs = coeffs / coeffs.max()
+        coeffs = coeffs * np.sign(ri)
+    elif beta_corr == 'sphere':
+        if missing_func == 'left':
+            coeffs = generate_param_vector(data_copy.shape[1], main_strength=30, direction='up')
+        else:
+            coeffs = generate_param_vector(data_copy.shape[1], main_strength=30, direction='up')
+    elif beta_corr == 'sphere2':
+            np.random.seed(col)
+            random_vector = np.random.randn(data_copy.shape[1])
+            unit_vector = random_vector / np.linalg.norm(random_vector)
+            if unit_vector[0] < 0:
+                unit_vector = -unit_vector
+            coeffs = unit_vector.reshape(-1, 1)
+    else:
+        raise NotImplementedError
+
+    # Wx = data_copy @ coeffs
+    # coeffs /= (np.std(Wx, 0, keepdims=True) + 1e-3)
+
+    def f1(x: np.ndarray) -> np.ndarray:
+        if missing_func == 'left':
+            return expit(-np.dot(data_copy, coeffs) + x).mean().item() - missing_ratio
+        elif missing_func == 'right':
+            return expit(np.dot(data_copy, coeffs) + x).mean().item() - missing_ratio
+        elif missing_func == 'mid':
+            return expit(-np.absolute(np.dot(data_copy, coeffs)) + 0.75 + x).mean().item() - missing_ratio
+        elif missing_func == 'tail':
+            return expit(np.absolute(np.dot(data_copy, coeffs)) - 0.75 + x).mean().item() - missing_ratio
+        else:
+            raise NotImplementedError
+
+    def f2(x: np.ndarray) -> np.ndarray:
+        if missing_func == 'left':
+            return np.quantile(expit(-np.dot(data_copy, coeffs) + x), 1-missing_ratio).item() - missing_ratio
+        elif missing_func == 'right':
+            return np.quantile(expit(np.dot(data_copy, coeffs) + x), 1-missing_ratio).item() - missing_ratio
+        elif missing_func == 'mid':
+            return np.quantile(expit(np.absolute(np.dot(data_copy, coeffs)) - 0.75 + x), 1-missing_ratio).item() - missing_ratio
+        elif missing_func == 'tail':
+            return np.quantile(expit(-np.absolute(np.dot(data_copy, coeffs)) + 0.75 + x), 1-missing_ratio).item() - missing_ratio
+        else:
+            raise NotImplementedError
+
+    if strict is False:
+        intercept = optimize.bisect(f1, -50, 50)
+        if missing_func == 'left':
+            ps = expit(-np.dot(data_copy, coeffs) + intercept)
+        elif missing_func == 'right':
+            ps = expit(np.dot(data_copy, coeffs) + intercept)
+        elif missing_func == 'mid':
+            ps = expit(-np.absolute(np.dot(data_copy, coeffs)) + 0.75 + intercept)
+        elif missing_func == 'tail':
+            ps = expit(np.absolute(np.dot(data_copy, coeffs)) - 0.75 + intercept)
+        else:
+            raise NotImplementedError
+
+        ps = ps.flatten()
+        ber = np.random.rand(data_copy.shape[0])
+        mask[:, col] = ber < ps
+
+    else:
+        intercept = optimize.bisect(f2, -50, 50)
+        if missing_func == 'left':
+            ps = expit(-np.dot(data_copy, coeffs) + intercept)
+        elif missing_func == 'right':
+            ps = expit(np.dot(data_copy, coeffs) + intercept)
+        elif missing_func == 'mid':
+            ps = expit(-np.absolute(np.dot(data_copy, coeffs)) + 0.75 + intercept)
+        elif missing_func == 'tail':
+            ps = expit(np.absolute(np.dot(data_copy, coeffs)) - 0.75 + intercept)
+        else:
+            raise NotImplementedError
+
+        ps = ps.flatten()
+        missing_N_upper = int((missing_ratio + 0.02) * data_copy.shape[0])
+        missing_N_lower = int((missing_ratio - 0.02) * data_copy.shape[0])
+        if (ps >= missing_ratio).sum() > missing_N_upper or (ps >= missing_ratio).sum() < missing_N_lower:
+            idx = np.argsort(ps)[::-1]
+            mask[idx[:int(data_copy.shape[0]*missing_ratio)], col] = True
+        else:
+            mask[:, col] = ps >= missing_ratio
 
 
-	intercept = optimize.bisect(f, -50, 50)
+    #print(f"Column {col} missing ratio: {mask[:, col].sum() / mask.shape[0]} Expected: {missing_ratio}")
 
-	if missing_func == 'left':
-		ps = expit(-wss + intercept)
-	elif missing_func == 'right':
-		ps = expit(wss + intercept)
-	elif missing_func == 'mid':
-		ps = expit(-np.absolute(wss) + 0.75 + intercept)
-	elif missing_func == 'tail':
-		ps = expit(np.absolute(wss) - 0.75 + intercept)
-	else:
-		raise NotImplementedError
-
-	# strict false means using random simulation
-	if strict is False:
-		ber = np.random.binomial(n=1, size=mask.shape[0], p=ps.flatten())
-		mask[:, col] = ber
-	# strict mode based on rank on calculated probability, strictly made missing
-	else:
-		ps = ps.flatten()
-		# print(ps)
-		end_value = np.sort(ps)[::-1][int(missing_ratio * data_copy.shape[0])]
-		indices = np.where((ps - end_value) > 1e-3)[0]
-		if len(indices) < int(missing_ratio * data_copy.shape[0]):
-			end_indices = np.where(np.absolute(ps - end_value) <= 1e-3)[0]
-			end_indices = np.random.choice(
-				end_indices, int(missing_ratio * data_copy.shape[0]) - len(indices), replace=False
-			)
-			indices = np.concatenate((indices, end_indices))
-		elif len(indices) > int(missing_ratio * data_copy.shape[0]):
-			indices = np.random.choice(
-				indices, int(
-					missing_ratio * data_copy.shape[0]
-				), replace=False
-				)
-
-		mask[indices, col] = True
-
-	return mask
-
+    return mask
 
 def mask_mar_quantile(mask, col, data_corr, missing_ratio, missing_func, strict, seed):
 

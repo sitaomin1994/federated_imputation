@@ -4,6 +4,8 @@ from .server_central_pytorch import ServerCentralPytorch
 from .pred_server_central_pytorch import PredServerCentralPytorch
 from .pred_server_central_sklearn import PredServerCentralSklearn
 from .pred_server_fedavg_pytorch import PredServerFedAvgPytorch
+from .server_miwae import ServerVAE
+from .server_gain import ServerGAIN
 
 
 def load_server(server_type: str, **kwargs):
@@ -20,6 +22,12 @@ def load_server(server_type: str, **kwargs):
         return ServerCentralPytorch(base_model='lr', **kwargs)
     elif server_type == 'fedavg_pytorch':
         return ServerFedAvg(**kwargs)
+    
+     # vae imputation server
+    elif server_type == 'vae':
+        return ServerVAE(**kwargs)
+    elif server_type == 'gain':
+        return ServerGAIN(**kwargs)
 
     # only prediction server
     elif server_type == 'central_mlp_sklearn_pred':

@@ -136,7 +136,7 @@ class PredServerFedAvgPytorch:
 
             if self.regression:
 
-                best_mse, best_r2, counter, patience = 10000, 0, 0, 100
+                best_mse, best_r2, counter, patience = 10000, 0, 0, 200
 
                 for current_round in range(1, train_epochs + 1):
 
@@ -151,7 +151,7 @@ class PredServerFedAvgPytorch:
                         }
                     )
 
-                    if current_round % 100 == 0:
+                    if current_round % 50 == 0:
                         logger.info(
                             'Round: {}, test_mse: {:.4f}, test_r2: {:.4f}'.format(
                                 current_round, test_mse, test_r2
@@ -183,7 +183,7 @@ class PredServerFedAvgPytorch:
                 )
 
             else:
-                best_accu, best_roc, best_f1, best_prc, counter, patience = 0, 0, 0, 0, 0, 100
+                best_accu, best_roc, best_f1, best_prc, counter, patience = 0, 0, 0, 0, 0, 50
 
                 for current_round in range(1, train_epochs + 1):
 
@@ -257,35 +257,36 @@ class PredServerFedAvgPytorch:
                 best_prcs.append(np.max([item['test_prc'] for item in clients_prediction_history]))
                 histories.append(clients_prediction_history)
 
-                logger.info(
-                    "model1 test acc: {:.6f} ({:.3f}), test f1: {:.6f} ({:.3f}) test roc: {:.6f}({:.3f}) "
-                    "test prc: {:.6f}({:.3f}))".format(
-                        np.array(best_accus).mean(), np.array(best_accus).std(), np.array(best_f1s).mean(),
-                        np.array(best_f1s).std(), np.array(best_rocs).mean(), np.array(best_rocs).std(),
-                        np.array(best_prcs).mean(), np.array(best_prcs).std()
-                    )
-                )
 
-            if self.regression:
-                return {
-                    "mse_mean": np.array(best_mses).mean(),
-                    "r2_mean": np.array(best_r2s).mean(),
-                    "mse_std": np.array(best_mses).std(),
-                    "r2_std": np.array(best_r2s).std(),
-                    'history': histories,
-                }
-            else:
-                return {
-                    "accu_mean": np.array(best_accus).mean(),
-                    "f1_mean": np.array(best_f1s).mean(),
-                    'roc_mean': np.array(best_rocs).mean(),
-                    'prc_mean': np.array(best_prcs).mean(),
-                    "accu_std": np.array(best_accus).std(),
-                    "f1_std": np.array(best_f1s).std(),
-                    'roc_std': np.array(best_rocs).std(),
-                    'prc_std': np.array(best_prcs).std(),
-                    'history': histories,
-                }
+        logger.info(
+            "model1 test acc: {:.6f} ({:.3f}), test f1: {:.6f} ({:.3f}) test roc: {:.6f}({:.3f}) "
+            "test prc: {:.6f}({:.3f}))".format(
+                np.array(best_accus).mean(), np.array(best_accus).std(), np.array(best_f1s).mean(),
+                np.array(best_f1s).std(), np.array(best_rocs).mean(), np.array(best_rocs).std(),
+                np.array(best_prcs).mean(), np.array(best_prcs).std()
+            )
+        )
+
+        if self.regression:
+            return {
+                "mse_mean": np.array(best_mses).mean(),
+                "r2_mean": np.array(best_r2s).mean(),
+                "mse_std": np.array(best_mses).std(),
+                "r2_std": np.array(best_r2s).std(),
+                'history': histories,
+            }
+        else:
+            return {
+                "accu_mean": np.array(best_accus).mean(),
+                "f1_mean": np.array(best_f1s).mean(),
+                'roc_mean': np.array(best_rocs).mean(),
+                'prc_mean': np.array(best_prcs).mean(),
+                "accu_std": np.array(best_accus).std(),
+                "f1_std": np.array(best_f1s).std(),
+                'roc_std': np.array(best_rocs).std(),
+                'prc_std': np.array(best_prcs).std(),
+                'history': histories,
+            }
 
 
 ####################################################################################################################

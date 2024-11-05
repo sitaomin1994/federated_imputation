@@ -388,4 +388,6 @@ dependencies:
   - torchvision==0.15.0
   - urllib3==2.0.4
   - wrapt==1.14.1
-name: fed_imp
+  - dython==0.7.4
+  - n_sphere==1.2.0
+name: fed_imp_new

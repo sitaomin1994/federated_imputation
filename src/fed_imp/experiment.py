@@ -1,7 +1,7 @@
 from copy import deepcopy
 
 import numpy as np
-
+from src.modules.evaluation.imputation_quality import sliced_ws
 from src.fed_imp.sub_modules.server.load_server import load_server
 from src.fed_imp.sub_modules.strategy.strategy_imp import StrategyImputation
 from src.fed_imp.sub_modules.client.client_factory import ClientsFactory
@@ -19,6 +19,7 @@ import multiprocessing as mp
 import itertools
 from config import settings
 from imblearn.over_sampling import SMOTE, RandomOverSampler, ADASYN
+from imblearn.under_sampling import RandomUnderSampler
 import pandas as pd
 from src.hyper_params import Hyperparameters
 
@@ -35,7 +36,7 @@ def main_func(
 
     rets, stat_trackers = [], []
     for repeat in range(repeats):
-        new_seed = (seed + 10087 * repeat) % (2 ^ 23)
+        new_seed = (seed + 10087 * repeat)
         #####################################################################################################
         # Create clients
         #####################################################################################################
@@ -57,9 +58,10 @@ def main_func(
         )
 
         client_factory = ClientsFactory(debug=False)
+        client_type = configuration['client_type']
         clients = client_factory.generate_clients(
             num_clients, data_partitions, data_ms_clients, test_data.values, data_config,
-            configuration['imputation'], seed=new_seed
+            configuration['imputation'], client_type=client_type, seed=new_seed
         )
 
         #####################################################################################################
@@ -92,16 +94,47 @@ def main_func(
 
         strategy_imp = StrategyImputation(strategy=imp_strategy, params=params)
 
-        if imp_strategy == 'central':
-            data_ms_new = [np.concatenate(data_ms_clients, axis=0)]
-            data_partitions_new = [np.concatenate(data_partitions, axis=0)]
+        # if imp_strategy == 'central':
+        #     data_ms_new = [np.concatenate(data_ms_clients, axis=0)]
+        #     data_partitions_new = [np.concatenate(data_partitions, axis=0)]
+        #     clients = client_factory.generate_clients(
+        #         1, data_partitions_new, data_ms_new, test_data.values, data_config,
+        #         configuration['imputation'], seed=new_seed
+        #     )
+
+        #     assert len(clients.keys()) == 1
+        #     strategy_imp = StrategyImputation(strategy='local', params={})
+
+        if imp_strategy == 'central2':
+            data_ms_new = np.concatenate(data_ms_clients, axis=0)
+            data_partitions_new = np.concatenate(data_partitions, axis=0)
+            data_ms_clients.append(data_ms_new)
+            data_partitions.append(data_partitions_new)
             clients = client_factory.generate_clients(
-                1, data_partitions_new, data_ms_new, test_data.values, data_config,
-                configuration['imputation'], seed=new_seed
+                num_clients + 1, data_partitions, data_ms_clients, test_data.values, data_config,
+                configuration['imputation'], seed=new_seed, client_type='ice'
             )
 
-            assert len(clients.keys()) == 1
-            strategy_imp = StrategyImputation(strategy='local', params={})
+            assert len(clients.keys()) == num_clients + 1
+        elif imp_strategy == 'central_vae':
+            data_ms_new = np.concatenate(data_ms_clients, axis=0)
+            data_partitions_new = np.concatenate(data_partitions, axis=0)
+            data_ms_clients.append(data_ms_new)
+            data_partitions.append(data_partitions_new)
+            clients = client_factory.generate_clients(
+                num_clients + 1, data_partitions, data_ms_clients, test_data.values, data_config,
+                configuration['imputation'], seed=new_seed, client_type = 'vae'
+            )
+
+            assert len(clients.keys()) == num_clients + 1
+        elif imp_strategy == 'central_gain':
+            data_ms_new = np.concatenate(data_ms_clients, axis=0)
+            data_partitions_new = np.concatenate(data_partitions, axis=0)
+            data_ms_clients.append(data_ms_new)
+            data_partitions.append(data_partitions_new)
+            clients = client_factory.generate_clients(
+                num_clients + 1, data_partitions, data_ms_clients, test_data.values, data_config,
+                configuration['imputation'], seed=new_seed, client_type='gain')
 
         #####################################################################################################
         # Create Server
@@ -182,6 +215,13 @@ class Experiment:
             ros = RandomOverSampler(random_state=seed)
             X_train, y_train = ros.fit_resample(X_train, y_train)
             train_data = pd.DataFrame(np.concatenate([X_train, y_train.reshape(-1, 1)], axis=1), columns=columns)
+        elif imbalance_strategy == 'undersampling':
+            columns = train_data.columns
+            X_train = train_data.iloc[:, :-1].values
+            y_train = train_data.iloc[:, -1].values
+            ros = RandomUnderSampler(random_state=seed)
+            X_train, y_train = ros.fit_resample(X_train, y_train)
+            train_data = pd.DataFrame(np.concatenate([X_train, y_train.reshape(-1, 1)], axis=1), columns=columns)
         elif imbalance_strategy == 'smote':
             columns = train_data.columns
             X_train = train_data.iloc[:, :-1].values
@@ -230,7 +270,8 @@ class Experiment:
 
         elif mtp:
             seed = configuration['experiment']['random_seed']
-            seeds = [(seed + 10087 * i) % (2 ^ 23) for i in range(n_rounds)]
+            seeds = [(seed + 10087 * i) for i in range(n_rounds)]
+            #seeds = [i for i in range(n_rounds)]
             rounds = list(range(n_rounds))
             results = []
             # multiprocessing
@@ -242,11 +283,18 @@ class Experiment:
 
             # fed_imp start
             with mp.Pool(num_processes) as pool:
-                process_args = [
-                    (train_data, test_data, configuration, num_clients, data_config, round, seed)
-                    for round, seed in zip(rounds, seeds)]
-                process_results = pool.starmap(main_func, process_args, chunksize=chunk_size)
-
+                try:
+                    process_args = [
+                        (train_data, test_data, configuration, num_clients, data_config, round, seed)
+                        for round, seed in zip(rounds, seeds)]
+                    process_results = pool.starmap(main_func, process_args, chunksize=chunk_size)
+                except KeyboardInterrupt:
+                    print("Caught KeyboardInterrupt, terminating workers")
+                    pool.terminate()
+                else:
+                    print("Normal termination")
+                    pool.close()
+                
             for ret in process_results:
                 results.extend(ret[0])
         else:
@@ -326,14 +374,6 @@ class Experiment:
             imp_sliced_ws.append(result['imp_result']['imp@sliced_ws'])
             best_f11.append(result['pred_result']['f1_mean'])
 
-        logger.info(
-            "imp@rmse: {:.5f} ({:.3f}) imp@ws: {:.5f} ({:.3f}) imp@sliced_ws: {:.5f} ({:.3f})".format(
-                np.array(imp_rmse).mean(), np.array(imp_rmse).std(),
-                np.array(imp_ws).mean(), np.array(imp_ws).std(),
-                np.array(imp_sliced_ws).mean(), np.array(imp_sliced_ws).std()
-            )
-        )
-
         if np.array(best_accu1).size > 0:
             logger.info(
                 "model pred_accu: {:.5f} ({:.3f}) pred_f1: {:.5f} ({:.3f})".format(
@@ -355,12 +395,22 @@ class Experiment:
                     if result['data'][key] is not None:
                         data_results[key].append(result['data'][key])
 
+        global_ws = compute_global_ws(data_results)
+
+        logger.info(
+            "imp@rmse: {:.5f} ({:.3f}) imp@sliced_ws: {:.5f} ({:.3f}) imp@global_ws: {:.5f}".format(
+                np.array(imp_rmse).mean(), np.array(imp_rmse).std(),
+                np.array(imp_sliced_ws).mean(), np.array(imp_sliced_ws).std(), global_ws
+            )
+        )
+
         return {
             'avg_rets_final': final_rets,
             'avg_imp_final': {
                 'imp@rmse': np.array(imp_rmse).mean(),
                 'imp@w2': np.array(imp_ws).mean(),
                 'imp@sliced_ws': np.array(imp_sliced_ws).mean(),
+                "imp@global_ws": global_ws,
                 'imp@rmse_std': np.array(imp_rmse).std(),
                 'imp@w2_std': np.array(imp_ws).std(),
                 'imp@sliced_ws_std': np.array(imp_sliced_ws).std()
@@ -377,3 +427,18 @@ class Experiment:
             'data': data_results,
             "plots": [encoded_image]
         }
+
+
+def compute_global_ws(data_result):
+
+    origin_datas = data_result['origin_data']
+    imputed_datas = data_result['imputed_data']
+    global_ws = []
+    for origin_data, impute_data in zip(origin_datas, imputed_datas):
+        origin_data = origin_data[:, :-1]
+        impute_data = impute_data[:, :-1]
+        ws = sliced_ws(origin_data, impute_data)
+        global_ws.append(ws)
+
+    return np.array(global_ws).mean()
+

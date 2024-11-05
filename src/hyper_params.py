@@ -3,7 +3,7 @@
 PARAMS = {
     "codrna":
         {  # s1 - lr
-            (3, "sample-unevenl1-1000", "mnar_lr@sp=extremel1"): (0.05, 0.5, 2),
+            (3, "sample-unevenl1-1000", "mnar_lr@sp=extremel1"): (0.05, 0.5, 4),
             (5, "sample-unevenl1-1000", "mnar_lr@sp=extremel1"): (0.05, 0.8, 2),
             (7, "sample-unevenl1-1000", "mnar_lr@sp=extremel1"): (0.05, 0.65, 4),
             (9, "sample-unevenl1-1000", "mnar_lr@sp=extremel1"): (0.05, 0.95, 3),
@@ -170,14 +170,21 @@ class Hyperparameters:
 
     def _fetch_params(self, method):
         if method == 'fedmechw_new':
-            gamma, alpha, beta = PARAMS[self.dataset][(self.num_clients, self.data_partition, self.mm_strategy)]
+            try:
+                gamma, alpha, beta = PARAMS[self.dataset][(self.num_clients, self.data_partition, self.mm_strategy)]
+            except:
+                gamma, alpha, beta = None, None, None
+
             if gamma is None:
-                gamma = 0.05
+                gamma = 0.02
             if alpha is None:
                 alpha = 0.95
             if beta is None:
                 beta = 4
-            return {"gamma": gamma, "alpha": alpha, "scale_factor": beta, 'client_thres': 1.0}
+            if gamma is not None and alpha is not None and beta is not None:
+                return {"gamma": gamma, "alpha": alpha, "scale_factor": beta, 'client_thres': 1.0}
+            else:
+                return None
         else:
             return None
 
