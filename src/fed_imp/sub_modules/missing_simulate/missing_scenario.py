@@ -94,6 +94,26 @@ def load_scenario3(n_clients, cols, mm_strategy, seed=0):
         missing_ratio = np.random.choice(mr_list, (n_clients, len(cols)))
         missing_mechanism = np.random.choice(mm_list, (n_clients, len(cols)))
 
+    elif strategy == "random3":  # random@mrr=0.1_mrl=0.9_mm=mnarlrq two sides
+        if params['mm'] == 'mnarlrq':
+            mm_list = ['mnar_quantile_left', 'mnar_quantile_right']
+        elif params['mm'] == 'mnarlrsig':
+            mm_list = ['mnar_sigmoid_left', 'mnar_sigmoid_right']
+        elif params['mm'] == 'mnarlrsigst':
+            mm_list = ['mnar_sigmoid_strict_left', 'mnar_sigmoid_strict_right']
+        else:
+            raise ValueError(f'mm not found, params: {params}')
+        np.random.seed(seed)
+        start = float(params['mrl'])
+        stop = float(params['mrr'])
+        step = int((stop - start) / 0.1 + 1)
+        mr_list = np.linspace(start, stop, step, endpoint=True)
+        missing_ratio = np.random.choice(mr_list, (n_clients, len(cols)))
+        missing_mechanism = np.random.choice(mm_list, (n_clients - 2, len(cols)))
+        mm_list2 = ['_'.join(mm_list[0].split('_')[:-1]) + "_tail"]
+        missing_mechanism_rest = np.random.choice(mm_list2, (2, len(cols)))
+        missing_mechanism = np.concatenate((missing_mechanism, missing_mechanism_rest), axis=0)
+
     elif strategy == 's3':
         mech_list = [(0.3, 0), (0.4, 0), (0.5, 0), (0.6, 0), (0.7, 0), (0.3, 1), (0.4, 1), (0.6, 1), (0.7, 1)]
         mechs = ['mnar_quantile_left', 'mnar_quantile_right']

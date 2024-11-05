@@ -6,7 +6,10 @@ from src.fed_imp.sub_modules.strategy.strategy_imp import StrategyImputation
 from src.fed_imp.sub_modules.client.client_gain import ClientGAIN
 from typing import Dict, List
 from loguru import logger
+
+from src.modules.evaluation.imputation_quality import sliced_ws
 from src.tracker.EPMTracker import EMPTracker, ClientInfo, EMPRecord
+from tqdm import trange
 
 
 class ServerGAIN:
@@ -125,7 +128,7 @@ class ServerGAIN:
         ###############################################################################################
         # N rounds imputation
         ###############################################################################################
-        for current_round in range(1, self.global_rounds_imp + 1):
+        for current_round in trange(1, self.global_rounds_imp + 1):
             if current_round % 50 == 0 or current_round == 1:
                 logger.info("=" * 50)
                 logger.info("Imputation Round {}".format(current_round))
@@ -163,6 +166,15 @@ class ServerGAIN:
         ###############################################################################################
         imp_results = [item[2]['metrics'] for item in clients_imp_history[-5:]]
 
+        global_ws = []
+        for origin_data, impute_data in zip(origin_datas, imputed_datas):
+            origin_data = origin_data[:, :-1]
+            impute_data = impute_data[:, :-1]
+            ws = sliced_ws(origin_data, impute_data)
+            global_ws.append(ws)
+
+        global_ws = np.array(global_ws).mean()
+
         return {
             'client_imp_history': clients_imp_history,
             'imp_result': {
@@ -171,6 +183,7 @@ class ServerGAIN:
                 'imp@sliced_ws': np.array(
                     [[value['imp@sliced_ws'] for value in item.values()] for item in imp_results]
                 ).mean(),
+                'imp@global_ws': global_ws,
             },
             'pred_result': {
                 'accu_mean': 0.0,
@@ -206,13 +219,23 @@ class ServerGAIN:
         # fit local imputation model
         ################################################################################################################
         weights, losses, missing_infos = {}, {}, {}
-        for client_id, client in self.clients.items():
+        if self.strategy_imp.strategy.startswith('central'):
+            client = list(self.clients.values())[-1]
+            client_id = list(self.clients.keys())[-1]
             weight, loss, missing_info = client.fit(
                 fit_instruction={'local_epoches': self.local_rounds_imp}
             )
             weights[client_id] = weight
             losses[client_id] = loss
             missing_infos[client_id] = missing_info
+        else:
+            for client_id, client in self.clients.items():
+                weight, loss, missing_info = client.fit(
+                    fit_instruction={'local_epoches': self.local_rounds_imp}
+                )
+                weights[client_id] = weight
+                losses[client_id] = loss
+                missing_infos[client_id] = missing_info
 
         ################################################################################################################
         # aggregate client weights
@@ -225,33 +248,33 @@ class ServerGAIN:
         # update local imputation model
         ################################################################################################################
         if isinstance(aggregated_weight, list):
-            update_weights = True if aggregated_weight is not None else False
+            update_weights = True
             for client_id, client in self.clients.items():
                 client.transform(
                     transform_task='update_imp_model', transform_instruction={'update_weights': update_weights},
                     global_weights=aggregated_weight[client_id]
                 )
         else:
-            update_weights = True if aggregated_weight is not None else False
+            update_weights = True
             for client_id, client in self.clients.items():
                 client.transform(
                     transform_task='update_imp_model', transform_instruction={'update_weights': update_weights},
-                    global_weights=aggregated_weight
+                    global_weights=deepcopy(aggregated_weight)
                 )
 
         ################################################################################################################
         # imputation
         ################################################################################################################
-        for client_id, client in self.clients.items():
-            client.transform(
-                transform_task='impute_data', transform_instruction={}, global_weights=aggregated_weight
-            )
+        if server_round <= 5 or server_round % self.verbose == 0 or server_round >= self.global_rounds_imp - 4:
+            for client_id, client in self.clients.items():
+                client.transform(
+                    transform_task='impute_data', transform_instruction={}, global_weights=aggregated_weight
+                )
 
-        # evaluation
-        rets = self._imp_evaluation(self.clients)
-        client_imp_history.append(('server', server_round, rets))
+            # evaluation
+            rets = self._imp_evaluation(self.clients)
+            client_imp_history.append(('server', server_round, rets))
 
-        if server_round % self.verbose == 0:
             avg_rmse = np.array([item['imp@rmse'] for item in rets['metrics'].values()]).mean()
             avg_g_loss = np.array([item['g_loss'] for item in losses.values()]).mean()
             avg_d_loss = np.array([item['d_loss'] for item in losses.values()]).mean()

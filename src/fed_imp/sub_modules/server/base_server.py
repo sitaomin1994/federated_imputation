@@ -9,6 +9,8 @@ from src.fed_imp.sub_modules.client.client import Client
 from src.fed_imp.sub_modules.dataloader import construct_tensor_dataset
 from typing import Dict, List
 from loguru import logger
+
+from src.modules.evaluation.imputation_quality import sliced_ws
 from src.tracker.EPMTracker import EMPTracker, ClientInfo, EMPRecord
 from copy import deepcopy
 
@@ -147,7 +149,7 @@ class ServerBase:
         ###############################################################################################
         final_local_coefs, final_mm_ceofs = None, None
         for current_round in range(1, self.num_rounds_imp + 1):
-            if current_round % 10 == 0 or current_round == 1:
+            if current_round % 1 == 0 or current_round == 1:
                 logger.info("=" * 50)
                 logger.info("Imputation Round {}".format(current_round))
 
@@ -207,6 +209,11 @@ class ServerBase:
         ###############################################################################################
         imp_results = [item[2]['metrics'] for item in clients_imp_history[-5:]]
 
+        origin_data = origin_datas[:, :-1]
+        impute_data = imputed_datas[:, :-1]
+        ws = sliced_ws(origin_data, impute_data)
+        global_ws = ws
+
         return {
             'client_imp_history': clients_imp_history,
             'imp_result': {
@@ -215,6 +222,7 @@ class ServerBase:
                 'imp@sliced_ws': np.array(
                     [[value['imp@sliced_ws'] for value in item.values()] for item in imp_results]
                 ).mean(),
+                'imp@global_ws': global_ws,
             },
             'pred_result': {
                 'accu_mean': np.array(best_accus).mean() if len(best_accus) > 0 else 0.0,
@@ -275,7 +283,7 @@ class ServerBase:
 
         local_coefs, mm_coefs = [], []
         for col_idx in range(num_cols):
-
+            
             if server_round <= self.froze_ms_coefs_round:
                 weights, losses, missing_infos, proj_matrix, ms_coefs, top_k_idx_clients = {}, {}, {}, {}, {}, {}
                 for client_id, client in clients.items():
@@ -347,7 +355,8 @@ class ServerBase:
 
             local_coefs.append(weights_new)
             mm_coefs.append(ms_coefs_new)
-
+            
+        #print([item.shape for item2 in item for item in mm_coefs])
         return {
             'local_coefs': np.stack(local_coefs),
             "mm_coefs": np.stack(mm_coefs)

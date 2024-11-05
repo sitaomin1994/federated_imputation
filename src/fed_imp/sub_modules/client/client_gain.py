@@ -88,7 +88,7 @@ class ClientGAIN:
 
         fit_res = (
             self.imputation_model.fit(
-                self.X_train_filled, self.missing_mask, params={
+                self.X_train_filled_pt, self.missing_mask, params={
                     'local_epochs': local_epoches
                 }
             ))
@@ -102,7 +102,7 @@ class ClientGAIN:
     def transform(self, transform_task: str, transform_instruction: dict, global_weights):
         if transform_task == 'impute_data':
             self.X_train_filled = self.imputation_model.impute(
-                self.X_train_filled, self.missing_mask, features_min=self.features_min, features_max=self.features_max
+                self.X_train_filled_pt, self.missing_mask, features_min=self.features_min, features_max=self.features_max
             )
         elif transform_task == 'update_imp_model':
             update_weights = transform_instruction['update_weights']

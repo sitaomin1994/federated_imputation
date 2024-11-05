@@ -27,14 +27,14 @@ imputation:
   initial_strategy: mean
   clip: true
   imp_model_params:
-    latent_size: 16
-    n_hidden: 128
-    K: 20
-    L: 1000
+    latent_size: 32
+    n_hidden: 64
+    K: 10
+    L: 100
   imp_params:
     lr: 1e-3
     batch_size: 256
-    weight_decay: 0.001
+    weight_decay: 0.0001
     optimizer: adam
 
 # aggregation strategy
@@ -48,11 +48,11 @@ agg_strategy_imp:
 client_type: vae
 server_type: vae
 server:
-  imp_round: 50            # global epoch
-  imp_local_epochs: 10       # local epoch
+  imp_round: 60            # global epoch
+  imp_local_epochs: 5       # local epoch
   pred_round: 0
   pred_local_epochs: 0
-  verbose: 2
+  verbose: 20
 
 # prediction model
 pred_model:

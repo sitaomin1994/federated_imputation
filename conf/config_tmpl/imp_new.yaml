@@ -18,7 +18,8 @@ handle_imbalance: null
 # missing data simulation
 missing_simulate:
   mf_strategy: all
-  mm_strategy: s3
+  mm_strategy: none
+#  mr_strategy: fixed@mr=0.5
   mm_strategy_params:
     corr_type: others
 
@@ -106,6 +107,11 @@ algo_params:
     beta: 0.1
     scale_factor: 4
   fedmechw_new:
+    client_thres: 1.0
+    alpha: 0.95
+    gamma: 0.02
+    scale_factor: 4
+  fedmechw_dedup:
     client_thres: 1.0
     alpha: 0.95
     gamma: 0.02

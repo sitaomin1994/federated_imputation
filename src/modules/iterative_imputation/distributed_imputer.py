@@ -54,6 +54,7 @@ class DistributedFeatureImputer:
 
 		# fit a model on to impute feature idx
 		estimator = self.estimator_num if feature_idx < num_cols else self.estimator_cat
+		#print(feature_idx, estimator)
 		estimator, losses, projection_matrix, ms_coef, lr = fit_one_feature(
 			X, y, self.missing_mask, col_idx=feature_idx, estimator=estimator, num_cols=num_cols,
 			regression=self.regression
@@ -66,7 +67,12 @@ class DistributedFeatureImputer:
 		self.estimator_placeholder = estimator
 
 		# get parameters and other information
-		model_weights = np.concatenate([estimator.coef_, np.expand_dims(estimator.intercept_, 0)])
+		#print(feature_idx, estimator.coef_, np.expand_dims(estimator.intercept_, 0))
+		#print(estimator.coef_.shape, estimator.intercept_.shape)
+		if feature_idx < num_cols:
+			model_weights = np.concatenate([estimator.coef_, np.expand_dims(estimator.intercept_, 0)])
+		else:
+			model_weights = np.concatenate([estimator.coef_.flatten(), estimator.intercept_])
 
 		# get missing info and losses
 		missing_info = self.missing_info[feature_idx]
@@ -98,8 +104,12 @@ class DistributedFeatureImputer:
 		else:
 			# update parameters of local saved estimator
 			if update_weights and global_weights is not None:
-				self.estimator_placeholder.coef_ = global_weights[:-1]
-				self.estimator_placeholder.intercept_ = global_weights[-1]
+				if feature_idx < num_cols:
+					self.estimator_placeholder.coef_ = global_weights[:-1]
+					self.estimator_placeholder.intercept_ = global_weights[-1]
+				else:
+					self.estimator_placeholder.coef_ = np.expand_dims(global_weights[:-1], 0)
+					self.estimator_placeholder.intercept_ = np.expand_dims(global_weights[-1], 0)
 
 			# impute X
 			Xt = impute_one_feature(

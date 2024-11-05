@@ -10,8 +10,7 @@ import copy
 from loguru import logger
 
 
-def main_prediction(data_dir, server_name, server_config, server_pred_config, round_, imbalance):
-
+def main_prediction(data_dir, server_name, server_config, server_pred_config, round_, imbalance, num_clients=10):
     data_imp = np.load(os.path.join(data_dir, "imputed_data_{}.npy".format(round_)))
     data_true = np.load(os.path.join(data_dir, "origin_data_{}.npy".format(round_)))
     missing_mask = np.load(os.path.join(data_dir, "missing_mask_{}.npy".format(round_)))
@@ -23,14 +22,14 @@ def main_prediction(data_dir, server_name, server_config, server_pred_config, ro
 
     # setup client
     clients = {}
-    for client_id in range(len(data_imps)):
+    for client_id in range(num_clients):
         clients[client_id] = SimpleClient(
             client_id=client_id,
             data_imp=data_imps[client_id],
             missing_mask=missing_masks[client_id],
             data_true=data_trues[client_id],
             data_test=test_data,
-            imbalance = imbalance,
+            imbalance=imbalance,
             regression=server_pred_config['regression']
         )
 
@@ -46,9 +45,9 @@ def main_prediction(data_dir, server_name, server_config, server_pred_config, ro
     return ret
 
 
-def prediction(main_config, server_config_, pred_rounds, seed, mtp=False, methods = None):
+def prediction(main_config, server_config_, pred_rounds, seed, mtp=False, methods=None, random_select=None):
     dataname = main_config["data"]
-    n_clients = main_config["n_clients"]
+    n_clients_list = main_config["n_clients"]
     sample_size = main_config["sample_size"]
     scenario = main_config["scenario"]
     scenario_list = main_config["scenario_list"]
@@ -71,110 +70,119 @@ def prediction(main_config, server_config_, pred_rounds, seed, mtp=False, method
         mr_list = ['']
 
     print(scenario_list)
-    for scenario_param in scenario_list:
-        for method in methods:
-            main_config['method'] = method
+    for n_clients in n_clients_list:
+        print("n_client: {}".format(n_clients))
+        for scenario_param in scenario_list:
+            for method in methods:
+                main_config['method'] = method
 
-            ###################################################################################
-            # Main part
-            ###################################################################################
-            root_dir = "./results/raw_results/{}/{}/".format(dataname, scenario_param)
+                ###################################################################################
+                # Main part
+                ###################################################################################
+                root_dir = "./results/raw_results/{}/{}/{}/{}/".format(
+                    dataname, n_clients, sample_size, scenario_param,
+                )
 
+                print(root_dir)
+                data_dir, exp_file = get_all_dirs(root_dir, method)
 
-            print(root_dir)
-            data_dir, exp_file = get_all_dirs(root_dir, method)
+                ####################################################################################
+                # Find overall train and test data
+                ####################################################################################
+                print("====================================================================================")
 
-            ####################################################################################
-            # Find overall train and test data
-            ####################################################################################
-            print("====================================================================================")
+                rets = []
+                n_rounds = main_config['n_rounds']
+                if mtp == False:
+                    for round_ in range(0, n_rounds):
+                        print("round: {}".format(round_))
+                        data_imp = np.load(os.path.join(data_dir, "imputed_data_{}.npy".format(round_)))
+                        data_true = np.load(os.path.join(data_dir, "origin_data_{}.npy".format(round_)))
+                        missing_mask = np.load(os.path.join(data_dir, "missing_mask_{}.npy".format(round_)))
+                        test_data = np.load(os.path.join(data_dir, "test_data_{}.npy".format(round_)))
+                        sp = np.load(os.path.join(data_dir, "split_indices_{}.npy".format(round_)))
+                        data_imps = np.split(data_imp, sp, axis=0)
+                        data_trues = np.split(data_true, sp, axis=0)
+                        missing_masks = np.split(missing_mask, sp, axis=0)
 
-            rets = []
-            n_rounds = main_config['n_rounds']
-            if mtp == False:
-                for round_ in range(0, n_rounds):
-                    print("round: {}".format(round_))
-                    data_imp = np.load(os.path.join(data_dir, "imputed_data_{}.npy".format(round_)))
-                    data_true = np.load(os.path.join(data_dir, "origin_data_{}.npy".format(round_)))
-                    missing_mask = np.load(os.path.join(data_dir, "missing_mask_{}.npy".format(round_)))
-                    test_data = np.load(os.path.join(data_dir, "test_data_{}.npy".format(round_)))
-                    sp = np.load(os.path.join(data_dir, "split_indices_{}.npy".format(round_)))
-                    data_imps = np.split(data_imp, sp, axis=0)
-                    data_trues = np.split(data_true, sp, axis=0)
-                    missing_masks = np.split(missing_mask, sp, axis=0)
+                        # setup client
+                        clients = {}
+                        for client_id in range(n_clients):
+                            clients[client_id] = SimpleClient(
+                                client_id=client_id,
+                                data_imp=data_imps[client_id],
+                                missing_mask=missing_masks[client_id],
+                                data_true=data_trues[client_id],
+                                data_test=test_data,
+                                imbalance=imbalance,
+                                regression=server_pred_config['regression']
+                            )
 
-                    # setup client
-                    clients = {}
-                    for client_id in range(len(data_imps)):
-                        clients[client_id] = SimpleClient(
-                            client_id=client_id,
-                            data_imp=data_imps[client_id],
-                            missing_mask=missing_masks[client_id],
-                            data_true=data_trues[client_id],
-                            data_test=test_data,
-                            imbalance = imbalance,
-                            regression = server_pred_config['regression']
+                        # setup server
+                        server = load_server(
+                            server_name, clients=clients, server_config=server_config, pred_config=server_pred_config,
+                            test_data=test_data, base_model=server_pred_config["model_params"]['model'],
+                            regression=server_pred_config['regression']
                         )
 
-                    # setup server
-                    server = load_server(
-                        server_name, clients=clients, server_config=server_config, pred_config=server_pred_config,
-                        test_data=test_data, base_model = server_pred_config["model_params"]['base_model'],
-                        regression = server_pred_config['regression']
-                    )
-
-                    # prediction
-                    ret = server.prediction()
-                    rets.append(ret)
-            else:
-                n_process = 3
-                chunk_size = n_rounds // n_process
-                rounds = list(range(n_rounds))
-
-                with mp.Pool(n_process) as pool:
-                    process_args = [
-                        (data_dir, server_name, server_config, server_pred_config, round_, imbalance)
-                        for round_ in rounds]
-                    process_results = pool.starmap(main_prediction, process_args, chunksize=chunk_size)
-
-                rets = process_results
-
-            # average results
-            average_ret = {}
-            for key in rets[0].keys():
-                if key != 'history':
-                    average_ret[key] = np.mean([ret[key] for ret in rets])
-                    average_ret['{}_std'.format(key)] = np.std([ret[key] for ret in rets])
-
-            print(average_ret)
-            items = root_dir.split('/')
-            new_items = []
-            for item in items:
-                if 'fed_imp' in item:
-                    new_items.append(item + '_pred_fed')
+                        # prediction
+                        ret = server.prediction()
+                        rets.append(ret)
                 else:
-                    new_items.append(item)
-            pred_result_dir = '/'.join(new_items)
+                    n_process = n_rounds
+                    if n_process > 10: n_process = 10
+                    chunk_size = n_rounds // n_process
+                    rounds = list(range(n_rounds))
 
-            if not os.path.exists(pred_result_dir):
-                os.makedirs(pred_result_dir)
+                    if random_select:
+                        np.random.seed(5)
+                        rounds = np.random.choice(rounds, random_select, replace=False)
+                    print(rounds)
 
-            print(pred_result_dir)
+                    with mp.Pool(n_process) as pool:
+                        process_args = [
+                            (data_dir, server_name, server_config, server_pred_config, round_, imbalance, n_clients)
+                            for round_ in rounds]
+                        process_results = pool.starmap(main_prediction, process_args, chunksize=chunk_size)
 
-            pred_exp_filepath = pred_result_dir + '{}_{}.json'.format(main_config['method'],
-                                                                      server_config_['server_name'])
-            print(pred_exp_filepath)
+                    rets = process_results
 
-            pred_exp_ret_content = {
-                'params': {
-                    "main_config": main_config,
-                    "server_config": server_config_,
-                },
-                'results': average_ret,
-                "raw_results": rets
-            }
-            with open(pred_exp_filepath, 'w') as fp:
-                json.dump(pred_exp_ret_content, fp)
+                # average results
+                average_ret = {}
+                for key in rets[0].keys():
+                    if key != 'history':
+                        average_ret[key] = np.mean([ret[key] for ret in rets])
+                        average_ret['{}_std'.format(key)] = np.std([ret[key] for ret in rets])
+
+                print(average_ret)
+                items = root_dir.split('/')
+                new_items = []
+                for item in items:
+                    if 'fed_imp' in item:
+                        new_items.append(item + '_pred_fed')
+                    else:
+                        new_items.append(item)
+                pred_result_dir = '/'.join(new_items)
+
+                if not os.path.exists(pred_result_dir):
+                    os.makedirs(pred_result_dir)
+
+                print(pred_result_dir)
+
+                pred_exp_filepath = pred_result_dir + '{}_{}.json'.format(main_config['method'],
+                                                                          server_config_['server_name'])
+                print(pred_exp_filepath)
+
+                pred_exp_ret_content = {
+                    'params': {
+                        "main_config": main_config,
+                        "server_config": server_config_,
+                    },
+                    'results': average_ret,
+                    "raw_results": rets
+                }
+                with open(pred_exp_filepath, 'w') as fp:
+                    json.dump(pred_exp_ret_content, fp)
 
 
 def get_all_dirs(root_dir, method):
@@ -200,6 +208,7 @@ def get_all_dirs(root_dir, method):
 
 
 if __name__ == '__main__':
+    import time
     main_config_tmpl = {
         "data": "fed_imp12/0717/ijcnn_balanced",
         "n_clients": [10],
@@ -226,7 +235,7 @@ if __name__ == '__main__':
                 "batch_size": 128,
                 "learning_rate": 0.001,
                 "weight_decay": 0.001,
-                "pred_round": 400,
+                "pred_round": 300,
                 "pred_local_epochs": 3,
                 'local_epoch': 5,
                 'sample_pct': 1
@@ -240,45 +249,67 @@ if __name__ == '__main__':
         }
     }
 
-    pred_rounds = 3
+    pred_rounds = 1
     seed = 21
     mtp = True
-    datasets = ['new/heart' ]
-    train_params = [
-        #{"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
-        #{"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
-        #{"num_hiddens": 64, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
-        #{"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
-        {"num_hiddens": 32, "batch_size": 128, "lr": 0.001, "weight_decay": 0.001, 'imbalance': 'smotetm'},
-        # {"num_hiddens": 64, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None}
+    models = [
+        'vae'
     ]
+    for model in models:
+        datasets = [
+            #f'fed_imp_pc4/{model}/codon', f'fed_imp_pc4/{model}/codrna', f'fed_imp_pc4/{model}/mimiciii_mo2',
+            f'fed_imp_pc4/{model}/codon',
+            f'fed_imp_pc4/{model}/heart', f'fed_imp_pc4/{model}/genetic'
+        ]
+        train_params = [
+             {"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
+             #{"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
+             #{"num_hiddens": 64, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
+             {"num_hiddens": 32, "batch_size": 128, "lr": 0.001, "weight_decay": 0.001, 'imbalance': 'smotetm'},
+             {"num_hiddens": 32, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None},
+            # {"num_hiddens": 64, "batch_size": 300, "lr": 0.001, "weight_decay": 0.000, 'imbalance': None}
+        ]
 
-    ####################################################################################
-    # Scenario new 1
-    for d, train_param in zip(datasets, train_params):
-        dataset = 'fed_imp_pc2/{}'.format(d)
+        #n_rounds = [300, 300, 500, 700, 2000]
+        #n_datas = [4, 4, 4, 4, 4]
+        n_rounds = [300, 700, 2000]
+        n_datas = [4, 4, 4]
 
-        #####################################################################################
-        #scenarios = ['sample-evenly'] #'sample-uneven10dir', 'sample-uneven10range', 'sample-unevenhs']
-        scenarios = ['no_comp']
-        rs = ['0.5']
-        for scenario in scenarios:
+        ####################################################################################
+        # Scenario new 1
+        methods = [f"central_{model}", f"local_{model}", f"fedavg_{model}"]
+        for d, train_param, n_round, n_data in zip(datasets, train_params, n_rounds, n_datas):
 
-            main_config = copy.deepcopy(main_config_tmpl)
-            main_config['data'] = dataset
-            main_config['n_clients'] = [10]
-            main_config['sample_size'] = 'sample-evenly'
-            main_config['scenario_list'] = [scenario]
-            main_config["n_rounds"] = 3
-            main_config['imbalance'] = train_param['imbalance']
+            dataset = d
 
-            server_config = copy.deepcopy(server_config_tmpl)
-            server_config["server_pred_config"]["model_params"]["num_hiddens"] = train_param["num_hiddens"]
-            server_config["server_pred_config"]["train_params"]["batch_size"] = train_param["batch_size"]
-            server_config["server_pred_config"]["train_params"]["learning_rate"] = train_param["lr"]
-            server_config["server_pred_config"]["train_params"]["weight_decay"] = train_param["weight_decay"]
+            #####################################################################################
+            sample_sizes = ['sample-evenly']
+            for sample_size in sample_sizes:
+                n_clients = [10]
+                scenario = [
+                    #"random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst/allk0.25_b1",
+                    #"random2@mrl=0.3_mrr=0.7_mm=mnarlrq/allk0.25_sphere",
+                    "random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst/allk0.25_sphere",
+                    "random2@mrl=0.3_mrr=0.7_mm=mnarlrq/allk0.25_sphere"
+                    # "random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst/allk0.25_b2"
+                ]   # "random2@mrl=0.2_mrr=0.8_mm=mnarlrq"]
 
-            server_config['server_name'] = 'fedavg_mlp_pytorch_pred'
-            methods = ['local']
+                main_config = copy.deepcopy(main_config_tmpl)
+                main_config["n_rounds"] = n_data
+                main_config['data'] = dataset
+                main_config['n_clients'] = n_clients
+                main_config['sample_size'] = sample_size
+                main_config['scenario_list'] = scenario
+                main_config['imbalance'] = train_param['imbalance']
 
-            prediction(main_config, server_config, pred_rounds, seed, mtp=mtp, methods=methods)
+                server_config = copy.deepcopy(server_config_tmpl)
+                server_config["server_pred_config"]["model_params"]["num_hiddens"] = train_param["num_hiddens"]
+                server_config["server_pred_config"]["train_params"]["batch_size"] = train_param["batch_size"]
+                server_config["server_pred_config"]["train_params"]["learning_rate"] = train_param["lr"]
+                server_config["server_pred_config"]["train_params"]["weight_decay"] = train_param["weight_decay"]
+                server_config['server_name'] = 'fedavg_mlp_pytorch_pred'
+                server_config['server_config']['pred_rounds'] = n_round
+                start = time.time()
+                prediction(main_config, server_config, pred_rounds, seed, mtp=mtp, methods=methods, random_select=None)
+                print("Finished Time: ", time.time() - start)
+                print("-"*50)

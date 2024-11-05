@@ -64,17 +64,17 @@ class MIWAE(nn.Module):
         set_seed(seed)
 
         self.num_features = num_features
-        self.n_hidden = n_hidden  # number of hidden units in (same for all MLPs)
-        self.latent_size = latent_size  # dimension of the latent space
+        self.n_hidden = num_features  # number of hidden units in (same for all MLPs)
+        self.latent_size = num_features//2  # dimension of the latent space
         self.K = K  # number of IS during training
         self.L = L  # number of samples for imputation
 
         # encoder
         self.encoder = nn.Sequential(
             torch.nn.Linear(num_features, self.n_hidden),
-            torch.nn.Tanh(),
+            torch.nn.ReLU(),
             torch.nn.Linear(self.n_hidden, self.n_hidden),
-            torch.nn.Tanh(),
+            torch.nn.ReLU(),
             torch.nn.Linear(
                 self.n_hidden, 2 * self.latent_size
             ),  # the encoder will output both the mean and the diagonal covariance
@@ -83,9 +83,9 @@ class MIWAE(nn.Module):
         # decoder
         self.decoder = nn.Sequential(
             torch.nn.Linear(self.latent_size, self.n_hidden),
-            torch.nn.Tanh(),
+            torch.nn.ReLU(),
             torch.nn.Linear(self.n_hidden, self.n_hidden),
-            torch.nn.Tanh(),
+            torch.nn.ReLU(),
             torch.nn.Linear(
                 self.n_hidden, 3 * num_features
             ),

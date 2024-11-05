@@ -1,12 +1,15 @@
 import pandas as pd
 from sklearn.model_selection import StratifiedKFold, train_test_split
 import numpy as np
+from typing import Union, List, Tuple
 
 
 ########################################################################################################################
 # Split dataset into n folds
 ########################################################################################################################
-def split_train_test(dataset: pd.DataFrame, n_folds=5, seed=0, test_size = 0.1, regression=False):
+def split_train_test(
+    	dataset: Union[pd.DataFrame, List[pd.DataFrame]], n_folds=5, seed=0, test_size = 0.1, regression=False
+    ) -> List[Tuple[Union[pd.DataFrame, List[pd.DataFrame]], pd.DataFrame]]:
 	"""
 	Split dataset into n folds train and test sets
 	:param dataset: pandas dataset to split
@@ -17,24 +20,49 @@ def split_train_test(dataset: pd.DataFrame, n_folds=5, seed=0, test_size = 0.1, 
 	# # split into n folds
 	# k_fold = StratifiedKFold(n_folds, random_state=seed, shuffle=True)
 	# splits = k_fold.split(dataset.drop([dataset.columns[-1]], axis=1), dataset[dataset.columns[-1]])
-
+    
 	# split into train and test sets
-	train_test_sets = []
-	for i in range(n_folds):
-		seed = seed + i*173738
-		if regression:
-			X_train, X_test, y_train, y_test = \
-				train_test_split(
-					dataset.iloc[:, :-1], dataset.iloc[:, -1], test_size=test_size, random_state=seed)
-		else:
-			X_train, X_test, y_train, y_test = \
-				train_test_split(
-					dataset.iloc[:, :-1], dataset.iloc[:, -1], test_size=test_size, random_state=seed, stratify=dataset.iloc[:, -1])
-		train_set = pd.concat([X_train, y_train], axis=1).reset_index(drop=True).copy()
-		test_set = pd.concat([X_test, y_test], axis=1).reset_index(drop=True).copy()
-		train_test_sets.append((train_set, test_set))
+	if not isinstance(dataset, list):    # single dataset / centralized dataset
+		train_test_sets = []
+		for i in range(n_folds):
+			seed = seed + i*173738
+			if regression:
+				X_train, X_test, y_train, y_test = \
+					train_test_split(
+						dataset.iloc[:, :-1], dataset.iloc[:, -1], test_size=test_size, random_state=seed)
+			else:
+				X_train, X_test, y_train, y_test = \
+					train_test_split(
+						dataset.iloc[:, :-1], dataset.iloc[:, -1], test_size=test_size, random_state=seed, stratify=dataset.iloc[:, -1])
+			train_set = pd.concat([X_train, y_train], axis=1).reset_index(drop=True).copy()
+			test_set = pd.concat([X_test, y_test], axis=1).reset_index(drop=True).copy()
+			train_test_sets.append((train_set, test_set))
 
-	return train_test_sets
+		return train_test_sets
+	else:    # multiple datasets / decentralized dataset
+		train_test_sets = []
+		for i in range(n_folds):
+			seed = seed + i*173738
+			train_sets = []
+			test_sets = []
+			for d in dataset:
+				if regression:
+					X_train, X_test, y_train, y_test = \
+						train_test_split(
+							d.iloc[:, :-1], d.iloc[:, -1], test_size=test_size, random_state=seed)
+				else:
+					X_train, X_test, y_train, y_test = \
+						train_test_split(
+							d.iloc[:, :-1], d.iloc[:, -1], test_size=test_size, random_state=seed, stratify=d.iloc[:, -1])
+				train_set = pd.concat([X_train, y_train], axis=1).reset_index(drop=True).copy()
+				test_set = pd.concat([X_test, y_test], axis=1).reset_index(drop=True).copy()
+				train_sets.append(train_set)
+				test_sets.append(test_set)
+			test_set_merged = pd.concat(test_sets, axis=0).reset_index(drop=True).copy()
+			train_test_sets.append((train_sets, test_set_merged))
+
+		return train_test_sets
+
 
 
 ########################################################################################################################

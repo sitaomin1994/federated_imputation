@@ -48,7 +48,9 @@ def initial_imputation(X, initial_strategy_num, initial_strategy_cat, num_cols):
     return Xt
 
 
-def fit_one_feature(X_filled, y, missing_mask, col_idx, estimator, num_cols, compute_proj=False, regression=False):
+def fit_one_feature(
+    X_filled, y, missing_mask, col_idx, estimator, num_cols, compute_proj=False, regression=False
+):
     # calculate correct num_cols (col_idx is numerical column then after remove it, num_cols will decrease by 1)
     # if col_idx < num_cols:
     # 	num_cols = num_cols - 1
@@ -57,6 +59,12 @@ def fit_one_feature(X_filled, y, missing_mask, col_idx, estimator, num_cols, com
     row_mask = missing_mask[:, col_idx]
     X_train = X_filled[~row_mask][:, np.arange(X_filled.shape[1]) != col_idx]
     y_train = X_filled[~row_mask][:, col_idx]
+
+    # uniqueness
+    # unq = np.unique(X_train.round(decimals=2), axis=0, return_counts=False)
+    # dup_rates = (len(X_train) - len(unq)) / len(X_train)
+    dup_rates = 0
+    adjusted_sample_size = len(X_train) * (1 - dup_rates)
 
     # one hot encoding for categorical columns
     # X_train_cat = X_train[:, num_cols:]
@@ -67,7 +75,19 @@ def fit_one_feature(X_filled, y, missing_mask, col_idx, estimator, num_cols, com
     # else:
     # 	X_train = X_train[:, :num_cols]
     # fit estimator
-    estimator.fit(X_train, y_train)
+    if np.unique(y_train).shape[0] > 1:
+        if X_train.shape[0] > 1000:
+            seed = 1234
+            np.random.seed(seed)
+            sample_indices = np.random.choice(X_train.shape[0], 1000, replace=False)
+            X_train = X_train[sample_indices, :]
+            y_train = y_train[sample_indices]
+        estimator.fit(X_train, y_train)
+    else:
+        # if all y_train are the same, fit a constant model
+        estimator.fit(X_train[:50, :], np.concatenate([np.zeros(25), np.ones(25)]))
+        estimator.coef_ = np.zeros_like(estimator.coef_)
+        estimator.intercept_ = np.zeros_like(estimator.intercept_)
 
     # compute losses
     y_pred = estimator.predict(X_train)
@@ -75,12 +95,13 @@ def fit_one_feature(X_filled, y, missing_mask, col_idx, estimator, num_cols, com
     rmse = np.sqrt(mean_squared_error(y_train, y_pred))  # RMSE
 
     # projection matrix
-    if compute_proj:
-        X_train_ext = np.concatenate((X_train, np.ones((X_train.shape[0], 1))), axis=1)
-        XtX_pinv = np.linalg.pinv(X_train_ext @ X_train_ext.T + 1e5 * np.identity(X_train_ext.shape[0]))
-        projection_matrix = X_train_ext.T @ XtX_pinv @ X_train_ext
-    else:
-        projection_matrix = None
+    # if compute_proj:
+    #     X_train_ext = np.concatenate((X_train, np.ones((X_train.shape[0], 1))), axis=1)
+    #     XtX_pinv = np.linalg.pinv(X_train_ext @ X_train_ext.T + 1e5 * np.identity(X_train_ext.shape[0]))
+    #     projection_matrix = X_train_ext.T @ XtX_pinv @ X_train_ext
+    # else:
+    #     projection_matrix = None
+    projection_matrix = None
 
     # missing indicator prediction model
     if not regression:
@@ -92,19 +113,20 @@ def fit_one_feature(X_filled, y, missing_mask, col_idx, estimator, num_cols, com
         X_ = np.concatenate([X_filled], axis=1)
     y_ = row_mask
     if row_mask.sum() == 0:
-        coef = np.zeros(X_.shape[1]) + 0.001
+        coef = np.zeros(X_.shape[1] + 1) + 0.001
         lr = None
     else:
         # lr = LogisticRegression(
         #     penalty='none', max_iter=1000, n_jobs=-1, class_weight='balanced', random_state=0
         # )
         lr = LogisticRegressionCV(
-        	Cs=[1e-1], cv=StratifiedKFold(3), random_state=0, max_iter=1000, n_jobs=-1, class_weight='balanced'
+            Cs=[1e-1], cv=StratifiedKFold(3), random_state=0, max_iter=1000, n_jobs=-1, class_weight='balanced'
         )
         lr.fit(X_, y_)
         coef = np.concatenate([lr.coef_[0], lr.intercept_])
 
-    return estimator, {"r2": r2, "rmse": rmse}, projection_matrix, coef, lr
+    return estimator, {"r2": r2, "rmse": rmse, "dup_rates": dup_rates,
+                       'adjusted_sample_size': adjusted_sample_size}, projection_matrix, coef, lr
 
 
 def impute_one_feature(X_filled, missing_mask, col_idx, estimator, num_cols, min_value=None, max_value=None):
@@ -245,7 +267,7 @@ def get_estimator(estimator_name):
     elif estimator_name == 'logistic':
         return LogisticRegression(penalty='l1', n_jobs=-1)
     elif estimator_name == 'logistic_cv':
-        return LogisticRegressionCV(Cs=[0.1, 1.0, 10.0], penalty='l1', solver='saga')
+        return LogisticRegressionCV(Cs=[0.1, 1.0, 10.0], penalty='l2', solver='saga', class_weight='balanced')
     elif estimator_name == 'mlp':
         return MLPRegressor(hidden_layer_sizes=(16, 16), max_iter=1000, random_state=0)
     else:

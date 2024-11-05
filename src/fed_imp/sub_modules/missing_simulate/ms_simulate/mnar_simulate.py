@@ -441,8 +441,6 @@ def mask_mar_quantile(mask, col, data_corr, missing_ratio, missing_func, strict,
             if len(indices) < total_missing:
                 end_indices_q0 = np.where(data_corr == q0)[0]
                 end_indices_q1 = np.where(data_corr == q1)[0]
-                print(missing_func, q0, q1, len(indices), total_missing, len(data_corr), len(end_indices_q0),
-                      len(end_indices_q1))
                 end_indices = np.union1d(
                     end_indices_q0, end_indices_q1
                 )

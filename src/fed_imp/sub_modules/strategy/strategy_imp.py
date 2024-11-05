@@ -3,7 +3,8 @@ from copy import deepcopy
 import numpy as np
 
 from .fedavg import fedavg, fedavgs, fedavgh, fedavg2, fedavgcross, testavg, fedavg_vae
-from .fedmech import fedmechclw, fedmechclwcl, fedmechcl2, fedmechw, fedmechcl4, fedmechw_new, fedmechw_new2
+from .fedmech import fedmechclw, fedmechclwcl, fedmechcl2, fedmechw, fedmechcl4, fedmechw_new, fedmechw_new2, \
+    fedmechw_dedup
 from .fedwavg import fedwavg, fedwavg2, fedwavg3
 from .fedwavgcl import fedwavgcl
 
@@ -67,9 +68,9 @@ class StrategyImputation:
         if self.strategy == 'local':
             agg_weight = None
         elif self.strategy == 'local_vae':
-            agg_weight = None
+            agg_weight = [deepcopy(weights[client_id]) for client_id in range(len(weights.values()))]
         elif self.strategy == 'local_gain':
-            agg_weight = None
+            agg_weight = [deepcopy(weights[client_id]) for client_id in range(len(weights.values()))]
         elif self.strategy == 'central':
             agg_weight = None
         elif self.strategy == 'central2':
@@ -119,6 +120,8 @@ class StrategyImputation:
         # ==============================================================================================================
         elif self.strategy == 'fedmechw':
             agg_weight, w = fedmechw(weights, missing_infos, ms_coefs, self.params)
+        elif self.strategy == 'fedmechw_dedup':
+            agg_weight, w = fedmechw_dedup(weights, missing_infos, ms_coefs, losses, self.params)
         elif self.strategy.startswith('fedmechw_new'):
             algo_params = self.strategy.split('-')
             if len(algo_params) == 1:

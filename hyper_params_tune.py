@@ -1,5 +1,7 @@
 import warnings
 
+import numpy as np
+
 warnings.filterwarnings("ignore", category=UserWarning, module='joblib')
 import argparse
 from itertools import product
@@ -12,14 +14,6 @@ import json
 from src.modules.data_spliting import split_train_test
 from src.modules.data_preprocessing import load_data
 from src.fed_imp.experiment import main_func
-
-results = []
-# PARAMS
-ALPHAS = [0.5, 0.65, 0.8, 0.95]
-SFS = [2, 4]
-GAMMAS = [0.05, 0.3]
-Ns = [3, 5, 7, 9, 11]
-Rs = [0.0, 0.5, 0.9, 1.0]
 import sys
 import traceback
 
@@ -85,77 +79,54 @@ def main(configuration):
             for ret in rets:
                 results.append(ret)
 
-    return results[0]['imp_result']['imp@rmse'], results[0]['imp_result']['imp@sliced_ws']
+    return (
+        np.array([item['imp_result']['imp@rmse'] for item in results]).mean(),
+        np.array([item['imp_result']['imp@sliced_ws'] for item in results]).mean(),
+        np.array([item['imp_result']['imp@global_ws'] for item in results]).mean()
+    )
 
 
 if __name__ == '__main__':
-
+    import time as time
     ####################################################################################################################
     # command argument
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--dataset', type=str, default=None, help='name of dataset')
-    parser.add_argument('--s', type=str, default=None, help='scenario')
-    parser.add_argument('--mm', type=str, default=None, help='mm type')
-    parser.add_argument('--tmpl', type=str, default='imp_pc2', help='name of tmpl')
-    parser.add_argument('--np', type=int, default=16, help='number of processes')
-    args = parser.parse_args()
+    # parser = argparse.ArgumentParser()
+    # parser.add_argument('--dataset', type=str, default=None, help='name of dataset')
+    # parser.add_argument('--s', type=str, default=None, help='scenario')
+    # parser.add_argument('--mm', type=str, default=None, help='mm type')
+    # parser.add_argument('--tmpl', type=str, default='imp_pc2', help='name of tmpl')
+    # parser.add_argument('--np', type=int, default=16, help='number of processes')
+    # args = parser.parse_args()
 
-    ####################################################################################################################
-    # args
-    scenario = args.s
-    if scenario not in ['s1', 's2']:  # s1, s2
-        raise ValueError('scenario not supported')
-    mm = args.mm
-    if mm not in ['lr', 'rl', 'even']:  # lr, rl, even
-        raise ValueError('mm type not supported')
-    tmpl_name = args.tmpl
-    dataset = args.dataset
-    p_size = 1000 if dataset != 'codon' else 600
+    dataset = 'heart'
+    mm = 'random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst'
+    corr_type = 'allk0.25_sphere'
 
     ####################################################################################################################
     # read template file
-    experiment_config_template_path = f'conf/config_tmpl/{tmpl_name}.yaml'
+    experiment_config_template_path = f'conf/config_tmpl/imp_new.yaml'
     with open(experiment_config_template_path, 'r') as f:
         experiment_config_template = yaml.safe_load(f)
 
     ####################################################################################################################
     # loads all experiments
-    s_params = None
-    if scenario == 's1':
-        s_params = Ns
-    else:
-        s_params = Rs
-
-    param_grid = list(product(s_params, GAMMAS, ALPHAS, SFS))  # [(N or r, alpha, sf), ...]
+    results = []
+    # PARAMS
+    ALPHAS = [0.5, 0.6, 0.7, 0.8, 0.9, 0.95, 1.0]
+    SFS = [4]
+    GAMMAS = [0.02, 0.05, 0.08, 0.12, 0.15]
+    param_grid = list(product(GAMMAS, ALPHAS, SFS))  # [(N or r, alpha, sf), ...]
     configs = []
     for param in param_grid:
-        if scenario == 's1':
-            N, gamma, alpha, sf = param
-            r = None
-        else:
-            r, gamma, alpha, sf = param
-            N = 10
 
+        gamma, alpha, sf = param
         config = deepcopy(experiment_config_template)
-        config['data']['dataset_name'] = args.dataset
-        if scenario == 's1':
-            config['num_clients'] = N
-        config['missing_simulate']['mr_strategy'] = 'fixed@mr=0.5'
+        config['data']['dataset_name'] = dataset
+        config['num_clients'] = 10
+        config['missing_simulate']['mm_strategy_new'] = mm
+        config['missing_simulate']['mm_strategy_params']['corr_type'] = corr_type
         config['missing_simulate']['mf_strategy'] = 'all'
-        if scenario == 's1':
-            if mm == 'lr':
-                config['missing_simulate']['mm_strategy'] = 'mnar_lr@sp=extremel1'
-                config['data_partition']['strategy'] = f'sample-unevenl1-{p_size}'
-            else:
-                config['missing_simulate']['mm_strategy'] = 'mnar_rl@sp=extremer1'
-                config['data_partition']['strategy'] = f'sample-unevenr1-{p_size}'
-        else:  # 's2-0.5'
-            if mm == 'even':
-                config['missing_simulate']['mm_strategy'] = 'mnar_lr@sp=extreme_r={}'.format(r)
-                config['data_partition']['strategy'] = f'sample-evenly'
-            else:
-                raise ValueError('mm type not supported')
-
+        config['data_partition']['strategy'] = 'sample-evenly'
         config['agg_strategy_imp']['strategy'] = 'fedmechw_new'
         config["algo_params"]["fedmechw_new"] = {
             "alpha": alpha,
@@ -169,11 +140,15 @@ if __name__ == '__main__':
     print(f'Num of configs: {len(configs)}')
     ####################################################################################################################
     # run experiments parallel
-    num_processes = max(1, mp.cpu_count())  # Safe fallback to prevent division by zero
+    num_processes = 7  # Safe fallback to prevent division by zero
 
     # multiprocessing
+    start = time.time()
     with mp.Pool(num_processes) as pool:
         process_results = pool.map(main, configs)  # Let Pool handle the chunking
+    end = time.time()
+
+    total_time = end - start
 
     print(process_results)
 
@@ -182,11 +157,22 @@ if __name__ == '__main__':
     for param, result in zip(param_grid, process_results):
         param_result[param] = result
     dir = f'./results/raw_results/hyper_params_tune/'
+
     import os
     import pickle
+    import json
 
     if not os.path.exists(dir):
         os.makedirs(dir)
 
-    with open(dir + f'{dataset}_{scenario}_{mm}_{tmpl_name}.pkl', 'wb') as f:
+    with open(dir + f'{dataset}_{mm}_{corr_type}.pkl', 'wb') as f:
         pickle.dump(param_result, f)
+
+    stats = {
+        'total_time': total_time,
+        'total_run': len(configs),
+        'num_processes': num_processes,
+    }
+
+    with open(dir + f'{dataset}_{mm}_{corr_type}_stats.json', 'w') as f:
+        json.dump(stats, f)

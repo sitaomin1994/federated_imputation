@@ -4,7 +4,7 @@ experiment_marker:
   - num_clients
   - server@imp_round
 defaults:
-  - config_tmpl: imp_gain
+  - config_tmpl: imp_new
   - config_vars/imp_extention:
-      - ext_exp3
+      - ext_exp4
   - _self_
