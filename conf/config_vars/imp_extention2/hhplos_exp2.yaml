@@ -78,7 +78,7 @@ hhplos_exp1:
 
   # n_rounds
   - name: n_rounds
-    value: [5]
+    value: [10]
     save_mode: none
     keys:
       - experiment
