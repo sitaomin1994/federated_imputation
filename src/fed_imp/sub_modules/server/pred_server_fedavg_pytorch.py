@@ -301,8 +301,9 @@ class PredServerFedAvgPytorch:
 # Prediction
 ####################################################################################################################
     def _run_round_prediction(self, pred_model, server_round, lr, wd, local_epoch, regression = False):
-        np.random.seed(self.seed + server_round)
-        selected_clients_ids = random.sample(self.clients.keys(), k=int(len(self.clients.keys()) * self.sample_pct))
+        #np.random.seed(self.seed + server_round)
+        #selected_clients_ids = random.sample(self.clients.keys(), k=int(len(self.clients.keys()) * self.sample_pct))
+        selected_clients_ids = list(self.clients.keys())
 
         train_losses = []
         for idx in selected_clients_ids:
