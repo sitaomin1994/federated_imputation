@@ -9,6 +9,7 @@ from loguru import logger
 
 from src.modules.evaluation.imputation_quality import sliced_ws
 from src.tracker.EPMTracker import EMPTracker, ClientInfo, EMPRecord
+from tqdm import trange
 
 
 class ServerGAIN:
@@ -127,7 +128,7 @@ class ServerGAIN:
         ###############################################################################################
         # N rounds imputation
         ###############################################################################################
-        for current_round in range(1, self.global_rounds_imp + 1):
+        for current_round in trange(1, self.global_rounds_imp + 1):
             if current_round % 50 == 0 or current_round == 1:
                 logger.info("=" * 50)
                 logger.info("Imputation Round {}".format(current_round))

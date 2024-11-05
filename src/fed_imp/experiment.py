@@ -184,7 +184,7 @@ class Experiment:
         self.debug = debug
 
     def run_experiment(self, configuration: dict):
-
+        print(configuration)
         # general parameters
         num_clients = configuration['num_clients']
 
