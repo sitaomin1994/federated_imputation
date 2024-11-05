@@ -80,7 +80,6 @@ def prediction(main_config, server_config_, pred_rounds, seed, mtp=False, method
             ###################################################################################
             root_dir = "./results/raw_results/{}/{}/".format(dataname, scenario_param)
 
-
             print(root_dir)
             data_dir, exp_file = get_all_dirs(root_dir, method)
 

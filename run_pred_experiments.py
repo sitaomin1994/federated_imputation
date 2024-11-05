@@ -10,6 +10,7 @@ import copy
 from loguru import logger
 
 def main_prediction(data_dir, server_name, server_config, server_pred_config, test_data, n_clients, round_):
+    
     print("round: {}".format(round_))
     data_imp = np.load(os.path.join(data_dir, "imputed_data_{}.npy".format(round_)))
     data_true = np.load(os.path.join(data_dir, "origin_data_{}.npy".format(round_)))
@@ -42,6 +43,7 @@ def main_prediction(data_dir, server_name, server_config, server_pred_config, te
 
 
 def prediction(main_config, server_config_, pred_rounds, seed, mtp=False):
+    
     data = main_config["data"]
     n_clients = main_config["n_clients"]
     sample_size = main_config["sample_size"]
@@ -187,6 +189,7 @@ def get_all_dirs(root_dir, method):
 
 
 if __name__ == '__main__':
+    
     main_config_tmpl = {
         "data": "fed_imp10/0716/ijcnn_balanced",
         "n_clients": 20,
