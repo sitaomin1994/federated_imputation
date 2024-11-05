@@ -149,7 +149,7 @@ class ServerBase:
         ###############################################################################################
         final_local_coefs, final_mm_ceofs = None, None
         for current_round in range(1, self.num_rounds_imp + 1):
-            if current_round % 10 == 0 or current_round == 1:
+            if current_round % 1 == 0 or current_round == 1:
                 logger.info("=" * 50)
                 logger.info("Imputation Round {}".format(current_round))
 
@@ -283,7 +283,7 @@ class ServerBase:
 
         local_coefs, mm_coefs = [], []
         for col_idx in range(num_cols):
-
+            
             if server_round <= self.froze_ms_coefs_round:
                 weights, losses, missing_infos, proj_matrix, ms_coefs, top_k_idx_clients = {}, {}, {}, {}, {}, {}
                 for client_id, client in clients.items():
@@ -355,7 +355,8 @@ class ServerBase:
 
             local_coefs.append(weights_new)
             mm_coefs.append(ms_coefs_new)
-
+            
+        #print([item.shape for item2 in item for item in mm_coefs])
         return {
             'local_coefs': np.stack(local_coefs),
             "mm_coefs": np.stack(mm_coefs)

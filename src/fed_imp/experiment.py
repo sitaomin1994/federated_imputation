@@ -44,14 +44,14 @@ def main_func(
         regression = data_config['task_type'] == 'regression'
         data_partition_params = configuration['data_partition']
         data_partitions = data_partition(
-            **data_partition_params, data=train_data.values, n_clients=num_clients, seed=new_seed,
+            **data_partition_params, data=train_data, n_clients=num_clients, seed=new_seed,
             regression=regression
         )
 
         #####################################################################################################
         # missing data simulate
         missing_params = configuration['missing_simulate']
-        cols = np.arange(0, train_data.shape[1] - 1)
+        cols = np.arange(0, data_config['num_cols'])
         scenario = missing_params
         data_ms_clients = add_missing(
             train_data_list=data_partitions, scenario=scenario, cols=cols, seed=new_seed
@@ -197,10 +197,13 @@ class Experiment:
         # load data
         dataset_params = configuration['data']
         data, data_config = load_data(**dataset_params)
+        if isinstance(data, list):
+            num_clients = len(data)
         regression = data_config['task_type'] == 'regression'
 
         n_rounds = configuration['experiment']['n_rounds']
         test_size = configuration['experiment'].get('test_size', 0.1)
+        
         if n_rounds == 1:
             n_rounds_data = split_train_test(data, n_folds=2, seed=seed, test_size=test_size, regression=regression)
         else:
@@ -211,37 +214,40 @@ class Experiment:
         # n rounds average
         train_data, test_data = n_rounds_data[0]
 
-        imbalance_strategy = configuration.get('handle_imbalance', None)
-        if imbalance_strategy == 'oversampling':
-            columns = train_data.columns
-            X_train = train_data.iloc[:, :-1].values
-            y_train = train_data.iloc[:, -1].values
-            ros = RandomOverSampler(random_state=seed)
-            X_train, y_train = ros.fit_resample(X_train, y_train)
-            train_data = pd.DataFrame(np.concatenate([X_train, y_train.reshape(-1, 1)], axis=1), columns=columns)
-        elif imbalance_strategy == 'undersampling':
-            columns = train_data.columns
-            X_train = train_data.iloc[:, :-1].values
-            y_train = train_data.iloc[:, -1].values
-            ros = RandomUnderSampler(random_state=seed)
-            X_train, y_train = ros.fit_resample(X_train, y_train)
-            train_data = pd.DataFrame(np.concatenate([X_train, y_train.reshape(-1, 1)], axis=1), columns=columns)
-        elif imbalance_strategy == 'smote':
-            columns = train_data.columns
-            X_train = train_data.iloc[:, :-1].values
-            y_train = train_data.iloc[:, -1].values
-            smote = SMOTE(random_state=seed, n_jobs=-1)
-            X_train, y_train = smote.fit_resample(X_train, y_train)
-            train_data = pd.DataFrame(np.concatenate([X_train, y_train.reshape(-1, 1)], axis=1), columns=columns)
-        elif imbalance_strategy == 'adasyn':
-            columns = train_data.columns
-            X_train = train_data.iloc[:, :-1].values
-            y_train = train_data.iloc[:, -1].values
-            ada = ADASYN(random_state=seed, n_jobs=-1)
-            X_train, y_train = ada.fit_resample(X_train, y_train)
-            train_data = pd.DataFrame(np.concatenate([X_train, y_train.reshape(-1, 1)], axis=1), columns=columns)
-
-        print(train_data.shape)
+        # imbalance_strategy = configuration.get('handle_imbalance', None)
+        # if imbalance_strategy == 'oversampling':
+        #     columns = train_data.columns
+        #     X_train = train_data.iloc[:, :-1].values
+        #     y_train = train_data.iloc[:, -1].values
+        #     ros = RandomOverSampler(random_state=seed)
+        #     X_train, y_train = ros.fit_resample(X_train, y_train)
+        #     train_data = pd.DataFrame(np.concatenate([X_train, y_train.reshape(-1, 1)], axis=1), columns=columns)
+        # elif imbalance_strategy == 'undersampling':
+        #     columns = train_data.columns
+        #     X_train = train_data.iloc[:, :-1].values
+        #     y_train = train_data.iloc[:, -1].values
+        #     ros = RandomUnderSampler(random_state=seed)
+        #     X_train, y_train = ros.fit_resample(X_train, y_train)
+        #     train_data = pd.DataFrame(np.concatenate([X_train, y_train.reshape(-1, 1)], axis=1), columns=columns)
+        # elif imbalance_strategy == 'smote':
+        #     columns = train_data.columns
+        #     X_train = train_data.iloc[:, :-1].values
+        #     y_train = train_data.iloc[:, -1].values
+        #     smote = SMOTE(random_state=seed, n_jobs=-1)
+        #     X_train, y_train = smote.fit_resample(X_train, y_train)
+        #     train_data = pd.DataFrame(np.concatenate([X_train, y_train.reshape(-1, 1)], axis=1), columns=columns)
+        # elif imbalance_strategy == 'adasyn':
+        #     columns = train_data.columns
+        #     X_train = train_data.iloc[:, :-1].values
+        #     y_train = train_data.iloc[:, -1].values
+        #     ada = ADASYN(random_state=seed, n_jobs=-1)
+        #     X_train, y_train = ada.fit_resample(X_train, y_train)
+        #     train_data = pd.DataFrame(np.concatenate([X_train, y_train.reshape(-1, 1)], axis=1), columns=columns)
+        if isinstance(train_data, list):
+            for d in train_data:
+                print(d.shape)
+        else:
+            print(train_data.shape)
         stat_trackers = []
         if tune_params:
             param_grid = settings['algo_params_grids'][configuration['agg_strategy_imp']['strategy']]

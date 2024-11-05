@@ -5,13 +5,25 @@ import pandas as pd
 from .sampling import dirichlet_noniid_partition, generate_alphas
 from sklearn.model_selection import train_test_split
 import numpy as np
+from typing import Union, List
 
 
-def data_partition(strategy, params, data, n_clients, seed=201030, regression=False) -> List[np.ndarray]:
+def data_partition(strategy, params, data: Union[pd.DataFrame, List[pd.DataFrame]], n_clients, seed=201030, regression=False) -> List[np.ndarray]:
     strategy, params = strategy.split('@')[0], dict([param.split('=') for param in strategy.split('@')[1:]])
     print(strategy, params)
+    if not isinstance(data, list):
+        data = data.values
+    else:
+        data = [d.values for d in data]
     if strategy == 'full':
         return [data.copy() for _ in range(n_clients)]
+    elif strategy == 'natural':
+        if not isinstance(data, list):
+            raise ValueError('data must be a list of pandas DataFrames')
+        ret = []
+        for d in data:
+            ret.append(d.copy())
+        return ret
     elif strategy == 'sample-evenly':
         sample_fracs = [1 / n_clients for _ in range(n_clients)]
         ret = []

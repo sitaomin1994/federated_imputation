@@ -13,6 +13,7 @@ from .data_prep_his import (
 	process_diabetic, process_diabetic2, process_cardio, process_mimiciii_mortality, process_genetic,
 	process_mimiciii_mo2, process_mimic_icd, process_mimic_icd2, process_mimic_mo, process_mimic_los
 )
+import json
 
 
 ########################################################################################################################
@@ -75,8 +76,8 @@ def process_breast(normalize=True, verbose=False, threshold=0.3):
 
 	# drop co-linear features
 	drop_list = ['perimeter_mean', 'radius_mean', 'compactness_mean', 'concave points_mean', 'radius_se',
-	             'perimeter_se', 'radius_worst', 'perimeter_worst', 'compactness_worst', 'concave points_worst',
-	             'compactness_se', 'concave points_se', 'texture_worst', 'area_worst']
+				 'perimeter_se', 'radius_worst', 'perimeter_worst', 'compactness_worst', 'concave points_worst',
+				 'compactness_se', 'concave points_se', 'texture_worst', 'area_worst']
 	data = data.drop(drop_list, axis=1)  # do not modify x, we will use it later
 
 	# move target to the end of the dataframe
@@ -952,8 +953,8 @@ def process_adult(normalize=True, verbose=False, threshold=None, sample=False, p
 	# retain_threshold = 0.05
 
 	columns = ["Age", "Workclass", "fnlwgt", "Education", "Education-Num", "Martial Status",
-	           "Occupation", "Relationship", "Race", "Sex", "Capital Gain", "Capital Loss",
-	           "Hours per week", "Country", "Target"]
+			   "Occupation", "Relationship", "Race", "Sex", "Capital Gain", "Capital Loss",
+			   "Hours per week", "Country", "Target"]
 	types = {
 		0: int, 1: str, 2: int, 3: str, 4: int, 5: str, 6: str, 7: str, 8: str, 9: str, 10: int,
 		11: int, 12: int, 13: str, 14: str
@@ -1914,20 +1915,10 @@ def load_data(dataset_name, normalize=True, verbose=False, threshold=None):
 		return process_NHIS_income(pca=False)
 	elif dataset_name == 'nhis_income_pca':
 		return process_NHIS_income(pca=True)
-	elif dataset_name == 'heart':
-		return process_heart(pca=True, sample=False)
-	elif dataset_name == 'heart_balanced':
-		return process_heart(pca=True, sample=True)
 	elif dataset_name == 'skin':
 		return process_skin(normalize, verbose, threshold, sample=False)
 	elif dataset_name == 'skin_balanced':
 		return process_skin(normalize, verbose, threshold, sample=True)
-	elif dataset_name == 'codrna':
-		return process_codrna(normalize, verbose, threshold, sample=False)
-	elif dataset_name == 'codrna_balanced':
-		return process_codrna(normalize, verbose, threshold, sample=True)
-	elif dataset_name == 'codon':
-		return process_codon(verbose, threshold)
 	elif dataset_name == 'sepsis':
 		return process_sepsis(verbose, threshold)
 	elif dataset_name == 'diabetic':
@@ -1938,16 +1929,6 @@ def load_data(dataset_name, normalize=True, verbose=False, threshold=None):
 		return process_diabetic2(verbose, threshold, sample=True)
 	elif dataset_name == 'cardio':
 		return process_cardio(verbose, threshold)
-	elif dataset_name == 'mimiciii_mo':
-		return process_mimiciii_mortality()
-	elif dataset_name == 'mimiciii_icd':
-		return process_mimic_icd2()
-	elif dataset_name == 'mimiciii_mo2':
-		return process_mimic_mo()
-	elif dataset_name == 'mimiciii_los':
-		return process_mimic_los()
-	elif dataset_name == 'genetic':
-		return process_genetic(sample=False)
 	elif dataset_name == 'genetic_balanced':
 		return process_genetic(sample=True)
 	#######################################################################################################################
@@ -1963,9 +1944,47 @@ def load_data(dataset_name, normalize=True, verbose=False, threshold=None):
 		return process_red_reg(normalize, verbose, threshold)
 	elif dataset_name == 'white_reg':
 		return process_white_reg(normalize, verbose, threshold)
+	#######################################################################################################################
+	# Used Dataset
+	#######################################################################################################################
+	elif dataset_name == 'mimiciii_mo':
+		return process_mimiciii_mortality()
+	elif dataset_name == 'mimiciii_icd':
+		return process_mimic_icd2()
+	elif dataset_name == 'mimiciii_mo2':
+		return process_mimic_mo()
+	elif dataset_name == 'mimiciii_los':
+		return process_mimic_los()
+	elif dataset_name == 'genetic':
+		return process_genetic(sample=False)
+	elif dataset_name == 'heart':
+		return process_heart(pca=True, sample=False)
+	elif dataset_name == 'heart_balanced':
+		return process_heart(pca=True, sample=True)
+	elif dataset_name == 'codrna':
+		return process_codrna(normalize, verbose, threshold, sample=False)
+	elif dataset_name == 'codrna_balanced':
+		return process_codrna(normalize, verbose, threshold, sample=True)
+	elif dataset_name == 'codon':
+		return process_codon(verbose, threshold)
+	elif dataset_name == 'hhp_los_np1':
+		return process_hhp(version = 'los_np1')
 	else:
 		raise Exception("Unknown dataset name {}".format(dataset_name))
 
+def process_hhp(version, verbose=True):
+	data = pd.read_csv(f'./data/hhp/data_clean_{version}.csv')
+	data_config = json.load(open(f'./data/hhp/data_config_{version}.json'))
+	
+	if verbose:
+		logger.debug("Data shape {}".format(data.shape, data.shape))
+		logger.debug(data_config)
+
+	if 'client_split_indices' in data_config:
+		data_arrays = np.array_split(data.values, data_config['client_split_indices'])
+		data = [pd.DataFrame(data_array, columns=data.columns) for data_array in data_arrays]
+
+	return data, data_config
 
 if __name__ == '__main__':
 	process_breast()
