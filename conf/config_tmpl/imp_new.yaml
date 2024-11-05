@@ -108,7 +108,7 @@ algo_params:
     scale_factor: 4
   fedmechw_new:
     client_thres: 1.0
-    alpha: 0.95
+    alpha: 0.6
     gamma: 0.02
     scale_factor: 4
   fedmechw_dedup:

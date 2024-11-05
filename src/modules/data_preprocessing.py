@@ -1969,10 +1969,26 @@ def load_data(dataset_name, normalize=True, verbose=False, threshold=None):
 		return process_codon(verbose, threshold)
 	elif dataset_name == 'hhp_los_np1':
 		return process_hhp(version = 'los_np1')
+	elif dataset_name == 'heart_disease_binary':
+		return process_heart_disease(version = 'binary')
 	else:
 		raise Exception("Unknown dataset name {}".format(dataset_name))
 
 def process_hhp(version, verbose=True):
+	data = pd.read_csv(f'./data/hhp/data_clean_{version}.csv')
+	data_config = json.load(open(f'./data/hhp/data_config_{version}.json'))
+	
+	if verbose:
+		logger.debug("Data shape {}".format(data.shape, data.shape))
+		logger.debug(data_config)
+
+	if 'client_split_indices' in data_config:
+		data_arrays = np.array_split(data.values, data_config['client_split_indices'])
+		data = [pd.DataFrame(data_array, columns=data.columns) for data_array in data_arrays]
+
+	return data, data_config
+
+def process_heart_disease(version, verbose=True):
 	data = pd.read_csv(f'./data/hhp/data_clean_{version}.csv')
 	data_config = json.load(open(f'./data/hhp/data_config_{version}.json'))
 	
