@@ -90,6 +90,7 @@ class PredServerFedAvgPytorch:
         self.val_dataloader = None
 
     def prediction(self):
+        
         ###############################################################################################
         # N rounds Final FedAvg federated prediction model learning
         ###############################################################################################
@@ -151,7 +152,7 @@ class PredServerFedAvgPytorch:
                         }
                     )
 
-                    if current_round % 100 == 0:
+                    if current_round % 20 == 0:
                         logger.info(
                             'Round: {}, test_mse: {:.4f}, test_r2: {:.4f}'.format(
                                 current_round, test_mse, test_r2
@@ -200,7 +201,7 @@ class PredServerFedAvgPytorch:
                         }
                     )
 
-                    if current_round % 100 == 0:
+                    if current_round % 20 == 0:
                         logger.info(
                             'Round: {}, test_accu: {:.4f}, test_f1: {:.4f}, test_roc: {:.4f},  test_prc: {:.4f}'.format(
                                 current_round, test_accu, test_f1, test_roc_auc, test_prc_auc,
@@ -258,15 +259,21 @@ class PredServerFedAvgPytorch:
                 best_prcs.append(np.max([item['test_prc'] for item in clients_prediction_history]))
                 histories.append(clients_prediction_history)
 
-
-        logger.info(
-            "model1 test acc: {:.6f} ({:.3f}), test f1: {:.6f} ({:.3f}) test roc: {:.6f}({:.3f}) "
-            "test prc: {:.6f}({:.3f}))".format(
-                np.array(best_accus).mean(), np.array(best_accus).std(), np.array(best_f1s).mean(),
-                np.array(best_f1s).std(), np.array(best_rocs).mean(), np.array(best_rocs).std(),
-                np.array(best_prcs).mean(), np.array(best_prcs).std()
+        if self.regression:
+            logger.info(
+                "model1 test mse: {:.6f} ({:.3f}), test r2: {:.6f} ({:.3f})".format(
+                np.array(best_mses).mean(), np.array(best_mses).std(), np.array(best_r2s).mean(),
+                    np.array(best_r2s).std()
+                )
             )
-        )
+        else:
+            logger.info(
+                "model1 test acc: {:.6f} ({:.3f}), test f1: {:.6f} ({:.3f}) test roc: {:.6f}({:.3f}) test prc: {:.6f}({:.3f})".format(
+                    np.array(best_accus).mean(), np.array(best_accus).std(), np.array(best_f1s).mean(),
+                    np.array(best_f1s).std(), np.array(best_rocs).mean(), np.array(best_rocs).std(),
+                    np.array(best_prcs).mean(), np.array(best_prcs).std()
+                )
+            )
 
         if self.regression:
             return {
@@ -415,7 +422,7 @@ class PredServerFedAvgPytorch:
         pred_model.to(DEVICE)
         test_epoch_loss = test_loss / counter
         outputs = pred_model(torch.FloatTensor(X_test).to(DEVICE))
-
+        #print(y_test.shape, outputs.detach().to('cpu').numpy().shape)
         test_mse = mean_squared_error(y_test, outputs.detach().to('cpu').numpy())
         test_r2 = r2_score(y_test, outputs.detach().to('cpu').numpy())
 

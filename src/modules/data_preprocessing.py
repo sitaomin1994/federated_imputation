@@ -1,7 +1,7 @@
 import pandas as pd
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import MinMaxScaler, OneHotEncoder, PowerTransformer
-from dython.nominal import correlation_ratio
+#from dython.nominal import correlation_ratio
 from loguru import logger
 from sklearn.datasets import fetch_openml
 import numpy as np
