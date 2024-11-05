@@ -3,3 +3,4 @@ results
 outputs
 .idea
 __pycache__
+slurm
