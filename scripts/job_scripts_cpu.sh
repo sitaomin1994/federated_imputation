@@ -14,7 +14,7 @@
 #SBATCH --output=./slurm/%N.%j.out  # STDOUT output file
 #SBATCH --error=./slurm/%N.%j.err   # STDERR output file
 source /projects/community/miniconda3/bin/activate impute4fair
-cd /scratch/sm2370/fedmiss_bench/
+cd ~/Research/federated_imputation/
 
 # Your command here
-srun ./scripts/cpu1.sh
+srun ./scripts/job1.sh
