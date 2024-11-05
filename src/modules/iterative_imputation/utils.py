@@ -120,7 +120,7 @@ def fit_one_feature(
         #     penalty='none', max_iter=1000, n_jobs=-1, class_weight='balanced', random_state=0
         # )
         lr = LogisticRegressionCV(
-            Cs=[1e-1], cv=StratifiedKFold(3), random_state=0, max_iter=1000, n_jobs=-1, class_weight='balanced'
+            Cs=[1e-1], cv=StratifiedKFold(3), random_state=0, max_iter=1000, n_jobs=1, class_weight='balanced'
         )
         lr.fit(X_, y_)
         coef = np.concatenate([lr.coef_[0], lr.intercept_])
@@ -267,7 +267,7 @@ def get_estimator(estimator_name):
     elif estimator_name == 'logistic':
         return LogisticRegression(penalty='l1', n_jobs=-1)
     elif estimator_name == 'logistic_cv':
-        return LogisticRegressionCV(Cs=[0.1, 1.0, 10.0], penalty='l2', solver='saga', class_weight='balanced')
+        return LogisticRegressionCV(Cs=[0.1, 1.0, 10.0], penalty='l2', solver='saga', class_weight='balanced', n_jobs=1)
     elif estimator_name == 'mlp':
         return MLPRegressor(hidden_layer_sizes=(16, 16), max_iter=1000, random_state=0)
     else:
