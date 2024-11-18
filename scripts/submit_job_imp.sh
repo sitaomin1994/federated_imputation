@@ -1,4 +1,5 @@
 #!/bin/bash
+#SBATCH --job-name=cafe_np
 #SBATCH --nodelist=hal0315
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=sm2370@rutgers.edu
@@ -10,10 +11,7 @@
 #SBATCH --time=3-00:00:00
 #SBATCH --export=ALL
 
-config_name=$1
-
 # Output and Error File Names
-#SBATCH --job-name=${config_name}
 #SBATCH --output=./slurm/%N.%j.out  # STDOUT output file
 #SBATCH --error=./slurm/%N.%j.err   # STDERR output file
 source /projects/community/miniconda3/bin/activate impute4fair

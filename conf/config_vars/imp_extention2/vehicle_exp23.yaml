@@ -50,7 +50,7 @@ vehicle_exp21:
 
   # aggregation strategy
   - name: agg_strategy
-    value: [fedmech_w]
+    value: [fedmechw_new]
     save_mode:
     keys:
       - agg_strategy_imp
