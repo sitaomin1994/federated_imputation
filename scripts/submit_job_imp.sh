@@ -1,5 +1,4 @@
 #!/bin/bash
-#SBATCH --job-name=eval_cafe
 #SBATCH --nodelist=hal0315
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=sm2370@rutgers.edu
@@ -11,12 +10,14 @@
 #SBATCH --time=3-00:00:00
 #SBATCH --export=ALL
 
+config_name=$1
+
 # Output and Error File Names
 #SBATCH --output=./slurm/%N.%j.out  # STDOUT output file
 #SBATCH --error=./slurm/%N.%j.err   # STDERR output file
+#SBATCH --job-name=${config_name}
 source /projects/community/miniconda3/bin/activate impute4fair
 cd ~/Research/federated_imputation/
 
 # Your command here
-config_name=$1
 srun ./scripts/run_imp.sh "${config_name}"
