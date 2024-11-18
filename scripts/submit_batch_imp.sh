@@ -10,5 +10,5 @@ configs=(
 
 for config_name in "${configs[@]}"; do
     echo "Submitting job for ${config_name}"
-    sbatch ~/Research/federated_imputation/scripts/submit_job.sb "${config_name}"
+    sbatch ~/Research/federated_imputation/scripts/submit_job.sh "${config_name}"
 done
