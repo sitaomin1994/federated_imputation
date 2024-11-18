@@ -78,14 +78,14 @@ hhplos_exp1:
 
   # n_rounds
   - name: n_rounds
-    value: [10]
+    value: [5]
     save_mode: none
     keys:
       - experiment
       - n_rounds
 
   - name: np
-    value: [10]
+    value: [5]
     save_mode: none
     keys:
       - experiment

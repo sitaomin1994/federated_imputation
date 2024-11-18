@@ -1971,6 +1971,10 @@ def load_data(dataset_name, normalize=True, verbose=False, threshold=None):
 		return process_hhp(version = 'los_np1')
 	elif dataset_name == 'heart_disease_binary':
 		return process_heart_disease(version = 'binary')
+	elif dataset_name == 'heart_disease_binary1':
+		return process_heart_disease(version = 'binary1')
+	elif dataset_name == 'vehicle':
+		return process_vehicle()
 	else:
 		raise Exception("Unknown dataset name {}".format(dataset_name))
 
@@ -1989,8 +1993,8 @@ def process_hhp(version, verbose=True):
 	return data, data_config
 
 def process_heart_disease(version, verbose=True):
-	data = pd.read_csv(f'./data/hhp/data_clean_{version}.csv')
-	data_config = json.load(open(f'./data/hhp/data_config_{version}.json'))
+	data = pd.read_csv(f'./data/heart_disease/data_clean_{version}.csv')
+	data_config = json.load(open(f'./data/heart_disease/data_config_{version}.json'))
 	
 	if verbose:
 		logger.debug("Data shape {}".format(data.shape, data.shape))
@@ -1999,7 +2003,21 @@ def process_heart_disease(version, verbose=True):
 	if 'client_split_indices' in data_config:
 		data_arrays = np.array_split(data.values, data_config['client_split_indices'])
 		data = [pd.DataFrame(data_array, columns=data.columns) for data_array in data_arrays]
+		print([data_array.shape for data_array in data])
+	return data, data_config
 
+def process_vehicle(verbose = True):
+	data = pd.read_csv(f'./data/vehicle/data_clean.csv')
+	data_config = json.load(open(f'./data/vehicle/data_config.json'))
+
+	if verbose:
+		logger.debug("Data shape {}".format(data.shape, data.shape))
+		logger.debug(data_config)
+
+	if 'client_split_indices' in data_config:
+		data_arrays = np.array_split(data.values, data_config['client_split_indices'])
+		data = [pd.DataFrame(data_array, columns=data.columns) for data_array in data_arrays]
+		print([data_array.shape for data_array in data])
 	return data, data_config
 
 if __name__ == '__main__':
