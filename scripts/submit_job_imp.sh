@@ -6,7 +6,7 @@
 #SBATCH --partition=p_jsvaidya_1
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=30
+#SBATCH --cpus-per-task=10
 #SBATCH --mem-per-cpu=4G
 #SBATCH --time=3-00:00:00
 #SBATCH --export=ALL
@@ -14,9 +14,9 @@
 # Output and Error File Names
 #SBATCH --output=./slurm/%N.%j.out  # STDOUT output file
 #SBATCH --error=./slurm/%N.%j.err   # STDERR output file
-job_num=$1
 source /projects/community/miniconda3/bin/activate impute4fair
 cd ~/Research/federated_imputation/
 
 # Your command here
-srun ./scripts/job${job_num}.sh
+config_name=$1
+srun ./scripts/run_imp.sh "${config_name}"

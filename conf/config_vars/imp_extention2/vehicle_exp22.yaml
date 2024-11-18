@@ -1,5 +1,5 @@
 # @package config_vars
-vehicle_exp:
+vehicle_exp21:
   # dataset_name
   - name: dataset_name
     value: [vehicle]
@@ -26,7 +26,6 @@ vehicle_exp:
   # missing mechanism
   - name: mm_strategy
     value:
-      - random2@mrl=0.3_mrr=0.7_mm=mnarlrq
       - random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst
     save_mode: dir4
     keys:
@@ -51,7 +50,7 @@ vehicle_exp:
 
   # aggregation strategy
   - name: agg_strategy
-    value: [fedavg-s, fedmechw_new, local]
+    value: [fedavg-s]
     save_mode:
     keys:
       - agg_strategy_imp

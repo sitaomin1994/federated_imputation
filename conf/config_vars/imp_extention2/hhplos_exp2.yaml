@@ -1,5 +1,5 @@
 # @package config_vars
-hhplos_exp1:
+hhplos_exp2:
   # dataset_name
   - name: dataset_name
     value: [hhp_los_np1]
@@ -26,7 +26,7 @@ hhplos_exp1:
   # missing mechanism
   - name: mm_strategy
     value:
-      - random2@mrl=0.3_mrr=0.7_mm=mnarlrq
+      - random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst
     save_mode: dir4
     keys:
       - missing_simulate

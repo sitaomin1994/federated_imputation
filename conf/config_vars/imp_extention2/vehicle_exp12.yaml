@@ -1,8 +1,8 @@
 # @package config_vars
-hhplos_exp1:
+vehicle_exp12:
   # dataset_name
   - name: dataset_name
-    value: [hhp_los_np1]
+    value: [vehicle]
     keys:
       - data
       - dataset_name
@@ -50,7 +50,7 @@ hhplos_exp1:
 
   # aggregation strategy
   - name: agg_strategy
-    value: [fedavg-s, fedmechw_new, local]
+    value: [fedavg-s]
     save_mode:
     keys:
       - agg_strategy_imp
