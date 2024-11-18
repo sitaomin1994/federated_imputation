@@ -27,6 +27,7 @@ hhplos_exp1:
   - name: mm_strategy
     value:
       - random2@mrl=0.3_mrr=0.7_mm=mnarlrq
+      - random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst
     save_mode: dir4
     keys:
       - missing_simulate

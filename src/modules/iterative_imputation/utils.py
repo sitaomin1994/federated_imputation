@@ -85,7 +85,10 @@ def fit_one_feature(
         estimator.fit(X_train, y_train)
     else:
         # if all y_train are the same, fit a constant model
-        estimator.fit(X_train[:50, :], np.concatenate([np.zeros(25), np.ones(25)]))
+        if X_train.shape[0] > 50:
+            estimator.fit(X_train[:50, :], np.concatenate([np.zeros(25), np.ones(25)]))
+        else:
+            estimator.fit(X_train, np.concatenate([np.zeros(X_train.shape[0]//2), np.ones(X_train.shape[0] - X_train.shape[0]//2)]))
         estimator.coef_ = np.zeros_like(estimator.coef_)
         estimator.intercept_ = np.zeros_like(estimator.intercept_)
 

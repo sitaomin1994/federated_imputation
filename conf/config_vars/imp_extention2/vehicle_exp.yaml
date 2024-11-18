@@ -1,8 +1,8 @@
 # @package config_vars
-hhplos_exp1:
+vehicle_exp:
   # dataset_name
   - name: dataset_name
-    value: [hhp_los_np1]
+    value: [vehicle]
     keys:
       - data
       - dataset_name
@@ -26,6 +26,7 @@ hhplos_exp1:
   # missing mechanism
   - name: mm_strategy
     value:
+      - random2@mrl=0.3_mrr=0.7_mm=mnarlrq
       - random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst
     save_mode: dir4
     keys:

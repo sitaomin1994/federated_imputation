@@ -6,5 +6,5 @@ experiment_marker:
 defaults:
   - config_tmpl: imp_new
   - config_vars/imp_extention2:
-      - hhplos_exp1
+      - vehicle_exp
   - _self_
