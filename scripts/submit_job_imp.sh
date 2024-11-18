@@ -13,9 +13,9 @@
 config_name=$1
 
 # Output and Error File Names
+#SBATCH --job-name=${config_name}
 #SBATCH --output=./slurm/%N.%j.out  # STDOUT output file
 #SBATCH --error=./slurm/%N.%j.err   # STDERR output file
-#SBATCH --job-name=${config_name}
 source /projects/community/miniconda3/bin/activate impute4fair
 cd ~/Research/federated_imputation/
 
