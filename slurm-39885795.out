@@ -241,3 +241,43 @@ experiment_marker:
 2024-11-18 15:27:04.443 | INFO     | src.fed_imp.experiment:main_func:31 - Round 7
 2024-11-18 15:27:04.556 | INFO     | src.fed_imp.experiment:main_func:31 - Round 8
 2024-11-18 15:27:04.679 | INFO     | src.fed_imp.experiment:main_func:31 - Round 9
+2024-11-18 15:28:26.545 | INFO     | src.fed_imp.sub_modules.server.base_server:run:153 - ==================================================
+2024-11-18 15:28:26.545 | INFO     | src.fed_imp.sub_modules.server.base_server:run:154 - Imputation Round 1
+2024-11-18 15:28:26.808 | INFO     | src.fed_imp.sub_modules.server.base_server:run:153 - ==================================================
+2024-11-18 15:28:26.808 | INFO     | src.fed_imp.sub_modules.server.base_server:run:154 - Imputation Round 1
+2024-11-18 15:28:27.518 | INFO     | src.fed_imp.sub_modules.server.base_server:run:153 - ==================================================
+2024-11-18 15:28:27.518 | INFO     | src.fed_imp.sub_modules.server.base_server:run:154 - Imputation Round 1
+2024-11-18 15:28:28.561 | INFO     | src.fed_imp.sub_modules.server.base_server:run:153 - ==================================================
+2024-11-18 15:28:28.561 | INFO     | src.fed_imp.sub_modules.server.base_server:run:154 - Imputation Round 1
+2024-11-18 15:28:33.463 | INFO     | src.fed_imp.sub_modules.server.base_server:run:153 - ==================================================
+2024-11-18 15:28:33.463 | INFO     | src.fed_imp.sub_modules.server.base_server:run:154 - Imputation Round 1
+2024-11-18 15:28:34.384 | INFO     | src.fed_imp.sub_modules.server.base_server:run:153 - ==================================================
+2024-11-18 15:28:34.385 | INFO     | src.fed_imp.sub_modules.server.base_server:run:154 - Imputation Round 1
+2024-11-18 15:28:39.984 | INFO     | src.fed_imp.sub_modules.server.base_server:run:153 - ==================================================
+2024-11-18 15:28:39.984 | INFO     | src.fed_imp.sub_modules.server.base_server:run:154 - Imputation Round 1
+2024-11-18 15:28:40.280 | INFO     | src.fed_imp.sub_modules.server.base_server:run:153 - ==================================================
+2024-11-18 15:28:40.281 | INFO     | src.fed_imp.sub_modules.server.base_server:run:154 - Imputation Round 1
+2024-11-18 15:28:43.063 | INFO     | src.fed_imp.sub_modules.server.base_server:run:153 - ==================================================
+2024-11-18 15:28:43.063 | INFO     | src.fed_imp.sub_modules.server.base_server:run:154 - Imputation Round 1
+2024-11-18 15:28:43.810 | INFO     | src.fed_imp.sub_modules.server.base_server:run:153 - ==================================================
+2024-11-18 15:28:43.811 | INFO     | src.fed_imp.sub_modules.server.base_server:run:154 - Imputation Round 1
+2024-11-18 15:31:11.486 | INFO     | src.fed_imp.sub_modules.server.base_server:run:153 - ==================================================
+2024-11-18 15:31:11.487 | INFO     | src.fed_imp.sub_modules.server.base_server:run:154 - Imputation Round 2
+2024-11-18 15:31:11.655 | INFO     | src.fed_imp.sub_modules.server.base_server:run:153 - ==================================================
+2024-11-18 15:31:11.655 | INFO     | src.fed_imp.sub_modules.server.base_server:run:154 - Imputation Round 2
+2024-11-18 15:31:18.717 | INFO     | src.fed_imp.sub_modules.server.base_server:run:153 - ==================================================
+2024-11-18 15:31:18.718 | INFO     | src.fed_imp.sub_modules.server.base_server:run:154 - Imputation Round 2
+2024-11-18 15:31:26.781 | INFO     | src.fed_imp.sub_modules.server.base_server:run:153 - ==================================================
+2024-11-18 15:31:26.782 | INFO     | src.fed_imp.sub_modules.server.base_server:run:154 - Imputation Round 2
+2024-11-18 15:31:30.295 | INFO     | src.fed_imp.sub_modules.server.base_server:run:153 - ==================================================
+2024-11-18 15:31:30.307 | INFO     | src.fed_imp.sub_modules.server.base_server:run:154 - Imputation Round 2
+2024-11-18 15:31:42.284 | INFO     | src.fed_imp.sub_modules.server.base_server:run:153 - ==================================================
+2024-11-18 15:31:42.284 | INFO     | src.fed_imp.sub_modules.server.base_server:run:154 - Imputation Round 2
+2024-11-18 15:31:48.989 | INFO     | src.fed_imp.sub_modules.server.base_server:run:153 - ==================================================
+2024-11-18 15:31:48.990 | INFO     | src.fed_imp.sub_modules.server.base_server:run:154 - Imputation Round 2
+2024-11-18 15:31:49.286 | INFO     | src.fed_imp.sub_modules.server.base_server:run:153 - ==================================================
+2024-11-18 15:31:49.308 | INFO     | src.fed_imp.sub_modules.server.base_server:run:154 - Imputation Round 2
+2024-11-18 15:31:50.030 | INFO     | src.fed_imp.sub_modules.server.base_server:run:153 - ==================================================
+2024-11-18 15:31:50.031 | INFO     | src.fed_imp.sub_modules.server.base_server:run:154 - Imputation Round 2
+2024-11-18 15:31:53.883 | INFO     | src.fed_imp.sub_modules.server.base_server:run:153 - ==================================================
+2024-11-18 15:31:53.883 | INFO     | src.fed_imp.sub_modules.server.base_server:run:154 - Imputation Round 2

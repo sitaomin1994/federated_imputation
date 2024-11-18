@@ -1,0 +1,59 @@
+joblib.externals.loky.process_executor._RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/home/sm2370/.conda/envs/impute4fair/lib/python3.11/site-packages/joblib/externals/loky/process_executor.py", line 428, in _process_worker
+    r = call_item()
+        ^^^^^^^^^^^
+  File "/home/sm2370/.conda/envs/impute4fair/lib/python3.11/site-packages/joblib/externals/loky/process_executor.py", line 275, in __call__
+    return self.fn(*self.args, **self.kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sm2370/.conda/envs/impute4fair/lib/python3.11/site-packages/joblib/_parallel_backends.py", line 620, in __call__
+    return self.func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sm2370/.conda/envs/impute4fair/lib/python3.11/site-packages/joblib/parallel.py", line 288, in __call__
+    return [func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sm2370/.conda/envs/impute4fair/lib/python3.11/site-packages/joblib/parallel.py", line 288, in <listcomp>
+    return [func(*args, **kwargs)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/cache/home/sm2370/Research/federated_imputation/run_pred_experiments_ext2.py", line 181, in process_single_task
+    ret = prediction(main_config, server_config, pred_rounds, seed)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cache/home/sm2370/Research/federated_imputation/run_pred_experiments_ext2.py", line 86, in prediction
+    ret = main_prediction(data_dir, server_name, server_config, server_pred_config, round_, imbalance)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cache/home/sm2370/Research/federated_imputation/run_pred_experiments_ext2.py", line 49, in main_prediction
+    ret = server.prediction()
+          ^^^^^^^^^^^^^^^^^^^
+  File "/cache/home/sm2370/Research/federated_imputation/src/fed_imp/sub_modules/server/pred_server_fedavg_pytorch.py", line 144, in prediction
+    train_loss, test_loss, test_mse, test_r2 = self._run_round_prediction(
+                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cache/home/sm2370/Research/federated_imputation/src/fed_imp/sub_modules/server/pred_server_fedavg_pytorch.py", line 305, in _run_round_prediction
+    selected_clients_ids = random.sample(self.clients.keys(), k=int(len(self.clients.keys()) * self.sample_pct))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sm2370/.conda/envs/impute4fair/lib/python3.11/random.py", line 436, in sample
+    raise TypeError("Population must be a sequence.  "
+TypeError: Population must be a sequence.  For dicts or sets, use sorted(d).
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/cache/home/sm2370/Research/federated_imputation/run_pred_experiments_ext2.py", line 261, in <module>
+    results = Parallel(n_jobs=args.n_jobs)(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sm2370/.conda/envs/impute4fair/lib/python3.11/site-packages/joblib/parallel.py", line 1098, in __call__
+    self.retrieve()
+  File "/home/sm2370/.conda/envs/impute4fair/lib/python3.11/site-packages/joblib/parallel.py", line 975, in retrieve
+    self._output.extend(job.get(timeout=self.timeout))
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sm2370/.conda/envs/impute4fair/lib/python3.11/site-packages/joblib/_parallel_backends.py", line 567, in wrap_future_result
+    return future.result(timeout=timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sm2370/.conda/envs/impute4fair/lib/python3.11/concurrent/futures/_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/sm2370/.conda/envs/impute4fair/lib/python3.11/concurrent/futures/_base.py", line 401, in __get_result
+    raise self._exception
+TypeError: Population must be a sequence.  For dicts or sets, use sorted(d).
+srun: error: hal0315: task 0: Exited with exit code 1
