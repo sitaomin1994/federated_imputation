@@ -4,3 +4,13 @@
 2024-11-19 11:30:33.569 | INFO     | src.experiment_management.experiment_manager:run_experiments:52 - Experiment - ['dn', 'nc', 'dp', 'ms', 'mct', 'as', 's', 's', 'p', 'nr', 'n', 'ts']
 2024-11-19 11:30:33.569 | INFO     | src.experiment_management.experiment_manager:run_experiments:53 - Experiment - ('hhp_ct_np1', 0, 'natural', 'random2@mrl=0.3_mrr=0.7_mm=mnarlrq', 'allk0.25_sphere', 'fedavg_gain', 102931466, 50, False, 10, 10, 0.1)
 [Parallel(n_jobs=10)]: Using backend LokyBackend with 10 concurrent workers.
+2024-11-19 11:34:34.641 | INFO     | src.fed_imp.experiment:main_func:31 - Round 0
+2024-11-19 11:34:34.689 | INFO     | src.fed_imp.experiment:main_func:31 - Round 9
+2024-11-19 11:34:34.710 | INFO     | src.fed_imp.experiment:main_func:31 - Round 7
+2024-11-19 11:34:34.802 | INFO     | src.fed_imp.experiment:main_func:31 - Round 1
+2024-11-19 11:34:35.388 | INFO     | src.fed_imp.experiment:main_func:31 - Round 2
+2024-11-19 11:34:35.729 | INFO     | src.fed_imp.experiment:main_func:31 - Round 3
+2024-11-19 11:34:35.846 | INFO     | src.fed_imp.experiment:main_func:31 - Round 5
+2024-11-19 11:34:35.877 | INFO     | src.fed_imp.experiment:main_func:31 - Round 8
+2024-11-19 11:34:35.878 | INFO     | src.fed_imp.experiment:main_func:31 - Round 4
+2024-11-19 11:34:35.880 | INFO     | src.fed_imp.experiment:main_func:31 - Round 6
