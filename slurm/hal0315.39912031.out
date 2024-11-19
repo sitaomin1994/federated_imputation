@@ -1,4 +1,4 @@
-Executing command: python main_experiment_amarel.py config_vars/imp_extention2=heart_disease_exp12.yaml
+Executing command: python main_experiment_amarel.py config_vars/imp_extention2=heart_disease_exp23.yaml
 config_tmpl:
   num_clients: 10
   data:
@@ -127,7 +127,7 @@ config_vars:
     - strategy
   - name: mm_strategy
     value:
-    - random2@mrl=0.3_mrr=0.7_mm=mnarlrq
+    - random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst
     save_mode: dir4
     keys:
     - missing_simulate
@@ -148,7 +148,7 @@ config_vars:
     - server_type
   - name: agg_strategy
     value:
-    - fedavg-s
+    - fedmechw_new
     save_mode: null
     keys:
     - agg_strategy_imp
@@ -201,7 +201,7 @@ experiment_marker:
 - server@imp_round
 
 ========================================================================================================================================================================================================
-{'num_clients': 0, 'data': {'dataset_name': 'heart_disease_binary', 'normalize': True}, 'data_partition': {'strategy': 'natural', 'params': {}}, 'handle_imbalance': None, 'missing_simulate': {'mf_strategy': 'all', 'mm_strategy': 'none', 'mm_strategy_params': {'corr_type': 'allk0.25_sphere'}, 'mm_strategy_new': 'random2@mrl=0.3_mrr=0.7_mm=mnarlrq'}, 'imputation': {'initial_strategy_num': 'mean', 'initial_strategy_cat': 'mode', 'estimator_num': 'ridge_cv', 'estimator_cat': 'logistic_cv', 'imp_evaluation_model': 'logistic', 'imp_evaluation_params': {'tune_params': 'gridsearch'}, 'clip': True}, 'agg_strategy_imp': {'strategy': 'fedavg-s', 'params': {'ms_field': 'missing_cell_pct', 'beta': 0.7}}, 'client_type': 'ice', 'server_type': 'fedavg_pytorch', 'server': {'impute_mode': 'instant', 'imp_round': 20, 'imp_local_epochs': 0, 'pred_round': 0, 'pred_local_epochs': 0, 'model_fit_mode': 'one_shot', 'froze_ms_coefs_round': 100}, 'pred_model': {'model_params': {'model': '2nn', 'num_hiddens': 32, 'model_init_config': None, 'model_other_params': None}, 'train_params': {'batch_size': 128, 'learning_rate': 0.001, 'weight_decay': 0.0001, 'pred_round': 200, 'pred_local_epochs': 3}}, 'experiment': {'n_rounds': 5, 'seed': 102931466, 'mtp': True, 'random_seed': 50, 'num_process': 5, 'test_size': 0.1}, 'track': False, 'tune_params': False, 'prediction': False, 'save_state': True, 'algo_params': {'central': {}, 'central2': {}, 'central_vae': {}, 'central_gain': {}, 'local': {}, 'local_vae': {}, 'local_gain': {}, 'fedavg': {}, 'fedavg_vae': {}, 'fedavg_gain': {}, 'fedwavg': {'alpha': 0.9}, 'fedmechw': {'client_thres': 1.0, 'alpha': 1.0, 'beta': '0.0,', 'scale_factor': 4}, 'fedmechw_p': {'client_thres': 1.0, 'alpha': 0.85, 'beta': 0.1, 'scale_factor': 4}, 'fedmechw_new': {'client_thres': 1.0, 'alpha': 0.95, 'gamma': 0.02, 'scale_factor': 4}, 'fedmechw_dedup': {'client_thres': 1.0, 'alpha': 0.95, 'gamma': 0.02, 'scale_factor': 4}, 'fedmechw_p_sigmoid': {'client_thres': 1.0, 'alpha': 0.9, 'beta': 0.1, 'scale_factor': 3}, 'fedmechclw': {'client_thres': 1.0, 'thres1': 0.2, 'alpha': 0.8}, 'scale_factor': 6}}
+{'num_clients': 0, 'data': {'dataset_name': 'heart_disease_binary', 'normalize': True}, 'data_partition': {'strategy': 'natural', 'params': {}}, 'handle_imbalance': None, 'missing_simulate': {'mf_strategy': 'all', 'mm_strategy': 'none', 'mm_strategy_params': {'corr_type': 'allk0.25_sphere'}, 'mm_strategy_new': 'random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst'}, 'imputation': {'initial_strategy_num': 'mean', 'initial_strategy_cat': 'mode', 'estimator_num': 'ridge_cv', 'estimator_cat': 'logistic_cv', 'imp_evaluation_model': 'logistic', 'imp_evaluation_params': {'tune_params': 'gridsearch'}, 'clip': True}, 'agg_strategy_imp': {'strategy': 'fedmechw_new', 'params': {'ms_field': 'missing_cell_pct', 'beta': 0.7}}, 'client_type': 'ice', 'server_type': 'fedavg_pytorch', 'server': {'impute_mode': 'instant', 'imp_round': 20, 'imp_local_epochs': 0, 'pred_round': 0, 'pred_local_epochs': 0, 'model_fit_mode': 'one_shot', 'froze_ms_coefs_round': 100}, 'pred_model': {'model_params': {'model': '2nn', 'num_hiddens': 32, 'model_init_config': None, 'model_other_params': None}, 'train_params': {'batch_size': 128, 'learning_rate': 0.001, 'weight_decay': 0.0001, 'pred_round': 200, 'pred_local_epochs': 3}}, 'experiment': {'n_rounds': 5, 'seed': 102931466, 'mtp': True, 'random_seed': 50, 'num_process': 5, 'test_size': 0.1}, 'track': False, 'tune_params': False, 'prediction': False, 'save_state': True, 'algo_params': {'central': {}, 'central2': {}, 'central_vae': {}, 'central_gain': {}, 'local': {}, 'local_vae': {}, 'local_gain': {}, 'fedavg': {}, 'fedavg_vae': {}, 'fedavg_gain': {}, 'fedwavg': {'alpha': 0.9}, 'fedmechw': {'client_thres': 1.0, 'alpha': 1.0, 'beta': '0.0,', 'scale_factor': 4}, 'fedmechw_p': {'client_thres': 1.0, 'alpha': 0.85, 'beta': 0.1, 'scale_factor': 4}, 'fedmechw_new': {'client_thres': 1.0, 'alpha': 0.95, 'gamma': 0.02, 'scale_factor': 4}, 'fedmechw_dedup': {'client_thres': 1.0, 'alpha': 0.95, 'gamma': 0.02, 'scale_factor': 4}, 'fedmechw_p_sigmoid': {'client_thres': 1.0, 'alpha': 0.9, 'beta': 0.1, 'scale_factor': 3}, 'fedmechclw': {'client_thres': 1.0, 'thres1': 0.2, 'alpha': 0.8}, 'scale_factor': 6}}
 [(303, 14), (293, 14), (116, 14), (144, 14)]
 (272, 14)
 (263, 14)
@@ -216,7 +216,7 @@ client: 0 dup rate: 0.0
 client: 1 dup rate: 0.0038022813688213253
 client: 2 dup rate: 0.0
 client: 3 dup rate: 0.007751937984496138
-Used default params: {}
+Used default params: {'client_thres': 1.0, 'alpha': 0.95, 'gamma': 0.02, 'scale_factor': 4}
 natural {}
 Adding missing to client 0 ...
 Adding missing to client 1 ...
@@ -226,7 +226,7 @@ client: 0 dup rate: 0.0
 client: 1 dup rate: 0.0038022813688213253
 client: 2 dup rate: 0.0
 client: 3 dup rate: 0.007751937984496138
-Used default params: {}
+Used default params: {'client_thres': 1.0, 'alpha': 0.95, 'gamma': 0.02, 'scale_factor': 4}
 natural {}
 Adding missing to client 0 ...
 Adding missing to client 1 ...
@@ -236,7 +236,7 @@ client: 0 dup rate: 0.0
 client: 1 dup rate: 0.0038022813688213253
 client: 2 dup rate: 0.0
 client: 3 dup rate: 0.007751937984496138
-Used default params: {}
+Used default params: {'client_thres': 1.0, 'alpha': 0.95, 'gamma': 0.02, 'scale_factor': 4}
 natural {}
 Adding missing to client 0 ...
 Adding missing to client 1 ...
@@ -246,7 +246,7 @@ client: 0 dup rate: 0.0
 client: 1 dup rate: 0.0038022813688213253
 client: 2 dup rate: 0.0
 client: 3 dup rate: 0.007751937984496138
-Used default params: {}
+Used default params: {'client_thres': 1.0, 'alpha': 0.95, 'gamma': 0.02, 'scale_factor': 4}
 natural {}
 Adding missing to client 0 ...
 Adding missing to client 1 ...
@@ -256,4 +256,4 @@ client: 0 dup rate: 0.0
 client: 1 dup rate: 0.0038022813688213253
 client: 2 dup rate: 0.0
 client: 3 dup rate: 0.007751937984496138
-Used default params: {}
+Used default params: {'client_thres': 1.0, 'alpha': 0.95, 'gamma': 0.02, 'scale_factor': 4}
