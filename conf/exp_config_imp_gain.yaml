@@ -5,6 +5,6 @@ experiment_marker:
   - server@imp_round
 defaults:
   - config_tmpl: imp_gain
-  - config_vars/imp_extention:
+  - config_vars/imp_extention2:
       - ext_exp31
   - _self_

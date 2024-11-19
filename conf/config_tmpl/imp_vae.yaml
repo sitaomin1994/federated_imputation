@@ -48,7 +48,7 @@ agg_strategy_imp:
 client_type: vae
 server_type: vae
 server:
-  imp_round: 60            # global epoch
+  imp_round: 200            # global epoch
   imp_local_epochs: 5       # local epoch
   pred_round: 0
   pred_local_epochs: 0
