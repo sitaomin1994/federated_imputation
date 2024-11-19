@@ -50,7 +50,7 @@ hhplos_exp1:
 
   # aggregation strategy
   - name: agg_strategy
-    value: [fedavg-s, fedmechw_new, local]
+    value: [fedavg-s]
     save_mode:
     keys:
       - agg_strategy_imp
