@@ -1969,6 +1969,8 @@ def load_data(dataset_name, normalize=True, verbose=False, threshold=None):
 		return process_codon(verbose, threshold)
 	elif dataset_name == 'hhp_los_np1':
 		return process_hhp(version = 'los_np1')
+	elif dataset_name == 'hhp_ct_np1':
+		return process_hhp(version = 'ct_np1')
 	elif dataset_name == 'heart_disease_binary':
 		return process_heart_disease(version = 'binary')
 	elif dataset_name == 'heart_disease_binary1':

@@ -279,24 +279,45 @@ class Experiment:
                 results.extend(ret[0])
 
         elif mtp:
+            # seed = configuration['experiment']['random_seed']
+            # seeds = [(seed + 10087 * i) for i in range(n_rounds)]
+            # #seeds = [i for i in range(n_rounds)]
+            # rounds = list(range(n_rounds))
+            # results = []
+            # # multiprocessing
+            # num_processes = configuration['experiment']['num_process']
+            # chunk_size = n_rounds // num_processes
+            # if chunk_size == 0:
+            #     chunk_size = 1
+            # # chunks = [exp_configs[i:i + chunk_size] for i in range(0, len(exp_configs), chunk_size)]
+            #
+            # # fed_imp start
+            # with mp.Pool(num_processes) as pool:
+            #     process_args = [
+            #         (train_data, test_data, configuration, num_clients, data_config, round, seed)
+            #         for round, seed in zip(rounds, seeds)]
+            #     process_results = pool.starmap(main_func, process_args, chunksize=chunk_size)
+            #
+            # for ret in process_results:
+            #     results.extend(ret[0])
+            from joblib import Parallel, delayed
             seed = configuration['experiment']['random_seed']
             seeds = [(seed + 10087 * i) for i in range(n_rounds)]
-            #seeds = [i for i in range(n_rounds)]
             rounds = list(range(n_rounds))
             results = []
-            # multiprocessing
-            num_processes = configuration['experiment']['num_process']
-            chunk_size = n_rounds // num_processes
-            if chunk_size == 0:
-                chunk_size = 1
-            # chunks = [exp_configs[i:i + chunk_size] for i in range(0, len(exp_configs), chunk_size)]
 
-            # fed_imp start
-            with mp.Pool(num_processes) as pool:
-                process_args = [
-                    (train_data, test_data, configuration, num_clients, data_config, round, seed)
-                    for round, seed in zip(rounds, seeds)]
-                process_results = pool.starmap(main_func, process_args, chunksize=chunk_size)
+            num_processes = configuration['experiment']['num_process']
+            process_results = Parallel(n_jobs=num_processes, verbose=1)(
+                delayed(main_func)(
+                    train_data,
+                    test_data,
+                    configuration,
+                    num_clients,
+                    data_config,
+                    round,
+                    seed
+                ) for round, seed in zip(rounds, seeds)
+            )
 
             for ret in process_results:
                 results.extend(ret[0])
