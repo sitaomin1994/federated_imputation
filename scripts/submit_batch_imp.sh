@@ -1,10 +1,10 @@
 #!/bin/bash
 configs=(
-  "hhnpct_exp11"
-  "hhnpct_exp12"
-  "hhnpct_exp13"
-  "hhnpct_exp21"
-  "hhnpct_exp22"
+  "hhpct_exp11"
+  "hhpct_exp12"
+  "hhpct_exp13"
+  "hhpct_exp21"
+  "hhpct_exp22"
   #"hhnpct_exp23"
 )
 
