@@ -1,0 +1,214 @@
+Executing command: python main_experiment_amarel.py config_vars/imp_extention2=eicumo_exp11.yaml
+config_tmpl:
+  num_clients: 10
+  data:
+    dataset_name: breast
+    normalize: true
+  data_partition:
+    strategy: full
+    params: {}
+  handle_imbalance: null
+  missing_simulate:
+    mf_strategy: all
+    mm_strategy: none
+    mm_strategy_params:
+      corr_type: others
+  imputation:
+    initial_strategy_num: mean
+    initial_strategy_cat: mode
+    estimator_num: ridge_cv
+    estimator_cat: logistic_cv
+    imp_evaluation_model: logistic
+    imp_evaluation_params:
+      tune_params: gridsearch
+    clip: true
+  agg_strategy_imp:
+    strategy: local
+    params:
+      ms_field: missing_cell_pct
+      beta: 0.7
+  client_type: ice
+  server_type: fedavg_pytorch
+  server:
+    impute_mode: instant
+    imp_round: 20
+    imp_local_epochs: 0
+    pred_round: 0
+    pred_local_epochs: 0
+    model_fit_mode: one_shot
+    froze_ms_coefs_round: 100
+  pred_model:
+    model_params:
+      model: 2nn
+      num_hiddens: 32
+      model_init_config: null
+      model_other_params: null
+    train_params:
+      batch_size: 128
+      learning_rate: 0.001
+      weight_decay: 0.0001
+      pred_round: 200
+      pred_local_epochs: 3
+  experiment:
+    n_rounds: 5
+    seed: 102931466
+    mtp: true
+    random_seed: 50
+    num_process: 5
+    test_size: 0.1
+  track: false
+  tune_params: false
+  prediction: false
+  save_state: true
+  algo_params:
+    central: {}
+    central2: {}
+    central_vae: {}
+    central_gain: {}
+    local: {}
+    local_vae: {}
+    local_gain: {}
+    fedavg: {}
+    fedavg_vae: {}
+    fedavg_gain: {}
+    fedwavg:
+      alpha: 0.9
+    fedmechw:
+      client_thres: 1.0
+      alpha: 1.0
+      beta: 0.0,
+      scale_factor: 4
+    fedmechw_p:
+      client_thres: 1.0
+      alpha: 0.85
+      beta: 0.1
+      scale_factor: 4
+    fedmechw_new:
+      client_thres: 1.0
+      alpha: 0.95
+      gamma: 0.02
+      scale_factor: 4
+    fedmechw_dedup:
+      client_thres: 1.0
+      alpha: 0.95
+      gamma: 0.02
+      scale_factor: 4
+    fedmechw_p_sigmoid:
+      client_thres: 1.0
+      alpha: 0.9
+      beta: 0.1
+      scale_factor: 3
+    fedmechclw:
+      client_thres: 1.0
+      thres1: 0.2
+      alpha: 0.8
+    scale_factor: 6
+config_vars:
+  eicumo_exp11:
+  - name: dataset_name
+    value:
+    - eicu_mo_np4
+    keys:
+    - data
+    - dataset_name
+    save_mode: dir1
+  - name: n_client
+    value:
+    - 0
+    save_mode: dir2
+    keys:
+    - num_clients
+  - name: data_partition
+    value:
+    - natural
+    save_mode: dir3
+    keys:
+    - data_partition
+    - strategy
+  - name: mm_strategy
+    value:
+    - random2@mrl=0.3_mrr=0.7_mm=mnarlrq
+    save_mode: dir4
+    keys:
+    - missing_simulate
+    - mm_strategy_new
+  - name: mm_corr_type
+    value:
+    - allk0.25_sphere
+    save_mode: dir4
+    keys:
+    - missing_simulate
+    - mm_strategy_params
+    - corr_type
+  - name: server_type
+    value:
+    - fedavg_pytorch
+    save_mode: none
+    keys:
+    - server_type
+  - name: agg_strategy
+    value:
+    - local
+    save_mode: null
+    keys:
+    - agg_strategy_imp
+    - strategy
+  - name: seed
+    value:
+    - 102931466
+    save_mode: null
+    keys:
+    - experiment
+    - seed
+  - name: seed2
+    value:
+    - 50
+    save_mode: null
+    keys:
+    - experiment
+    - random_seed
+  - name: params
+    value:
+    - false
+    save_mode: null
+    keys:
+    - tune_params
+  - name: n_rounds
+    value:
+    - 10
+    save_mode: none
+    keys:
+    - experiment
+    - n_rounds
+  - name: np
+    value:
+    - 10
+    save_mode: none
+    keys:
+    - experiment
+    - num_process
+  - name: test_size
+    value:
+    - 0.1
+    save_mode: none
+    keys:
+    - experiment
+    - test_size
+experiment_name: fed_imp_ext2_amarel
+debug: false
+experiment_marker:
+- num_clients
+- server@imp_round
+
+========================================================================================================================================================================================================
+{'num_clients': 0, 'data': {'dataset_name': 'eicu_mo_np4', 'normalize': True}, 'data_partition': {'strategy': 'natural', 'params': {}}, 'handle_imbalance': None, 'missing_simulate': {'mf_strategy': 'all', 'mm_strategy': 'none', 'mm_strategy_params': {'corr_type': 'allk0.25_sphere'}, 'mm_strategy_new': 'random2@mrl=0.3_mrr=0.7_mm=mnarlrq'}, 'imputation': {'initial_strategy_num': 'mean', 'initial_strategy_cat': 'mode', 'estimator_num': 'ridge_cv', 'estimator_cat': 'logistic_cv', 'imp_evaluation_model': 'logistic', 'imp_evaluation_params': {'tune_params': 'gridsearch'}, 'clip': True}, 'agg_strategy_imp': {'strategy': 'local', 'params': {'ms_field': 'missing_cell_pct', 'beta': 0.7}}, 'client_type': 'ice', 'server_type': 'fedavg_pytorch', 'server': {'impute_mode': 'instant', 'imp_round': 20, 'imp_local_epochs': 0, 'pred_round': 0, 'pred_local_epochs': 0, 'model_fit_mode': 'one_shot', 'froze_ms_coefs_round': 100}, 'pred_model': {'model_params': {'model': '2nn', 'num_hiddens': 32, 'model_init_config': None, 'model_other_params': None}, 'train_params': {'batch_size': 128, 'learning_rate': 0.001, 'weight_decay': 0.0001, 'pred_round': 200, 'pred_local_epochs': 3}}, 'experiment': {'n_rounds': 10, 'seed': 102931466, 'mtp': True, 'random_seed': 50, 'num_process': 10, 'test_size': 0.1}, 'track': False, 'tune_params': False, 'prediction': False, 'save_state': True, 'algo_params': {'central': {}, 'central2': {}, 'central_vae': {}, 'central_gain': {}, 'local': {}, 'local_vae': {}, 'local_gain': {}, 'fedavg': {}, 'fedavg_vae': {}, 'fedavg_gain': {}, 'fedwavg': {'alpha': 0.9}, 'fedmechw': {'client_thres': 1.0, 'alpha': 1.0, 'beta': '0.0,', 'scale_factor': 4}, 'fedmechw_p': {'client_thres': 1.0, 'alpha': 0.85, 'beta': 0.1, 'scale_factor': 4}, 'fedmechw_new': {'client_thres': 1.0, 'alpha': 0.95, 'gamma': 0.02, 'scale_factor': 4}, 'fedmechw_dedup': {'client_thres': 1.0, 'alpha': 0.95, 'gamma': 0.02, 'scale_factor': 4}, 'fedmechw_p_sigmoid': {'client_thres': 1.0, 'alpha': 0.9, 'beta': 0.1, 'scale_factor': 3}, 'fedmechclw': {'client_thres': 1.0, 'thres1': 0.2, 'alpha': 0.8}, 'scale_factor': 6}}
+(1646, 33)
+(1215, 33)
+(1580, 33)
+(907, 33)
+(1886, 33)
+(782, 33)
+(978, 33)
+(1579, 33)
+(598, 33)
+(1052, 33)
