@@ -1,4 +1,4 @@
-Executing command: python main_experiment_vae.py config_vars/imp_extention2=hhpct_exp24.yaml
+Executing command: python main_experiment_gain.py config_vars/imp_extention2=hhpct_exp25.yaml
 config_tmpl:
   num_clients: 10
   data:
@@ -17,28 +17,27 @@ config_tmpl:
     initial_strategy: mean
     clip: true
     imp_model_params:
-      latent_size: 32
-      n_hidden: 64
-      K: 10
-      L: 100
+      loss_alpha: 10
     imp_params:
       lr: 0.001
       batch_size: 256
       weight_decay: 0.0001
+      hint_rate: 0.3
+      loss_alpha: 10
       optimizer: adam
   agg_strategy_imp:
     strategy: local
     params:
       ms_field: missing_cell_pct
       beta: 0.7
-  client_type: vae
-  server_type: vae
+  client_type: gain
+  server_type: gain
   server:
-    imp_round: 200
+    imp_round: 400
     imp_local_epochs: 5
     pred_round: 0
     pred_local_epochs: 0
-    verbose: 20
+    verbose: 60
   pred_model:
     model_params:
       model: 2nn
@@ -139,7 +138,7 @@ config_vars:
     - corr_type
   - name: agg_strategy
     value:
-    - fedavg_gain
+    - fedavg_vae
     save_mode: null
     keys:
     - agg_strategy_imp
@@ -185,14 +184,14 @@ config_vars:
     keys:
     - experiment
     - test_size
-experiment_name: fed_imp_pc4
+experiment_name: fed_imp_pc3
 debug: false
 experiment_marker:
 - num_clients
 - server@imp_round
 
 ========================================================================================================================================================================================================
-{'num_clients': 0, 'data': {'dataset_name': 'hhp_ct_np1', 'normalize': True}, 'data_partition': {'strategy': 'natural', 'params': {}}, 'handle_imbalance': None, 'missing_simulate': {'mf_strategy': 'all', 'mm_strategy': 's3', 'mm_strategy_params': {'corr_type': 'allk0.25_sphere'}, 'mm_strategy_new': 'random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst'}, 'imputation': {'initial_strategy': 'mean', 'clip': True, 'imp_model_params': {'latent_size': 32, 'n_hidden': 64, 'K': 10, 'L': 100}, 'imp_params': {'lr': 0.001, 'batch_size': 256, 'weight_decay': 0.0001, 'optimizer': 'adam'}}, 'agg_strategy_imp': {'strategy': 'fedavg_gain', 'params': {'ms_field': 'missing_cell_pct', 'beta': 0.7}}, 'client_type': 'vae', 'server_type': 'vae', 'server': {'imp_round': 200, 'imp_local_epochs': 5, 'pred_round': 0, 'pred_local_epochs': 0, 'verbose': 20}, 'pred_model': {'model_params': {'model': '2nn', 'num_hiddens': 32, 'model_init_config': None, 'model_other_params': None}, 'train_params': {'batch_size': 128, 'learning_rate': 0.001, 'weight_decay': 0.0001, 'pred_round': 200, 'pred_local_epochs': 3}}, 'experiment': {'n_rounds': 10, 'seed': 102931466, 'mtp': True, 'random_seed': 50, 'num_process': 10, 'test_size': 0.1}, 'track': False, 'tune_params': False, 'prediction': False, 'save_state': True, 'algo_params': {'central': {}, 'central2': {}, 'central_vae': {}, 'central_gain': {}, 'local': {}, 'local_vae': {}, 'local_gain': {}, 'fedavg': {}, 'fedavg_vae': {}, 'fedavg_gain': {}, 'fedwavg': {'alpha': 0.9}, 'fedmechw': {'client_thres': 1.0, 'alpha': 1.0, 'beta': '0.0,', 'scale_factor': 4}, 'fedmechw_p': {'client_thres': 1.0, 'alpha': 0.85, 'beta': 0.1, 'scale_factor': 4}, 'fedmechw_new': {'client_thres': 1.0, 'alpha': 0.95, 'gamma': 0.02, 'scale_factor': 4}, 'fedmechw_p_sigmoid': {'client_thres': 1.0, 'alpha': 0.9, 'beta': 0.1, 'scale_factor': 3}, 'fedmechclw': {'client_thres': 1.0, 'thres1': 0.2, 'alpha': 0.8}, 'scale_factor': 6}}
+{'num_clients': 0, 'data': {'dataset_name': 'hhp_ct_np1', 'normalize': True}, 'data_partition': {'strategy': 'natural', 'params': {}}, 'handle_imbalance': None, 'missing_simulate': {'mf_strategy': 'all', 'mm_strategy': 's3', 'mm_strategy_params': {'corr_type': 'allk0.25_sphere'}, 'mm_strategy_new': 'random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst'}, 'imputation': {'initial_strategy': 'mean', 'clip': True, 'imp_model_params': {'loss_alpha': 10}, 'imp_params': {'lr': 0.001, 'batch_size': 256, 'weight_decay': 0.0001, 'hint_rate': 0.3, 'loss_alpha': 10, 'optimizer': 'adam'}}, 'agg_strategy_imp': {'strategy': 'fedavg_vae', 'params': {'ms_field': 'missing_cell_pct', 'beta': 0.7}}, 'client_type': 'gain', 'server_type': 'gain', 'server': {'imp_round': 400, 'imp_local_epochs': 5, 'pred_round': 0, 'pred_local_epochs': 0, 'verbose': 60}, 'pred_model': {'model_params': {'model': '2nn', 'num_hiddens': 32, 'model_init_config': None, 'model_other_params': None}, 'train_params': {'batch_size': 128, 'learning_rate': 0.001, 'weight_decay': 0.0001, 'pred_round': 200, 'pred_local_epochs': 3}}, 'experiment': {'n_rounds': 10, 'seed': 102931466, 'mtp': True, 'random_seed': 50, 'num_process': 10, 'test_size': 0.1}, 'track': False, 'tune_params': False, 'prediction': False, 'save_state': True, 'algo_params': {'central': {}, 'central2': {}, 'central_vae': {}, 'central_gain': {}, 'local': {}, 'local_vae': {}, 'local_gain': {}, 'fedavg': {}, 'fedavg_vae': {}, 'fedavg_gain': {}, 'fedwavg': {'alpha': 0.9}, 'fedmechw': {'client_thres': 1.0, 'alpha': 1.0, 'beta': '0.0,', 'scale_factor': 4}, 'fedmechw_p': {'client_thres': 1.0, 'alpha': 0.85, 'beta': 0.1, 'scale_factor': 4}, 'fedmechw_new': {'client_thres': 1.0, 'alpha': 0.95, 'gamma': 0.02, 'scale_factor': 4}, 'fedmechw_p_sigmoid': {'client_thres': 1.0, 'alpha': 0.9, 'beta': 0.1, 'scale_factor': 3}, 'fedmechclw': {'client_thres': 1.0, 'thres1': 0.2, 'alpha': 0.8}, 'scale_factor': 6}}
 (16502, 33)
 (8335, 33)
 (12748, 33)
