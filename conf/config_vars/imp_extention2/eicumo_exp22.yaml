@@ -1,5 +1,5 @@
 # @package config_vars
-eicumo_exp22
+eicumo_exp22:
   # dataset_name
   - name: dataset_name
     value: [eicu_mo_np4]
