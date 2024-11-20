@@ -47,7 +47,7 @@ agg_strategy_imp:
 client_type: gain
 server_type: gain
 server:
-  imp_round: 400            # global epoch
+  imp_round: 10            # global epoch
   imp_local_epochs: 5       # local epoch
   pred_round: 0
   pred_local_epochs: 0

@@ -2,7 +2,7 @@
 hhpct_exp12:
   # dataset_name
   - name: dataset_name
-    value: [hhp_ct_np1]
+    value: [hhp_ct2]
     keys:
       - data
       - dataset_name

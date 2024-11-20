@@ -1967,16 +1967,30 @@ def load_data(dataset_name, normalize=True, verbose=False, threshold=None):
 		return process_codrna(normalize, verbose, threshold, sample=True)
 	elif dataset_name == 'codon':
 		return process_codon(verbose, threshold)
+	elif dataset_name == 'hhp_ct1':
+		return process_hhp(version = 'ct_np1')
+	elif dataset_name == 'hhp_ct2':
+		return process_hhp(version = 'ct_np6')
+	elif dataset_name == 'hhp_ct3':
+		return process_hhp(version = 'ct_np9')
+	elif dataset_name == 'vehicle':
+		return process_vehicle()
+	elif dataset_name == 'vehicle2':
+		return process_vehicle2()
+	elif dataset_name == 'eicu_mo1':
+		return process_eicu(version = 'mo_np1120')
+	elif dataset_name == 'heart_disease_binary':
+		return process_heart_disease(version = 'binary')
 	elif dataset_name == 'hhp_los_np1':
 		return process_hhp(version = 'los_np1')
-	elif dataset_name == 'hhp_ct_np1':
-		return process_hhp(version = 'ct_np1')
 	elif dataset_name == 'heart_disease_binary':
 		return process_heart_disease(version = 'binary')
 	elif dataset_name == 'heart_disease_binary1':
 		return process_heart_disease(version = 'binary1')
 	elif dataset_name == 'vehicle':
 		return process_vehicle()
+	elif dataset_name == 'eicu_mo1':
+		return process_eicu(version = 'mo_np1120')
 	elif dataset_name == 'eicu_mo_np1':
 		return process_eicu(version = 'mo_np22')
 	elif dataset_name == 'eicu_mo_np2':
@@ -2019,6 +2033,20 @@ def process_heart_disease(version, verbose=True):
 def process_vehicle(verbose = True):
 	data = pd.read_csv(f'./data/vehicle/data_clean.csv')
 	data_config = json.load(open(f'./data/vehicle/data_config.json'))
+
+	if verbose:
+		logger.debug("Data shape {}".format(data.shape, data.shape))
+		logger.debug(data_config)
+
+	if 'client_split_indices' in data_config:
+		data_arrays = np.array_split(data.values, data_config['client_split_indices'])
+		data = [pd.DataFrame(data_array, columns=data.columns) for data_array in data_arrays]
+		print([data_array.shape for data_array in data])
+	return data, data_config
+
+def process_vehicle2(verbose = True):
+	data = pd.read_csv(f'./data/vehicle/data_clean3.csv')
+	data_config = json.load(open(f'./data/vehicle/data_config3.json'))
 
 	if verbose:
 		logger.debug("Data shape {}".format(data.shape, data.shape))

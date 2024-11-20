@@ -165,14 +165,10 @@ class ServerVAE:
         ###############################################################################################
         imp_results = [item[2]['metrics'] for item in clients_imp_history[-5:]]
 
-        global_ws = []
-        for origin_data, impute_data in zip(origin_datas, imputed_datas):
-            origin_data = origin_data[:, :-1]
-            impute_data = impute_data[:, :-1]
-            ws = sliced_ws(origin_data, impute_data)
-            global_ws.append(ws)
-
-        global_ws = np.array(global_ws).mean()
+        origin_data = origin_datas[:, :-1]
+        impute_data = imputed_datas[:, :-1]
+        ws = sliced_ws(origin_data, impute_data)
+        global_ws = ws
 
         return {
             'client_imp_history': clients_imp_history,
