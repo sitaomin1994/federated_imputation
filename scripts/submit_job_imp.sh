@@ -15,9 +15,8 @@
 #SBATCH --output=./slurm/%N.%j.out  # STDOUT output file
 #SBATCH --error=./slurm/%N.%j.err   # STDERR output file
 config_name=$1
-model_name=$2
 source /projects/community/miniconda3/bin/activate impute4fair
 cd ~/Research/federated_imputation/
 
 # Your command here
-srun ./scripts/run_imp_"${model_name}".sh "${config_name}"
+srun ./scripts/run_imp_ice.sh "${config_name}"
