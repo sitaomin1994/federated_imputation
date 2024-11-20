@@ -1,0 +1,40 @@
+2024-11-20 17:14:14.212 | INFO     | src.experiment_management.experiment_manager:set_experiment:22 - Experiment name: fed_imp
+2024-11-20 17:14:14.218 | INFO     | src.experiment_management.experiment_manager:run_experiments:45 - Running 1 experiments
+2024-11-20 17:14:14.218 | INFO     | src.experiment_management.experiment_manager:run_experiments:51 - Experiment - 0
+2024-11-20 17:14:14.218 | INFO     | src.experiment_management.experiment_manager:run_experiments:52 - Experiment - ['dn', 'nc', 'dp', 'ms', 'mct', 'st', 'as', 's', 's', 'p', 'nr', 'n', 'ts']
+2024-11-20 17:14:14.218 | INFO     | src.experiment_management.experiment_manager:run_experiments:53 - Experiment - ('hhp_ct2', 0, 'natural', 'random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst', 'allk0.25_sphere', 'fedavg_pytorch', 'fedmechw_new', 102931466, 50, False, 10, 10, 0.1)
+Error executing job with overrides: ['config_vars/imp_extention2=hhpct_exp23.yaml']
+Traceback (most recent call last):
+  File "/cache/home/sm2370/Research/federated_imputation/main_experiment_amarel.py", line 37, in main
+    experiment_manager.run_experiments(configs, exp_meta, use_db=False, debug=debug)
+  File "/cache/home/sm2370/Research/federated_imputation/src/experiment_management/experiment_manager.py", line 63, in run_experiments
+    ret,_ = experiment.run_experiment(exp_config.config)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cache/home/sm2370/Research/federated_imputation/src/fed_imp/experiment.py", line 199, in run_experiment
+    data, data_config = load_data(**dataset_params)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cache/home/sm2370/Research/federated_imputation/src/modules/data_preprocessing.py", line 1973, in load_data
+    return process_hhp(version = 'ct_np6')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cache/home/sm2370/Research/federated_imputation/src/modules/data_preprocessing.py", line 2006, in process_hhp
+    data = pd.read_csv(f'./data/hhp/data_clean_{version}.csv')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sm2370/.conda/envs/impute4fair/lib/python3.11/site-packages/pandas/io/parsers/readers.py", line 912, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sm2370/.conda/envs/impute4fair/lib/python3.11/site-packages/pandas/io/parsers/readers.py", line 577, in _read
+    parser = TextFileReader(filepath_or_buffer, **kwds)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sm2370/.conda/envs/impute4fair/lib/python3.11/site-packages/pandas/io/parsers/readers.py", line 1407, in __init__
+    self._engine = self._make_engine(f, self.engine)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sm2370/.conda/envs/impute4fair/lib/python3.11/site-packages/pandas/io/parsers/readers.py", line 1661, in _make_engine
+    self.handles = get_handle(
+                   ^^^^^^^^^^^
+  File "/home/sm2370/.conda/envs/impute4fair/lib/python3.11/site-packages/pandas/io/common.py", line 859, in get_handle
+    handle = open(
+             ^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: './data/hhp/data_clean_ct_np6.csv'
+
+Set the environment variable HYDRA_FULL_ERROR=1 for a complete stack trace.
+srun: error: hal0315: task 0: Exited with exit code 1
