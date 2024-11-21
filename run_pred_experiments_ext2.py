@@ -142,7 +142,7 @@ def parse_args():
         help='Comma-separated list of methods (e.g., method1,method2,method3)',
         default=['fedavg-s', 'fedmechw_new', 'local']
     )
-    parser.add_argument('--n_rounds', type=int, default=5)
+    parser.add_argument('--n_rounds', type=int, default=10)
     parser.add_argument('--num_hiddens', type=int, default=32)
     parser.add_argument('--batch_size', type=int, default=300)
     parser.add_argument('--lr', type=float, default=0.001)
