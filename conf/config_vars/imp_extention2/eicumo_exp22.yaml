@@ -2,7 +2,7 @@
 eicumo_exp22:
   # dataset_name
   - name: dataset_name
-    value: [eicu_mo2]
+    value: [eicu_mo3]
     keys:
       - data
       - dataset_name

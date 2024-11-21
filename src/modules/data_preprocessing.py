@@ -1993,6 +1993,8 @@ def load_data(dataset_name, normalize=True, verbose=False, threshold=None):
 		return process_eicu(version = 'mo_np1120')
 	elif dataset_name == 'eicu_mo2':
 		return process_eicu(version = 'mo_np1121')
+	elif dataset_name == 'eicu_mo3':
+		return process_eicu(version = 'mo_np1122')
 	elif dataset_name == 'eicu_mo_np1':
 		return process_eicu(version = 'mo_np22')
 	elif dataset_name == 'eicu_mo_np2':
