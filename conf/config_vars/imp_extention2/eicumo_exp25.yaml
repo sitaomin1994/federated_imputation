@@ -1,5 +1,5 @@
 # @package config_vars
-eicumo_exp13:
+ext_exp31:
   # dataset_name
   - name: dataset_name
     value: [eicu_mo2]
@@ -23,16 +23,16 @@ eicumo_exp13:
       - data_partition
       - strategy
 
-  # missing mechanism
+  # missing scenario
   - name: mm_strategy
     value:
-      - random2@mrl=0.3_mrr=0.7_mm=mnarlrq
+      - random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst
     save_mode: dir4
     keys:
       - missing_simulate
       - mm_strategy_new
 
-  # missing mechanism correlation type
+  # missing scenario
   - name: mm_corr_type
     value: [allk0.25_sphere]
     save_mode: dir4
@@ -41,16 +41,9 @@ eicumo_exp13:
       - mm_strategy_params
       - corr_type
 
-  # server_type
-  - name: server_type
-    value: [fedavg_pytorch]
-    save_mode: none
-    keys:
-      - server_type
-
   # aggregation strategy
   - name: agg_strategy
-    value: [fedmechw_new]
+    value: [fedavg_vae]
     save_mode:
     keys:
       - agg_strategy_imp

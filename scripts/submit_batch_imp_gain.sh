@@ -2,6 +2,8 @@
 configs=(
   "hhpct_exp15"
   "hhpct_exp25"
+  "eicumo_exp15"
+  "eicumo_exp25"
 )
 
 for config_name in "${configs[@]}"; do
