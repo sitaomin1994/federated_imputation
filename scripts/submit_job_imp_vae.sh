@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=cafe_np
-#SBATCH --nodelist=gpuk001
+#SBATCH --nodelist=hal0315
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=sm2370@rutgers.edu
 #SBATCH --partition=p_jsvaidya_1
