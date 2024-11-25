@@ -1,0 +1,104 @@
+2024-11-25 18:02:29.642 | INFO     | src.experiment_management.experiment_manager:set_experiment:22 - Experiment name: fed_imp
+2024-11-25 18:02:29.646 | INFO     | src.experiment_management.experiment_manager:run_experiments:45 - Running 1 experiments
+2024-11-25 18:02:29.646 | INFO     | src.experiment_management.experiment_manager:run_experiments:51 - Experiment - 0
+2024-11-25 18:02:29.646 | INFO     | src.experiment_management.experiment_manager:run_experiments:52 - Experiment - ['dn', 'nc', 'dp', 'ms', 'mct', 'as', 's', 's', 'p', 'nr', 'n', 'ts']
+2024-11-25 18:02:29.646 | INFO     | src.experiment_management.experiment_manager:run_experiments:53 - Experiment - ('hhp_ct2', 0, 'natural', 'random2@mrl=0.3_mrr=0.7_mm=mnarlrq', 'allk0.25_sphere', 'fedavg_vae', 102931466, 50, False, 10, 10, 0.1)
+[Parallel(n_jobs=10)]: Using backend LokyBackend with 10 concurrent workers.
+2024-11-25 18:02:39.821 | INFO     | src.fed_imp.experiment:main_func:31 - Round 1
+2024-11-25 18:02:39.832 | INFO     | src.fed_imp.experiment:main_func:31 - Round 3
+2024-11-25 18:02:39.833 | INFO     | src.fed_imp.experiment:main_func:31 - Round 6
+2024-11-25 18:02:39.834 | INFO     | src.fed_imp.experiment:main_func:31 - Round 4
+2024-11-25 18:02:39.838 | INFO     | src.fed_imp.experiment:main_func:31 - Round 7
+2024-11-25 18:02:39.841 | INFO     | src.fed_imp.experiment:main_func:31 - Round 2
+2024-11-25 18:02:39.844 | INFO     | src.fed_imp.experiment:main_func:31 - Round 0
+2024-11-25 18:02:39.845 | INFO     | src.fed_imp.experiment:main_func:31 - Round 8
+2024-11-25 18:02:39.849 | INFO     | src.fed_imp.experiment:main_func:31 - Round 5
+2024-11-25 18:02:39.864 | INFO     | src.fed_imp.experiment:main_func:31 - Round 9
+2024-11-25 18:03:09.790 | INFO     | src.fed_imp.sub_modules.server.server_gain:run:124 - Server Round: 0 avg_rmse: 0.2503999943226988
+  0%|          | 0/10 [00:00<?, ?it/s]2024-11-25 18:03:09.791 | INFO     | src.fed_imp.sub_modules.server.server_gain:run:133 - ==================================================
+2024-11-25 18:03:09.792 | INFO     | src.fed_imp.sub_modules.server.server_gain:run:134 - Imputation Round 1
+2024-11-25 18:03:09.803 | INFO     | src.fed_imp.sub_modules.server.server_gain:run:124 - Server Round: 0 avg_rmse: 0.24691675123448384
+  0%|          | 0/10 [00:00<?, ?it/s]2024-11-25 18:03:09.804 | INFO     | src.fed_imp.sub_modules.server.server_gain:run:133 - ==================================================
+2024-11-25 18:03:09.804 | INFO     | src.fed_imp.sub_modules.server.server_gain:run:134 - Imputation Round 1
+2024-11-25 18:03:09.852 | INFO     | src.fed_imp.sub_modules.server.server_gain:run:124 - Server Round: 0 avg_rmse: 0.2757076665207574
+  0%|          | 0/10 [00:00<?, ?it/s]2024-11-25 18:03:09.853 | INFO     | src.fed_imp.sub_modules.server.server_gain:run:133 - ==================================================
+2024-11-25 18:03:09.854 | INFO     | src.fed_imp.sub_modules.server.server_gain:run:134 - Imputation Round 1
+2024-11-25 18:03:09.942 | INFO     | src.fed_imp.sub_modules.server.server_gain:run:124 - Server Round: 0 avg_rmse: 0.26199303466072443
+  0%|          | 0/10 [00:00<?, ?it/s]2024-11-25 18:03:09.944 | INFO     | src.fed_imp.sub_modules.server.server_gain:run:133 - ==================================================
+2024-11-25 18:03:09.944 | INFO     | src.fed_imp.sub_modules.server.server_gain:run:134 - Imputation Round 1
+2024-11-25 18:03:10.158 | INFO     | src.fed_imp.sub_modules.server.server_gain:run:124 - Server Round: 0 avg_rmse: 0.25119270773200436
+  0%|          | 0/10 [00:00<?, ?it/s]2024-11-25 18:03:10.160 | INFO     | src.fed_imp.sub_modules.server.server_gain:run:133 - ==================================================
+2024-11-25 18:03:10.160 | INFO     | src.fed_imp.sub_modules.server.server_gain:run:134 - Imputation Round 1
+2024-11-25 18:03:10.288 | INFO     | src.fed_imp.sub_modules.server.server_gain:run:124 - Server Round: 0 avg_rmse: 0.2542446573466431
+  0%|          | 0/10 [00:00<?, ?it/s]2024-11-25 18:03:10.290 | INFO     | src.fed_imp.sub_modules.server.server_gain:run:133 - ==================================================
+2024-11-25 18:03:10.290 | INFO     | src.fed_imp.sub_modules.server.server_gain:run:134 - Imputation Round 1
+2024-11-25 18:03:10.401 | INFO     | src.fed_imp.sub_modules.server.server_gain:run:124 - Server Round: 0 avg_rmse: 0.27078226395673854
+  0%|          | 0/10 [00:00<?, ?it/s]2024-11-25 18:03:10.403 | INFO     | src.fed_imp.sub_modules.server.server_gain:run:133 - ==================================================
+2024-11-25 18:03:10.403 | INFO     | src.fed_imp.sub_modules.server.server_gain:run:134 - Imputation Round 1
+2024-11-25 18:03:10.421 | INFO     | src.fed_imp.sub_modules.server.server_gain:run:124 - Server Round: 0 avg_rmse: 0.2706915563759907
+  0%|          | 0/10 [00:00<?, ?it/s]2024-11-25 18:03:10.423 | INFO     | src.fed_imp.sub_modules.server.server_gain:run:133 - ==================================================
+2024-11-25 18:03:10.423 | INFO     | src.fed_imp.sub_modules.server.server_gain:run:134 - Imputation Round 1
+2024-11-25 18:03:10.531 | INFO     | src.fed_imp.sub_modules.server.server_gain:run:124 - Server Round: 0 avg_rmse: 0.250444183165956
+  0%|          | 0/10 [00:00<?, ?it/s]2024-11-25 18:03:10.532 | INFO     | src.fed_imp.sub_modules.server.server_gain:run:133 - ==================================================
+2024-11-25 18:03:10.532 | INFO     | src.fed_imp.sub_modules.server.server_gain:run:134 - Imputation Round 1
+2024-11-25 18:03:10.558 | INFO     | src.fed_imp.sub_modules.server.server_gain:run:124 - Server Round: 0 avg_rmse: 0.2386994389965421
+  0%|          | 0/10 [00:00<?, ?it/s]2024-11-25 18:03:10.559 | INFO     | src.fed_imp.sub_modules.server.server_gain:run:133 - ==================================================
+2024-11-25 18:03:10.559 | INFO     | src.fed_imp.sub_modules.server.server_gain:run:134 - Imputation Round 1
+2024-11-25 18:03:36.868 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 1 avg_rmse: 0.3319039618065149 avg_g_loss: 1.7144201089427327 avg_d_loss: 0.6937924027442932
+ 10%|█         | 1/10 [00:27<04:03, 27.08s/it]2024-11-25 18:03:37.043 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 1 avg_rmse: 0.3378237508297448 avg_g_loss: 1.71288050473886 avg_d_loss: 0.6921030124028523
+ 10%|█         | 1/10 [00:27<04:05, 27.24s/it]2024-11-25 18:03:37.105 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 1 avg_rmse: 0.3488457689326267 avg_g_loss: 1.7126757805774597 avg_d_loss: 0.6960028767585754
+ 10%|█         | 1/10 [00:27<04:05, 27.25s/it]2024-11-25 18:03:37.431 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 1 avg_rmse: 0.33762194465257167 avg_g_loss: 1.6509855513113072 avg_d_loss: 0.6898904045422872
+ 10%|█         | 1/10 [00:27<04:07, 27.49s/it]2024-11-25 18:03:37.446 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 1 avg_rmse: 0.3449762102443867 avg_g_loss: 1.6465441477462825 avg_d_loss: 0.6943999608357747
+ 10%|█         | 1/10 [00:27<04:05, 27.29s/it]2024-11-25 18:03:37.570 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 1 avg_rmse: 0.3326964938322819 avg_g_loss: 1.7082431118238626 avg_d_loss: 0.6982998530069987
+ 10%|█         | 1/10 [00:27<04:05, 27.28s/it]2024-11-25 18:03:37.652 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 1 avg_rmse: 0.3443972138298272 avg_g_loss: 1.6563055893490615 avg_d_loss: 0.6926257491111757
+ 10%|█         | 1/10 [00:27<04:05, 27.25s/it]2024-11-25 18:03:37.674 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 1 avg_rmse: 0.34358179086882923 avg_g_loss: 1.5773120349740501 avg_d_loss: 0.6989439368247986
+ 10%|█         | 1/10 [00:27<04:05, 27.25s/it]2024-11-25 18:03:38.050 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 1 avg_rmse: 0.343241106829248 avg_g_loss: 1.6476679764286393 avg_d_loss: 0.6965890467166901
+ 10%|█         | 1/10 [00:27<04:07, 27.52s/it]2024-11-25 18:03:38.281 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 1 avg_rmse: 0.3460339441648422 avg_g_loss: 1.6212192311835774 avg_d_loss: 0.6982201794783274
+ 10%|█         | 1/10 [00:27<04:09, 27.72s/it]2024-11-25 18:04:03.094 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 2 avg_rmse: 0.3285984476249742 avg_g_loss: 1.6913334042606474 avg_d_loss: 0.6888635734717052
+ 20%|██        | 2/10 [00:53<03:32, 26.58s/it]2024-11-25 18:04:03.273 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 2 avg_rmse: 0.333242233527893 avg_g_loss: 1.6739689152183095 avg_d_loss: 0.689817186196645
+ 20%|██        | 2/10 [00:53<03:33, 26.65s/it]2024-11-25 18:04:03.460 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 2 avg_rmse: 0.3441459682944081 avg_g_loss: 1.5913192138379026 avg_d_loss: 0.6853158930937449
+ 20%|██        | 2/10 [00:53<03:33, 26.72s/it]2024-11-25 18:04:03.677 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 2 avg_rmse: 0.3322249385570997 avg_g_loss: 1.6108975473569946 avg_d_loss: 0.6869989375273385
+ 20%|██        | 2/10 [00:53<03:34, 26.76s/it]2024-11-25 18:04:03.769 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 2 avg_rmse: 0.34169249507611527 avg_g_loss: 1.5792512483550256 avg_d_loss: 0.6904124995072682
+ 20%|██        | 2/10 [00:53<03:33, 26.72s/it]2024-11-25 18:04:04.013 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 2 avg_rmse: 0.3281522905089707 avg_g_loss: 1.6749091358757768 avg_d_loss: 0.6888703942298889
+ 20%|██        | 2/10 [00:53<03:34, 26.79s/it]2024-11-25 18:04:04.097 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 2 avg_rmse: 0.3405557481562131 avg_g_loss: 1.5650518598158902 avg_d_loss: 0.6883938213189443
+ 20%|██        | 2/10 [00:53<03:34, 26.78s/it]2024-11-25 18:04:04.267 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 2 avg_rmse: 0.3387371601589331 avg_g_loss: 1.511196569029351 avg_d_loss: 0.6905500531196593
+ 20%|██        | 2/10 [00:53<03:34, 26.86s/it]2024-11-25 18:04:04.542 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 2 avg_rmse: 0.33744591796353357 avg_g_loss: 1.553462555603421 avg_d_loss: 0.6924766381581624
+ 20%|██        | 2/10 [00:54<03:35, 26.91s/it]2024-11-25 18:04:05.092 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 2 avg_rmse: 0.3422859181778322 avg_g_loss: 1.5802601843872537 avg_d_loss: 0.692110804716746
+ 20%|██        | 2/10 [00:54<03:37, 27.19s/it]2024-11-25 18:04:29.042 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 3 avg_rmse: 0.32364980249383674 avg_g_loss: 1.6500915837232684 avg_d_loss: 0.6859272321065267
+ 30%|███       | 3/10 [01:19<03:04, 26.29s/it]2024-11-25 18:04:29.204 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 3 avg_rmse: 0.32846866979368217 avg_g_loss: 1.6278874944558266 avg_d_loss: 0.6872702221075694
+ 30%|███       | 3/10 [01:19<03:04, 26.32s/it]2024-11-25 18:04:29.662 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 3 avg_rmse: 0.3260092673831859 avg_g_loss: 1.5715988983130138 avg_d_loss: 0.684305328130722
+ 30%|███       | 3/10 [01:19<03:04, 26.40s/it]2024-11-25 18:04:29.722 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 3 avg_rmse: 0.33832046333878263 avg_g_loss: 1.5364516937455661 avg_d_loss: 0.6832419951756795
+ 30%|███       | 3/10 [01:19<03:05, 26.51s/it]2024-11-25 18:04:29.805 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 3 avg_rmse: 0.3375654029887131 avg_g_loss: 1.5558693409906563 avg_d_loss: 0.6886844178040822
+ 30%|███       | 3/10 [01:19<03:04, 26.41s/it]2024-11-25 18:04:30.175 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 3 avg_rmse: 0.32172307003752815 avg_g_loss: 1.61509174890986 avg_d_loss: 0.687108959754308
+ 30%|███       | 3/10 [01:19<03:05, 26.50s/it]2024-11-25 18:04:30.340 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 3 avg_rmse: 0.33571612357015285 avg_g_loss: 1.5104593174044227 avg_d_loss: 0.6856949766476949
+ 30%|███       | 3/10 [01:19<03:05, 26.53s/it]2024-11-25 18:04:30.398 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 3 avg_rmse: 0.3326787058592945 avg_g_loss: 1.4604604352826012 avg_d_loss: 0.6884043316046397
+ 30%|███       | 3/10 [01:19<03:05, 26.53s/it]2024-11-25 18:04:31.054 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 3 avg_rmse: 0.3316816783197934 avg_g_loss: 1.5026177339907607 avg_d_loss: 0.6909981767336527
+ 30%|███       | 3/10 [01:20<03:07, 26.73s/it]2024-11-25 18:04:31.663 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 3 avg_rmse: 0.3373677142501476 avg_g_loss: 1.5389095812442075 avg_d_loss: 0.689583996931712
+ 30%|███       | 3/10 [01:21<03:08, 26.91s/it]2024-11-25 18:04:55.419 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 4 avg_rmse: 0.31660727918777415 avg_g_loss: 1.6063701258165966 avg_d_loss: 0.6823885440826416
+ 40%|████      | 4/10 [01:45<02:37, 26.32s/it]2024-11-25 18:04:55.604 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 4 avg_rmse: 0.32289642069272007 avg_g_loss: 1.572794667763544 avg_d_loss: 0.6839707434177399
+ 40%|████      | 4/10 [01:45<02:38, 26.35s/it]2024-11-25 18:04:56.118 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 4 avg_rmse: 0.33217614359154507 avg_g_loss: 1.5041203262789467 avg_d_loss: 0.6867287496725719
+ 40%|████      | 4/10 [01:45<02:38, 26.37s/it]2024-11-25 18:04:56.330 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 4 avg_rmse: 0.31847090063121325 avg_g_loss: 1.5253554687849238 avg_d_loss: 0.6813803811868032
+ 40%|████      | 4/10 [01:46<02:39, 26.51s/it]2024-11-25 18:04:56.357 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 4 avg_rmse: 0.3309697057169689 avg_g_loss: 1.4644867901248935 avg_d_loss: 0.6805114825566609
+ 40%|████      | 4/10 [01:46<02:39, 26.56s/it]2024-11-25 18:04:56.518 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 4 avg_rmse: 0.3132605306207197 avg_g_loss: 1.546096198232185 avg_d_loss: 0.6853876928488414
+ 40%|████      | 4/10 [01:46<02:38, 26.44s/it]2024-11-25 18:04:57.046 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 4 avg_rmse: 0.3297755555954961 avg_g_loss: 1.4437219844702434 avg_d_loss: 0.6831755896409354
+ 40%|████      | 4/10 [01:46<02:39, 26.60s/it]2024-11-25 18:04:57.255 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 4 avg_rmse: 0.3249446731847568 avg_g_loss: 1.3897214124703632 avg_d_loss: 0.6855222046375274
+ 40%|████      | 4/10 [01:46<02:39, 26.66s/it]2024-11-25 18:04:57.942 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 4 avg_rmse: 0.3250055175078114 avg_g_loss: 1.4398663313356943 avg_d_loss: 0.6894380191961923
+ 40%|████      | 4/10 [01:47<02:40, 26.79s/it]2024-11-25 18:04:58.850 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 4 avg_rmse: 0.33085286207238757 avg_g_loss: 1.4904921442892916 avg_d_loss: 0.6865815103054048
+ 40%|████      | 4/10 [01:48<02:42, 27.02s/it]2024-11-25 18:05:26.465 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 5 avg_rmse: 0.3079134791772961 avg_g_loss: 1.541858313983964 avg_d_loss: 0.6782802820205688
+ 50%|█████     | 5/10 [02:16<02:20, 28.03s/it]2024-11-25 18:05:26.627 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 5 avg_rmse: 0.3163050893216254 avg_g_loss: 1.5162796539052952 avg_d_loss: 0.6809809883435567
+ 50%|█████     | 5/10 [02:16<02:20, 28.04s/it]2024-11-25 18:05:27.217 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 5 avg_rmse: 0.3254937997989252 avg_g_loss: 1.4405485507140925 avg_d_loss: 0.6844120681285858
+ 50%|█████     | 5/10 [02:17<02:20, 28.08s/it]2024-11-25 18:05:27.519 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 5 avg_rmse: 0.32235700048558297 avg_g_loss: 1.3804431393807761 avg_d_loss: 0.6779400746027627
+ 50%|█████     | 5/10 [02:17<02:21, 28.22s/it]2024-11-25 18:05:27.565 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 5 avg_rmse: 0.3095256457268539 avg_g_loss: 1.475679655941646 avg_d_loss: 0.6780027230580647
+ 50%|█████     | 5/10 [02:17<02:21, 28.21s/it]2024-11-25 18:05:27.609 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 5 avg_rmse: 0.3033848463511399 avg_g_loss: 1.4517300602071537 avg_d_loss: 0.6827536344528199
+ 50%|█████     | 5/10 [02:17<02:20, 28.12s/it]2024-11-25 18:05:28.398 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 5 avg_rmse: 0.3226307982311772 avg_g_loss: 1.3591635655227645 avg_d_loss: 0.6804186006387075
+ 50%|█████     | 5/10 [02:17<02:21, 28.31s/it]2024-11-25 18:05:28.413 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 5 avg_rmse: 0.31538907220394446 avg_g_loss: 1.3151746344033153 avg_d_loss: 0.682268210252126
+ 50%|█████     | 5/10 [02:17<02:21, 28.28s/it]2024-11-25 18:05:29.094 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 5 avg_rmse: 0.3171944138119274 avg_g_loss: 1.3629028229553348 avg_d_loss: 0.6877446015675863
+ 50%|█████     | 5/10 [02:18<02:21, 28.36s/it]2024-11-25 18:05:29.837 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 5 avg_rmse: 0.3223153438598053 avg_g_loss: 1.437186177236242 avg_d_loss: 0.6830628037452698
+ 50%|█████     | 5/10 [02:19<02:22, 28.45s/it]2024-11-25 18:05:57.105 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 6 avg_rmse: 0.2979766900307892 avg_g_loss: 1.4673914011183828 avg_d_loss: 0.6740368167559306
+ 60%|██████    | 6/10 [02:47<01:55, 28.92s/it]2024-11-25 18:05:57.160 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 6 avg_rmse: 0.30839482390753353 avg_g_loss: 1.444658099772952 avg_d_loss: 0.677575820684433
+ 60%|██████    | 6/10 [02:47<01:55, 28.88s/it]2024-11-25 18:05:58.266 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 6 avg_rmse: 0.3181894762548141 avg_g_loss: 1.3549849251985722 avg_d_loss: 0.6823682864507039
+ 60%|██████    | 6/10 [02:48<01:56, 29.09s/it]2024-11-25 18:05:58.315 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 6 avg_rmse: 0.31370596605540996 avg_g_loss: 1.2794262958240845 avg_d_loss: 0.6753242115179697
+ 60%|██████    | 6/10 [02:48<01:56, 29.10s/it]2024-11-25 18:05:58.484 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 6 avg_rmse: 0.2997861314071603 avg_g_loss: 1.399760936080973 avg_d_loss: 0.6739526788393656
+ 60%|██████    | 6/10 [02:48<01:56, 29.13s/it]2024-11-25 18:05:58.522 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 6 avg_rmse: 0.29388131158920766 avg_g_loss: 1.3395560719861404 avg_d_loss: 0.6802741746107738
+ 60%|██████    | 6/10 [02:48<01:56, 29.07s/it]2024-11-25 18:05:59.510 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 6 avg_rmse: 0.3044066776151149 avg_g_loss: 1.221746080181957 avg_d_loss: 0.6786112626393637
+ 60%|██████    | 6/10 [02:49<01:56, 29.24s/it]2024-11-25 18:05:59.518 | INFO     | src.fed_imp.sub_modules.server.server_gain:_run_round_impute:277 - Server Round: 6 avg_rmse: 0.31511087697383067 avg_g_loss: 1.2508562867267488 avg_d_loss: 0.6775104264418284

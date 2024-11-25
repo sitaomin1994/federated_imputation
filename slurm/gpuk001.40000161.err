@@ -1,0 +1,3 @@
+slurmstepd: error: *** STEP 40000161.0 ON gpuk001 CANCELLED AT 2024-11-25T18:02:28 ***
+slurmstepd: error: *** JOB 40000161 ON gpuk001 CANCELLED AT 2024-11-25T18:02:28 ***
+srun: Job step aborted: Waiting up to 32 seconds for job step to finish.
