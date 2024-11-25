@@ -8,7 +8,6 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=10
 #SBATCH --mem-per-cpu=12G
-#SBATCH --gres=gpu:1
 #SBATCH --time=3-00:00:00
 #SBATCH --export=ALL
 
