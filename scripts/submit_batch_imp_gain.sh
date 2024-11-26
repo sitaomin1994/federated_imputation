@@ -1,9 +1,9 @@
 #!/bin/bash
 configs=(
-  "hhpct_exp15"
-  "hhpct_exp25"
-  "eicumo_exp15"
-  "eicumo_exp25"
+  "hhpct_exp14"
+  "hhpct_exp24"
+  "eicumo_exp14"
+  "eicumo_exp24"
 )
 
 for config_name in "${configs[@]}"; do
