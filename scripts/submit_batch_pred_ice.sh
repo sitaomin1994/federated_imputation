@@ -1,10 +1,12 @@
 #!/bin/bash
 configs=(
-  "1120/hhp_ct3"
-  "1120/vehicle2"
-  "1120/eicu_mo2"
-  "1120/hhp_ct2"
-  "1120/eicu_mo1"
+#  "1120/hhp_ct3"
+#  "1120/vehicle2"
+#  "1120/eicu_mo2"
+#  "1120/hhp_ct2"
+#  "1120/eicu_mo1"
+  "1125/eicu_mo2"
+  "1125/hhp_ct2"
 )
 
 for config_name in "${configs[@]}"; do
