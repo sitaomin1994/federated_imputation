@@ -171,3 +171,6 @@
 2024-11-25 18:08:40.860 | INFO     | src.fed_imp.experiment:experiment_result_processing:387 - imp@w2: avg 3.5533736414076302
 2024-11-25 18:08:40.860 | INFO     | src.fed_imp.experiment:experiment_result_processing:387 - imp@sliced_ws: avg 0.1459132711662748
 2024-11-25 18:08:40.860 | INFO     | src.fed_imp.experiment:experiment_result_processing:402 - model pred_accu: 0.00000 (0.000) pred_f1: 0.00000 (0.000)
+2024-11-25 18:13:41.157 | INFO     | src.fed_imp.experiment:experiment_result_processing:424 - imp@rmse: 0.29504 (0.026) imp@sliced_ws: 0.14591 (0.014) imp@global_ws: 0.14091
+2024-11-25 18:13:41.158 | INFO     | src.experiment_management.experiment_manager:run_experiments:67 - Experiment finished in 671.5114376544952
+2024-11-25 18:13:44.322 | INFO     | src.experiment_management.experiment_manager:run_experiments:86 - Total time: 674.6758568286896
