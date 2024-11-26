@@ -1,0 +1,168 @@
+./results/raw_results/fed_imp_ext2_amarel/1125/hhp_ct2/0/natural/random2@mrl=0.3_mrr=0.7_mm=mnarlrq/allk0.25_sphere/
+====================================================================================
+round: 3
+{'batch_size': 300, 'learning_rate': 0.001, 'weight_decay': 0.0, 'pred_round': 600, 'pred_local_epochs': 3, 'local_epoch': 5, 'sample_pct': 1}
+./results/raw_results/fed_imp_ext2_amarel/1125/hhp_ct2/0/natural/random2@mrl=0.3_mrr=0.7_mm=mnarlrq/allk0.25_sphere/
+====================================================================================
+round: 5
+{'batch_size': 300, 'learning_rate': 0.001, 'weight_decay': 0.0, 'pred_round': 600, 'pred_local_epochs': 3, 'local_epoch': 5, 'sample_pct': 1}
+./results/raw_results/fed_imp_ext2_amarel/1125/hhp_ct2/0/natural/random2@mrl=0.3_mrr=0.7_mm=mnarlrq/allk0.25_sphere/
+====================================================================================
+round: 8
+{'batch_size': 300, 'learning_rate': 0.001, 'weight_decay': 0.0, 'pred_round': 600, 'pred_local_epochs': 3, 'local_epoch': 5, 'sample_pct': 1}
+./results/raw_results/fed_imp_ext2_amarel/1125/hhp_ct2/0/natural/random2@mrl=0.3_mrr=0.7_mm=mnarlrq/allk0.25_sphere/
+====================================================================================
+round: 1
+{'batch_size': 300, 'learning_rate': 0.001, 'weight_decay': 0.0, 'pred_round': 600, 'pred_local_epochs': 3, 'local_epoch': 5, 'sample_pct': 1}
+./results/raw_results/fed_imp_ext2_amarel/1125/hhp_ct2/0/natural/random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst/allk0.25_sphere/
+====================================================================================
+round: 4
+{'batch_size': 300, 'learning_rate': 0.001, 'weight_decay': 0.0, 'pred_round': 600, 'pred_local_epochs': 3, 'local_epoch': 5, 'sample_pct': 1}
+./results/raw_results/fed_imp_ext2_amarel/1125/hhp_ct2/0/natural/random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst/allk0.25_sphere/
+====================================================================================
+round: 1
+{'batch_size': 300, 'learning_rate': 0.001, 'weight_decay': 0.0, 'pred_round': 600, 'pred_local_epochs': 3, 'local_epoch': 5, 'sample_pct': 1}
+./results/raw_results/fed_imp_ext2_amarel/1125/hhp_ct2/0/natural/random2@mrl=0.3_mrr=0.7_mm=mnarlrq/allk0.25_sphere/
+====================================================================================
+round: 5
+{'batch_size': 300, 'learning_rate': 0.001, 'weight_decay': 0.0, 'pred_round': 600, 'pred_local_epochs': 3, 'local_epoch': 5, 'sample_pct': 1}
+./results/raw_results/fed_imp_ext2_amarel/1125/hhp_ct2/0/natural/random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst/allk0.25_sphere/
+====================================================================================
+round: 2
+{'batch_size': 300, 'learning_rate': 0.001, 'weight_decay': 0.0, 'pred_round': 600, 'pred_local_epochs': 3, 'local_epoch': 5, 'sample_pct': 1}
+./results/raw_results/fed_imp_ext2_amarel/1125/hhp_ct2/0/natural/random2@mrl=0.3_mrr=0.7_mm=mnarlrq/allk0.25_sphere/
+====================================================================================
+round: 1
+{'batch_size': 300, 'learning_rate': 0.001, 'weight_decay': 0.0, 'pred_round': 600, 'pred_local_epochs': 3, 'local_epoch': 5, 'sample_pct': 1}
+./results/raw_results/fed_imp_ext2_amarel/1125/hhp_ct2/0/natural/random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst/allk0.25_sphere/
+====================================================================================
+round: 7
+{'batch_size': 300, 'learning_rate': 0.001, 'weight_decay': 0.0, 'pred_round': 600, 'pred_local_epochs': 3, 'local_epoch': 5, 'sample_pct': 1}
+./results/raw_results/fed_imp_ext2_amarel/1125/hhp_ct2/0/natural/random2@mrl=0.3_mrr=0.7_mm=mnarlrq/allk0.25_sphere/
+====================================================================================
+round: 7
+{'batch_size': 300, 'learning_rate': 0.001, 'weight_decay': 0.0, 'pred_round': 600, 'pred_local_epochs': 3, 'local_epoch': 5, 'sample_pct': 1}
+./results/raw_results/fed_imp_ext2_amarel/1125/hhp_ct2/0/natural/random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst/allk0.25_sphere/
+====================================================================================
+round: 5
+{'batch_size': 300, 'learning_rate': 0.001, 'weight_decay': 0.0, 'pred_round': 600, 'pred_local_epochs': 3, 'local_epoch': 5, 'sample_pct': 1}
+./results/raw_results/fed_imp_ext2_amarel/1125/hhp_ct2/0/natural/random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst/allk0.25_sphere/
+====================================================================================
+round: 7
+{'batch_size': 300, 'learning_rate': 0.001, 'weight_decay': 0.0, 'pred_round': 600, 'pred_local_epochs': 3, 'local_epoch': 5, 'sample_pct': 1}
+./results/raw_results/fed_imp_ext2_amarel/1125/hhp_ct2/0/natural/random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst/allk0.25_sphere/
+====================================================================================
+round: 3
+{'batch_size': 300, 'learning_rate': 0.001, 'weight_decay': 0.0, 'pred_round': 600, 'pred_local_epochs': 3, 'local_epoch': 5, 'sample_pct': 1}
+./results/raw_results/fed_imp_ext2_amarel/1125/hhp_ct2/0/natural/random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst/allk0.25_sphere/
+====================================================================================
+round: 6
+{'batch_size': 300, 'learning_rate': 0.001, 'weight_decay': 0.0, 'pred_round': 600, 'pred_local_epochs': 3, 'local_epoch': 5, 'sample_pct': 1}
+./results/raw_results/fed_imp_ext2_amarel/1125/hhp_ct2/0/natural/random2@mrl=0.3_mrr=0.7_mm=mnarlrq/allk0.25_sphere/
+====================================================================================
+round: 6
+{'batch_size': 300, 'learning_rate': 0.001, 'weight_decay': 0.0, 'pred_round': 600, 'pred_local_epochs': 3, 'local_epoch': 5, 'sample_pct': 1}
+./results/raw_results/fed_imp_ext2_amarel/1125/hhp_ct2/0/natural/random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst/allk0.25_sphere/
+====================================================================================
+round: 0
+{'batch_size': 300, 'learning_rate': 0.001, 'weight_decay': 0.0, 'pred_round': 600, 'pred_local_epochs': 3, 'local_epoch': 5, 'sample_pct': 1}
+./results/raw_results/fed_imp_ext2_amarel/1125/hhp_ct2/0/natural/random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst/allk0.25_sphere/
+====================================================================================
+round: 1
+{'batch_size': 300, 'learning_rate': 0.001, 'weight_decay': 0.0, 'pred_round': 600, 'pred_local_epochs': 3, 'local_epoch': 5, 'sample_pct': 1}
+./results/raw_results/fed_imp_ext2_amarel/1125/hhp_ct2/0/natural/random2@mrl=0.3_mrr=0.7_mm=mnarlrq/allk0.25_sphere/
+====================================================================================
+round: 9
+{'batch_size': 300, 'learning_rate': 0.001, 'weight_decay': 0.0, 'pred_round': 600, 'pred_local_epochs': 3, 'local_epoch': 5, 'sample_pct': 1}
+./results/raw_results/fed_imp_ext2_amarel/1125/hhp_ct2/0/natural/random2@mrl=0.3_mrr=0.7_mm=mnarlrq/allk0.25_sphere/
+====================================================================================
+round: 4
+{'batch_size': 300, 'learning_rate': 0.001, 'weight_decay': 0.0, 'pred_round': 600, 'pred_local_epochs': 3, 'local_epoch': 5, 'sample_pct': 1}
+./results/raw_results/fed_imp_ext2_amarel/1125/hhp_ct2/0/natural/random2@mrl=0.3_mrr=0.7_mm=mnarlrq/allk0.25_sphere/
+====================================================================================
+round: 2
+{'batch_size': 300, 'learning_rate': 0.001, 'weight_decay': 0.0, 'pred_round': 600, 'pred_local_epochs': 3, 'local_epoch': 5, 'sample_pct': 1}
+./results/raw_results/fed_imp_ext2_amarel/1125/hhp_ct2/0/natural/random2@mrl=0.3_mrr=0.7_mm=mnarlrq/allk0.25_sphere/
+====================================================================================
+round: 8
+{'batch_size': 300, 'learning_rate': 0.001, 'weight_decay': 0.0, 'pred_round': 600, 'pred_local_epochs': 3, 'local_epoch': 5, 'sample_pct': 1}
+./results/raw_results/fed_imp_ext2_amarel/1125/hhp_ct2/0/natural/random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst/allk0.25_sphere/
+====================================================================================
+round: 6
+{'batch_size': 300, 'learning_rate': 0.001, 'weight_decay': 0.0, 'pred_round': 600, 'pred_local_epochs': 3, 'local_epoch': 5, 'sample_pct': 1}
+./results/raw_results/fed_imp_ext2_amarel/1125/hhp_ct2/0/natural/random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst/allk0.25_sphere/
+====================================================================================
+round: 8
+{'batch_size': 300, 'learning_rate': 0.001, 'weight_decay': 0.0, 'pred_round': 600, 'pred_local_epochs': 3, 'local_epoch': 5, 'sample_pct': 1}
+./results/raw_results/fed_imp_ext2_amarel/1125/hhp_ct2/0/natural/random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst/allk0.25_sphere/
+====================================================================================
+round: 0
+{'batch_size': 300, 'learning_rate': 0.001, 'weight_decay': 0.0, 'pred_round': 600, 'pred_local_epochs': 3, 'local_epoch': 5, 'sample_pct': 1}
+./results/raw_results/fed_imp_ext2_amarel/1125/hhp_ct2/0/natural/random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst/allk0.25_sphere/
+====================================================================================
+round: 9
+{'batch_size': 300, 'learning_rate': 0.001, 'weight_decay': 0.0, 'pred_round': 600, 'pred_local_epochs': 3, 'local_epoch': 5, 'sample_pct': 1}
+./results/raw_results/fed_imp_ext2_amarel/1125/hhp_ct2/0/natural/random2@mrl=0.3_mrr=0.7_mm=mnarlrq/allk0.25_sphere/
+====================================================================================
+round: 2
+{'batch_size': 300, 'learning_rate': 0.001, 'weight_decay': 0.0, 'pred_round': 600, 'pred_local_epochs': 3, 'local_epoch': 5, 'sample_pct': 1}
+{'accu_mean': 0.7849266795498465, 'accu_mean_std': 0.026120206829867917, 'f1_mean': 0.6222538591351198, 'f1_mean_std': 0.030537806279838205, 'roc_mean': 0.8356572097317942, 'roc_mean_std': 0.03845392124362413, 'prc_mean': 0.6631524280337255, 'prc_mean_std': 0.06926977548195574, 'accu_std': 0.0, 'accu_std_std': 0.0, 'f1_std': 0.0, 'f1_std_std': 0.0, 'roc_std': 0.0, 'roc_std_std': 0.0, 'prc_std': 0.0, 'prc_std_std': 0.0}
+./results/raw_results/fed_imp_ext2_amarel_pred_fed/1125/hhp_ct2/random2@mrl=0.3_mrr=0.7_mm=mnarlrq/fedavg_vae.json
+{'accu_mean': 0.8125611003751277, 'accu_mean_std': 0.03461109377919729, 'f1_mean': 0.687267311514251, 'f1_mean_std': 0.05057918082826983, 'roc_mean': 0.8720266538337716, 'roc_mean_std': 0.0375864720741437, 'prc_mean': 0.7366309748300081, 'prc_mean_std': 0.07198454485745644, 'accu_std': 0.0, 'accu_std_std': 0.0, 'f1_std': 0.0, 'f1_std_std': 0.0, 'roc_std': 0.0, 'roc_std_std': 0.0, 'prc_std': 0.0, 'prc_std_std': 0.0}
+./results/raw_results/fed_imp_ext2_amarel_pred_fed/1125/hhp_ct2/random2@mrl=0.3_mrr=0.7_mm=mnarlrq/fedavg_gain.json
+{'accu_mean': 0.7650903717176311, 'accu_mean_std': 0.036633920558479326, 'f1_mean': 0.5664943284254312, 'f1_mean_std': 0.08199874449778381, 'roc_mean': 0.8114038511846029, 'roc_mean_std': 0.05155671618387881, 'prc_mean': 0.637394308412625, 'prc_mean_std': 0.08770574327733395, 'accu_std': 0.0, 'accu_std_std': 0.0, 'f1_std': 0.0, 'f1_std_std': 0.0, 'roc_std': 0.0, 'roc_std_std': 0.0, 'prc_std': 0.0, 'prc_std_std': 0.0}
+./results/raw_results/fed_imp_ext2_amarel_pred_fed/1125/hhp_ct2/random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst/fedavg_vae.json
+{'accu_mean': 0.8164487893600091, 'accu_mean_std': 0.024300594767161943, 'f1_mean': 0.6961065647472935, 'f1_mean_std': 0.036837543527088595, 'roc_mean': 0.8768715652668059, 'roc_mean_std': 0.02611555482297685, 'prc_mean': 0.7379076571984573, 'prc_mean_std': 0.060304969047206745, 'accu_std': 0.0, 'accu_std_std': 0.0, 'f1_std': 0.0, 'f1_std_std': 0.0, 'roc_std': 0.0, 'roc_std_std': 0.0, 'prc_std': 0.0, 'prc_std_std': 0.0}
+./results/raw_results/fed_imp_ext2_amarel_pred_fed/1125/hhp_ct2/random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst/fedavg_gain.json
+./results/raw_results/fed_imp_ext2_amarel/1125/hhp_ct2/0/natural/random2@mrl=0.3_mrr=0.7_mm=mnarlrq/allk0.25_sphere/
+====================================================================================
+round: 4
+{'batch_size': 300, 'learning_rate': 0.001, 'weight_decay': 0.0, 'pred_round': 600, 'pred_local_epochs': 3, 'local_epoch': 5, 'sample_pct': 1}
+./results/raw_results/fed_imp_ext2_amarel/1125/hhp_ct2/0/natural/random2@mrl=0.3_mrr=0.7_mm=mnarlrq/allk0.25_sphere/
+====================================================================================
+round: 0
+{'batch_size': 300, 'learning_rate': 0.001, 'weight_decay': 0.0, 'pred_round': 600, 'pred_local_epochs': 3, 'local_epoch': 5, 'sample_pct': 1}
+./results/raw_results/fed_imp_ext2_amarel/1125/hhp_ct2/0/natural/random2@mrl=0.3_mrr=0.7_mm=mnarlrq/allk0.25_sphere/
+====================================================================================
+round: 0
+{'batch_size': 300, 'learning_rate': 0.001, 'weight_decay': 0.0, 'pred_round': 600, 'pred_local_epochs': 3, 'local_epoch': 5, 'sample_pct': 1}
+./results/raw_results/fed_imp_ext2_amarel/1125/hhp_ct2/0/natural/random2@mrl=0.3_mrr=0.7_mm=mnarlrq/allk0.25_sphere/
+====================================================================================
+round: 3
+{'batch_size': 300, 'learning_rate': 0.001, 'weight_decay': 0.0, 'pred_round': 600, 'pred_local_epochs': 3, 'local_epoch': 5, 'sample_pct': 1}
+./results/raw_results/fed_imp_ext2_amarel/1125/hhp_ct2/0/natural/random2@mrl=0.3_mrr=0.7_mm=mnarlrq/allk0.25_sphere/
+====================================================================================
+round: 7
+{'batch_size': 300, 'learning_rate': 0.001, 'weight_decay': 0.0, 'pred_round': 600, 'pred_local_epochs': 3, 'local_epoch': 5, 'sample_pct': 1}
+./results/raw_results/fed_imp_ext2_amarel/1125/hhp_ct2/0/natural/random2@mrl=0.3_mrr=0.7_mm=mnarlrq/allk0.25_sphere/
+====================================================================================
+round: 6
+{'batch_size': 300, 'learning_rate': 0.001, 'weight_decay': 0.0, 'pred_round': 600, 'pred_local_epochs': 3, 'local_epoch': 5, 'sample_pct': 1}
+./results/raw_results/fed_imp_ext2_amarel/1125/hhp_ct2/0/natural/random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst/allk0.25_sphere/
+====================================================================================
+round: 3
+{'batch_size': 300, 'learning_rate': 0.001, 'weight_decay': 0.0, 'pred_round': 600, 'pred_local_epochs': 3, 'local_epoch': 5, 'sample_pct': 1}
+./results/raw_results/fed_imp_ext2_amarel/1125/hhp_ct2/0/natural/random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst/allk0.25_sphere/
+====================================================================================
+round: 9
+{'batch_size': 300, 'learning_rate': 0.001, 'weight_decay': 0.0, 'pred_round': 600, 'pred_local_epochs': 3, 'local_epoch': 5, 'sample_pct': 1}
+./results/raw_results/fed_imp_ext2_amarel/1125/hhp_ct2/0/natural/random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst/allk0.25_sphere/
+====================================================================================
+round: 8
+{'batch_size': 300, 'learning_rate': 0.001, 'weight_decay': 0.0, 'pred_round': 600, 'pred_local_epochs': 3, 'local_epoch': 5, 'sample_pct': 1}
+./results/raw_results/fed_imp_ext2_amarel/1125/hhp_ct2/0/natural/random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst/allk0.25_sphere/
+====================================================================================
+round: 2
+{'batch_size': 300, 'learning_rate': 0.001, 'weight_decay': 0.0, 'pred_round': 600, 'pred_local_epochs': 3, 'local_epoch': 5, 'sample_pct': 1}
+./results/raw_results/fed_imp_ext2_amarel/1125/hhp_ct2/0/natural/random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst/allk0.25_sphere/
+====================================================================================
+round: 5
+{'batch_size': 300, 'learning_rate': 0.001, 'weight_decay': 0.0, 'pred_round': 600, 'pred_local_epochs': 3, 'local_epoch': 5, 'sample_pct': 1}
+./results/raw_results/fed_imp_ext2_amarel/1125/hhp_ct2/0/natural/random2@mrl=0.3_mrr=0.7_mm=mnarlrsigst/allk0.25_sphere/
+====================================================================================
+round: 4
+{'batch_size': 300, 'learning_rate': 0.001, 'weight_decay': 0.0, 'pred_round': 600, 'pred_local_epochs': 3, 'local_epoch': 5, 'sample_pct': 1}
+./results/raw_results/fed_imp_ext2_amarel/1125/hhp_ct2/0/natural/random2@mrl=0.3_mrr=0.7_mm=mnarlrq/allk0.25_sphere/
+====================================================================================
+round: 9
+{'batch_size': 300, 'learning_rate': 0.001, 'weight_decay': 0.0, 'pred_round': 600, 'pred_local_epochs': 3, 'local_epoch': 5, 'sample_pct': 1}
