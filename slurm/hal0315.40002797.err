@@ -1,0 +1,50 @@
+joblib.externals.loky.process_executor._RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/home/sm2370/.conda/envs/impute4fair/lib/python3.11/site-packages/joblib/externals/loky/process_executor.py", line 428, in _process_worker
+    r = call_item()
+        ^^^^^^^^^^^
+  File "/home/sm2370/.conda/envs/impute4fair/lib/python3.11/site-packages/joblib/externals/loky/process_executor.py", line 275, in __call__
+    return self.fn(*self.args, **self.kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sm2370/.conda/envs/impute4fair/lib/python3.11/site-packages/joblib/_parallel_backends.py", line 620, in __call__
+    return self.func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sm2370/.conda/envs/impute4fair/lib/python3.11/site-packages/joblib/parallel.py", line 288, in __call__
+    return [func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sm2370/.conda/envs/impute4fair/lib/python3.11/site-packages/joblib/parallel.py", line 288, in <listcomp>
+    return [func(*args, **kwargs)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "/cache/home/sm2370/Research/federated_imputation/run_pred_experiments_ext2.py", line 181, in process_single_task
+    ret = prediction(main_config, server_config, pred_rounds, seed)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cache/home/sm2370/Research/federated_imputation/run_pred_experiments_ext2.py", line 77, in prediction
+    data_dir, exp_file = get_all_dirs(root_dir, method)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cache/home/sm2370/Research/federated_imputation/run_pred_experiments_ext2.py", line 108, in get_all_dirs
+    raise ValueError("No folder for such method: {}".format(method))
+ValueError: No folder for such method: fedavg_vae
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/cache/home/sm2370/Research/federated_imputation/run_pred_experiments_ext2.py", line 261, in <module>
+    results = Parallel(n_jobs=args.n_jobs)(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sm2370/.conda/envs/impute4fair/lib/python3.11/site-packages/joblib/parallel.py", line 1098, in __call__
+    self.retrieve()
+  File "/home/sm2370/.conda/envs/impute4fair/lib/python3.11/site-packages/joblib/parallel.py", line 975, in retrieve
+    self._output.extend(job.get(timeout=self.timeout))
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sm2370/.conda/envs/impute4fair/lib/python3.11/site-packages/joblib/_parallel_backends.py", line 567, in wrap_future_result
+    return future.result(timeout=timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sm2370/.conda/envs/impute4fair/lib/python3.11/concurrent/futures/_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/sm2370/.conda/envs/impute4fair/lib/python3.11/concurrent/futures/_base.py", line 401, in __get_result
+    raise self._exception
+ValueError: No folder for such method: fedavg_vae
+srun: error: hal0315: task 0: Exited with exit code 1
